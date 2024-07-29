@@ -16,10 +16,10 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.firefox import GeckoDriverManager
 
 cfg = {}
-cfg["user"]=os.environ["XRAY_USER"]
-cfg["password"]=os.environ["XRAY_PASSWORD"]
-cfg["jira_keys"]=os.environ["XRAY_KEYS"]
-cfg["jira_url"]=os.environ["XRAY_BASE_URL"]
+cfg["user"] = os.environ["XRAY_USER"]
+cfg["password"] = os.environ["XRAY_PASSWORD"]
+cfg["jira_keys"] = os.environ["XRAY_KEYS"]
+cfg["jira_url"] = os.environ["XRAY_BASE_URL"]
 
 # Create non-hidden directory in $HOME to be accessible both by snap package and native processes
 # https://firefox-source-docs.mozilla.org/testing/geckodriver/Usage.html#running-firefox-in-a-container-based-package
@@ -41,7 +41,7 @@ Path(download_file).unlink(missing_ok=True)
 options = Options()
 options.add_argument("-headless")
 options.enable_downloads = True
-options.log.level = "fatal" # WARNING enabling logs in debug/trace will reveal secrets
+options.log.level = "fatal"  # WARNING enabling logs in debug/trace will reveal secrets
 options.set_preference("browser.download.folderList", 2)
 options.set_preference("browser.download.manager.showWhenStarting", False)
 options.set_preference("browser.download.manager.closeWhenDone", True)
@@ -64,7 +64,7 @@ try:
     browser.get(cfg["jira_url"])
 
     # Insert cookie to avoid alert message later
-    browser.add_cookie({"name":"CtxsClientDetectionDone", "value":"true"})
+    browser.add_cookie({"name": "CtxsClientDetectionDone", "value": "true"})
 
     # NetScaler Gateway Login Page
     print(":: Waiting for NetScaler Gateway Login Page")
@@ -91,7 +91,7 @@ try:
     # Export JIRA Cucumber feature files
     print(":: Exporting XRay Cucumber feature files")
 
-    all_cookies=browser.get_cookies()
+    all_cookies = browser.get_cookies()
     cookies_dict = {}
     for cookie in all_cookies:
         cookies_dict[cookie['name']] = cookie['value']

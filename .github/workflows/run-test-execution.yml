@@ -37,6 +37,15 @@ jobs:
         #    - name: Test with pytest
         #      run: |
         #        pytest
+    - name: Export Cucumber feature files
+      env:
+        XRAY_KEYS: ${{ vars.XRAY_KEYS }}
+        XRAY_USER: ${{ secrets.XRAY_USER }}
+        XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
+        XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
+      run: |
+        python jira_export.py
+        unzip ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
     - name: xray-action
       uses: mikepenz/xray-action@v3
       with:
