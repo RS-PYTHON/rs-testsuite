@@ -1,5 +1,6 @@
 """Module exporting JIRA X-Ray tickets as a zip archive of Cucumber features files"""
 
+import logging
 import os
 import shutil
 import subprocess
@@ -7,6 +8,7 @@ from pathlib import Path
 import requests
 import geckodriver_autoinstaller
 from selenium import webdriver
+from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
@@ -60,15 +62,20 @@ browser = webdriver.Firefox(options,
                             Service(executable_path=GeckoDriverManager().install(),
                                     log_output=subprocess.STDOUT))
 try:
-    print(":: Connecting to JIRA/XRay")
-    browser.get(cfg["jira_url"])
+    for i in range(5):
+        try:
+            print(":: Connecting to JIRA/XRay")
+            browser.get(cfg["jira_url"])
 
-    # Insert cookie to avoid alert message later
-    browser.add_cookie({"name": "CtxsClientDetectionDone", "value": "true"})
+            # Insert cookie to avoid alert message later
+            browser.add_cookie({"name": "CtxsClientDetectionDone", "value": "true"})
 
-    # NetScaler Gateway Login Page
-    print(":: Waiting for NetScaler Gateway Login Page")
-    WebDriverWait(browser, 40).until(EC.element_to_be_clickable((By.ID, "login")))
+            # NetScaler Gateway Login Page
+            print(":: Waiting for NetScaler Gateway Login Page")
+            WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.ID, "login")))
+            break
+        except (TimeoutException, WebDriverException) as e:
+            logging.error(e)
     browser.find_element(By.ID, "login").send_keys(cfg["user"])
     browser.find_element(By.ID, "passwd").send_keys(cfg["password"])
     browser.find_element(By.ID, "nsg-x1-logon-button").click()
