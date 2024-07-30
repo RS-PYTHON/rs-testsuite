@@ -8,9 +8,17 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      xray_keys:
+        description: List of XRay Test Executions to run
+        required: true
+        default: 'RSPY-365'
 
 permissions:
-  contents: read
+  contents: write
+  checks: write
+  pull-requests: write
 
 jobs:
   build:
@@ -23,21 +31,21 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: "3.12"
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        #    - name: Test with pytest
-        #      run: |
-        #        pytest
-    - name: Export Cucumber feature files
+
+    - name: Run tests from Jira/Xray
       env:
         XRAY_KEYS: ${{ vars.XRAY_KEYS }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
@@ -45,7 +53,66 @@ jobs:
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
       run: |
         python jira_export.py
-        unzip ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
+        unzip -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
+        behave --junit
+
+    - name: Publish Test Results
+      uses: EnricoMi/publish-unit-test-result-action@v2
+      id: test-results
+      if: always()
+      with:
+        files: |
+          reports/**/*.xml
+
+    - name: Set badge color
+      shell: bash
+      run: |
+        case ${{ fromJSON( steps.test-results.outputs.json ).conclusion }} in
+          success)
+            echo "BADGE_COLOR=31c653" >> $GITHUB_ENV
+            ;;
+          failure)
+            echo "BADGE_COLOR=800000" >> $GITHUB_ENV
+            ;;
+          neutral)
+            echo "BADGE_COLOR=696969" >> $GITHUB_ENV
+            ;;
+        esac
+
+    - name: Create badge
+      uses: emibcn/badge-action@v2.0.3
+      id: badge
+      with:
+        label: Tests
+        status: '${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}'
+        color: ${{ env.BADGE_COLOR }}
+        path: badge.svg
+
+    - name: Upload badge as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: badge
+        path: badge.svg
+        if-no-files-found: error
+
+    - name: Commit badge
+      continue-on-error: true
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git fetch origin badges
+        git switch badges
+        git add badge.svg
+        git commit -m "Add/Update badge"
+
+    - name: Push badge commit
+      uses: ad-m/github-push-action@master
+      if: ${{ success() }}
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force_with_lease: true
+        branch: badges
+
     - name: xray-action
       uses: mikepenz/xray-action@v3
       with:
@@ -53,7 +120,7 @@ jobs:
         xrayBaseUrl: ${{ secrets.XRAY_BASE_URL }}
         xrayToken: ${{ secrets.XRAY_TOKEN }}
         testFormat: "behave"
-        testPaths: "**/test/*.xml"
+        testPaths: "**/reports/*.xml"
         testExecKey: "RSPY-365"
         projectKey: "RSPY"
 
