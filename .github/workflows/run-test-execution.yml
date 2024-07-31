@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
     inputs:
       xray_keys:
-        description: List of XRay Test Executions to run
+        description: XRay Test Execution key to run
         required: true
         default: 'RSPY-365'
 
@@ -55,9 +55,15 @@ jobs:
         python jira_export_features.py
         unzip -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
+    - name: Upload features as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: features
+        path: ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
+
     - name: Run tests with behave
       run: |
-        behave --junit
+        behave --junit -f json.pretty -o reports/results.json
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
@@ -66,6 +72,22 @@ jobs:
       with:
         files: |
           reports/**/*.xml
+
+    - name: Upload test reports as artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: reports
+        path: reports/
+
+    - name: Import test execution results to Jira/Xray
+      if: always()
+      env:
+        XRAY_KEYS: ${{ vars.XRAY_KEYS }}
+        XRAY_USER: ${{ secrets.XRAY_USER }}
+        XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
+        XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
+      run: |
+        python jira_import_test_execution.py
 
     - name: Set badge color
       shell: bash
@@ -112,7 +134,7 @@ jobs:
         git switch badges
         mv newbadge.svg badge.svg
         git add badge.svg
-        git commit -m "Add/Update badge"
+        git commit -m "Add/Update badge" || true
 
     - name: Push badge commit
       uses: ad-m/github-push-action@master
@@ -121,16 +143,3 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         force_with_lease: true
         branch: badges
-
-    - name: xray-action
-      uses: mikepenz/xray-action@v3
-      if: always()
-      with:
-        xrayCloud: "false"
-        xrayBaseUrl: ${{ secrets.XRAY_BASE_URL }}
-        xrayToken: ${{ secrets.XRAY_TOKEN }}
-        testFormat: "behave"
-        testPaths: "**/reports/*.xml"
-        testExecKey: "RSPY-365"
-        projectKey: "RSPY"
-

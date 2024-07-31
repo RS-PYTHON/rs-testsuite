@@ -25,7 +25,7 @@ try:
     # Export JIRA Cucumber feature files
     print(":: Exporting XRay Cucumber feature files")
 
-    r = requests.get(cfg["jira_url"]+"/rest/raven/1.0/export/test?fz=true&keys="+cfg["jira_keys"],
+    r = requests.get(cfg["jira_url"]+"rest/raven/1.0/export/test?fz=true&keys="+cfg["jira_keys"],
                      cookies=get_cookies(browser), timeout=30)
     with open(download_dir+"/FeatureBundle.zip", 'wb') as file:
         file.write(r.content)

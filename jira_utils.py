@@ -54,7 +54,7 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
     print(":: Starting Firefox")
     browser = webdriver.Firefox(options,
                                 Service(executable_path=GeckoDriverManager().install(),
-                                        log_output=subprocess.STDOUT))
+                                        log_output=subprocess.STDOUT))  # DEVNULL if needed
     return firefox_profile, browser, download_dir
 
 

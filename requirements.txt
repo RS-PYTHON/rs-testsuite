@@ -2,3 +2,4 @@ git+https://github.com/behave/behave@v1.2.7.dev5#egg=behave
 selenium==4.23.1
 webdriver-manager==4.0.2
 geckodriver-autoinstaller==0.1.0
+junitparser==3.1.2
