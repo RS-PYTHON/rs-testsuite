@@ -15,6 +15,7 @@ def step_impl1(context):
 def step_impl2(context):
     """xxx"""
     assert True is not False
+    raise Exception("wololo")
 
 
 @then('the ninja should run for his life')
