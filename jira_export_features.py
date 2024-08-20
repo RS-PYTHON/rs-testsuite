@@ -9,7 +9,7 @@ from jira_utils import firefox_browser, login_to_jira, get_cookies
 cfg = {}
 cfg["user"] = os.environ["XRAY_USER"]
 cfg["password"] = os.environ["XRAY_PASSWORD"]
-cfg["jira_keys"] = os.environ["XRAY_KEYS"]
+cfg["jira_key"] = os.environ["XRAY_KEY"]
 cfg["jira_url"] = os.environ["XRAY_BASE_URL"]
 
 # Create Firefox browser and download directory
@@ -25,7 +25,7 @@ try:
     # Export JIRA Cucumber feature files
     print(":: Exporting XRay Cucumber feature files")
 
-    r = requests.get(cfg["jira_url"]+"rest/raven/1.0/export/test?fz=true&keys="+cfg["jira_keys"],
+    r = requests.get(cfg["jira_url"]+"rest/raven/1.0/export/test?fz=true&keys="+cfg["jira_key"],
                      cookies=get_cookies(browser), timeout=30)
     with open(download_dir+"/FeatureBundle.zip", 'wb') as file:
         file.write(r.content)

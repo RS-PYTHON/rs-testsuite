@@ -11,7 +11,7 @@ from jira_utils import firefox_browser, login_to_jira, get_cookies
 cfg = {}
 cfg["user"] = os.environ["XRAY_USER"]
 cfg["password"] = os.environ["XRAY_PASSWORD"]
-cfg["jira_keys"] = os.environ["XRAY_KEYS"]
+cfg["jira_key"] = os.environ["XRAY_KEY"]
 cfg["jira_url"] = os.environ["XRAY_BASE_URL"]
 
 FILENAME = 'junit.xml'
@@ -53,7 +53,7 @@ try:
     # https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-JUnitXMLresults
 #    with open(FILENAME, 'rb') as file:
 #        r = requests.post(cfg["jira_url"] +
-#                          "rest/raven/1.0/import/execution/junit?testExecKey=" + cfg["jira_keys"],
+#                          "rest/raven/1.0/import/execution/junit?testExecKey=" + cfg["jira_key"],
 #                          files={'file': (FILENAME, file, 'text/xml')},
 #                          cookies=get_cookies(browser), timeout=30)
 #        r.raise_for_status()
