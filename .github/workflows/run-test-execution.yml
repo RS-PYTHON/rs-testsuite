@@ -47,7 +47,7 @@ jobs:
 
     - name: Export tests from Jira/Xray
       env:
-        XRAY_KEY: ${{ vars.XRAY_KEY }}
+        INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
         XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
@@ -82,7 +82,7 @@ jobs:
     - name: Import test execution results to Jira/Xray
       if: always()
       env:
-        XRAY_KEY: ${{ vars.XRAY_KEY }}
+        INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
         XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}

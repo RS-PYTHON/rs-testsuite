@@ -60,6 +60,7 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
 
 def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, password: str):
     """Login to Jira/Xray using the provided credentials"""
+    success = False
     for _ in range(5):
         try:
             print(":: Connecting to JIRA/XRay")
@@ -71,9 +72,12 @@ def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, passwor
             # NetScaler Gateway Login Page
             print(":: Waiting for NetScaler Gateway Login Page")
             WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.ID, "login")))
+            success = True
             break
         except (TimeoutException, WebDriverException) as e:
             logging.error(e)
+    if not success:
+        raise Exception("Failed to connect to JIRA/XRay")
     browser.find_element(By.ID, "login").send_keys(login)
     browser.find_element(By.ID, "passwd").send_keys(password)
     browser.find_element(By.ID, "nsg-x1-logon-button").click()
