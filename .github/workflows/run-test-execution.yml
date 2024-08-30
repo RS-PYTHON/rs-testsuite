@@ -4,12 +4,12 @@
 name: Run Test Execution
 
 on:
-#  push:
-#    branches: [ "main" ]
-#  pull_request:
-#    branches: [ "main" ]
   workflow_dispatch:
     inputs:
+      environment:
+        description: Test environment (ENV_DEV or ENV_OPS)
+        required: true
+        default: 'ENV_OPS'
       xray_key:
         description: XRay Test Execution key to run
         required: true
@@ -24,6 +24,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ inputs.environment }}
 
     steps:
     - uses: actions/checkout@v4
@@ -53,7 +56,7 @@ jobs:
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
       run: |
         python jira_export_features.py
-        unzip -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
+        unzip -u -o -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
     - name: Upload features as artifact
       uses: actions/upload-artifact@v4
@@ -62,6 +65,10 @@ jobs:
         path: ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
     - name: Run tests with behave
+      env:
+        APIKEY_URL: ${{ vars.APIKEY_URL }}
+        RSPY_TEST_USER_1: ${{ secrets.RSPY_TEST_USER_1 }}
+        RSPY_TEST_PASS_1: ${{ secrets.RSPY_TEST_PASS_1 }}
       run: |
         behave --junit -f json.pretty -o reports/results.json
 
