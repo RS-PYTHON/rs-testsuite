@@ -86,8 +86,8 @@ jobs:
         name: reports
         path: reports/
 
-    - name: Import test execution results to Jira/Xray
-      if: always()
+    - name: Import test execution results to Jira/Xray (OPS)
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       env:
         INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
@@ -96,9 +96,9 @@ jobs:
       run: |
         python jira_import_test_execution.py
 
-    - name: Set badge color
+    - name: Set badge color (OPS)
       shell: bash
-      if: always()
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       run: |
         case ${{ fromJSON( steps.test-results.outputs.json ).conclusion }} in
           success)
@@ -112,10 +112,10 @@ jobs:
             ;;
         esac
 
-    - name: Create badge
+    - name: Create badge (OPS)
       uses: emibcn/badge-action@v2.0.3
       id: badge
-      if: always()
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       with:
         label: Tests
         status: '${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}'
@@ -124,14 +124,14 @@ jobs:
 
     - name: Upload badge as artifact
       uses: actions/upload-artifact@v4
-      if: always()
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       with:
         name: badge
         path: badge.svg
         if-no-files-found: error
 
-    - name: Commit badge
-      if: always()
+    - name: Commit badge (OPS)
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       continue-on-error: true
       run: |
         git config --local user.email "action@github.com"
@@ -143,9 +143,9 @@ jobs:
         git add badge.svg
         git commit -m "Add/Update badge" || true
 
-    - name: Push badge commit
+    - name: Push badge commit (OPS)
       uses: ad-m/github-push-action@master
-      if: always()
+      if: inputs.environment == 'ENV_OPS' && (success() || failure())
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         force_with_lease: true
