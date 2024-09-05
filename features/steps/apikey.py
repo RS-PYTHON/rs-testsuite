@@ -101,7 +101,7 @@ def step_revoke_apikey(context: str):
             f'/auth/api_key/revoke?api-key={context.apikey}'))
 
         response.raise_for_status()
-
+ 
 
 @then('the last created API key should be revoked')
 def step_check_revocation_apikey(context):
