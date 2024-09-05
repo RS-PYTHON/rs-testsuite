@@ -74,7 +74,8 @@ def step_create_apikey(context, key_type: str):
         response = session.get(urljoin(os.getenv("APIKEY_URL"),
             f'/auth/api_key/new?name={name}&never_expires={never_expires}'))
         response.raise_for_status()
-
+        
+        
         # Save API key
         context.apikey = response.json()
         assert context.apikey is not None
@@ -82,6 +83,48 @@ def step_create_apikey(context, key_type: str):
 
 
 use_step_matcher("parse")
+
+@when('he revokes the last created API key')
+def step_revoke_apikey(context: str):
+    """Revoke the last created API key"""
+    assert "APIKEY_URL" in os.environ
+    assert context.cookies is not None
+    assert context.apikey is not None
+    assert uuid.UUID(context.apikey) is not None
+
+
+    with requests.Session() as session:
+        session.cookies.update(context.cookies)
+
+        # Delete new API key
+        response = session.get(urljoin(os.getenv("APIKEY_URL"),
+            f'/auth/api_key/revoke?api-key={context.apikey}'))
+
+        response.raise_for_status()
+
+
+@then('the last created API key should be revoked')
+def step_check_revocation_apikey(context):
+    """Check API key existence and validity"""
+    assert "APIKEY_URL" in os.environ
+    assert context.cookies is not None
+    assert context.apikey is not None
+    assert uuid.UUID(context.apikey) is not None
+
+    with requests.Session() as session:
+        session.cookies.update(context.cookies)
+
+        response = session.get(urljoin(os.getenv("APIKEY_URL"), '/auth/api_key/list'))
+        response.raise_for_status()
+
+        valid_key_found = False
+        for key in response.json():
+            if key['api_key'] == context.apikey:
+                assert key['is_active'] == False
+                valid_key_found = True
+
+    assert valid_key_found
+
 
 
 @then('the API key should be valid')
