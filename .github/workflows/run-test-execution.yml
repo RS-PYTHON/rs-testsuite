@@ -64,7 +64,7 @@ jobs:
         name: features
         path: ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
-    - name: Run tests with behave
+    - name: Run tests with behave 
       env:
         APIKEY_URL: ${{ vars.APIKEY_URL }}
         STAC_API_URL: ${{ vars.STAC_API_URL }}
