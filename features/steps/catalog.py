@@ -54,9 +54,9 @@ def get_user_collections(context, headers):
                 collections_without_duplicate.append(item)
 
         # Print the unfiltered list of collections
-        print("List of STAC Collections reachable by the user (unfiltered):")
-        for collection in collections_without_duplicate:
-            print(f"ID: {collection['id']}, Title: {collection['owner']}")
+        #print("List of STAC Collections reachable by the user (unfiltered):")
+        #for collection in collections_without_duplicate:
+            #print(f"ID: {collection['id']}, Title: {collection['owner']}")
 
         # Filter collections to extract those owned by the user
         user_collections = [collection for collection in collections_without_duplicate if collection['id'].startswith(context.login)]
@@ -80,14 +80,13 @@ def step_remove_user_collections(context, user: int):
     with requests.Session() as session:
         # Delete all collection owned by the user
         for collection in user_collections:
-            print(f"ID: {collection['id']}, Title: {collection['owner']}, Title filtered {collection['id'][len(context.login)+1:]} to be deleted.")
+            #print(f"ID: {collection['id']}, Title: {collection['owner']}, Title filtered {collection['id'][len(context.login)+1:]} to be deleted.")
             response = session.delete(urljoin(os.getenv("STAC_API_URL"),
                     f'/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}'),
                     headers=headers)
             response.raise_for_status() 
             assert(response.status_code == 200)
             
-    print("")
     
 
 
@@ -108,14 +107,14 @@ def step_create_collection(context, name):
             "stac_version": "1.0.0",            
             "owner": f"{context.login}",
         }
-    print (json.dumps(collection_json, indent=4))
+    #print (json.dumps(collection_json, indent=4))
     # Call the endpoint to create the collection
     with requests.Session() as session:
         url = urljoin(os.getenv("STAC_API_URL"), '/catalog/collections')
         response = session.post(url, data=json.dumps(collection_json),headers=headers)        
         response.raise_for_status() 
         assert(response.status_code == 200)        
-    print()
+    #print()
 
 
 @then ('The count of collection is {number:d}')
