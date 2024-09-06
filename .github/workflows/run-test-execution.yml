@@ -13,7 +13,7 @@ on:
       xray_key:
         description: XRay Test Execution key to run
         required: true
-        default: 'RSPY-395'
+        default: 'RSPY-406'
 
 permissions:
   contents: write
@@ -67,8 +67,10 @@ jobs:
     - name: Run tests with behave
       env:
         APIKEY_URL: ${{ vars.APIKEY_URL }}
+        STAC_API_URL: ${{ vars.STAC_API_URL }}
         RSPY_TEST_USER_1: ${{ secrets.RSPY_TEST_USER_1 }}
         RSPY_TEST_PASS_1: ${{ secrets.RSPY_TEST_PASS_1 }}
+        RSPY_TEST_APIK_1: ${{ secrets.RSPY_TEST_APIK_1 }}
       run: |
         behave --junit -f json.pretty -o reports/results.json
 
@@ -92,7 +94,7 @@ jobs:
         INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
         XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
-        XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
+        XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}        
       run: |
         python jira_import_test_execution.py
 
