@@ -71,7 +71,7 @@ def step_create_apikey(context, key_type: str):
         name = f'test_{now}'
         never_expires = True if "permanent" == key_type else False
 
-        response = session.get(urljoin(os.getenv("APIKEY_URL"),
+        response = session.get((os.getenv("APIKEY_URL") +
             f'/auth/api_key/new?name={name}&never_expires={never_expires}'))
         response.raise_for_status()
         
