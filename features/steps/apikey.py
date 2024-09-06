@@ -92,14 +92,12 @@ def step_revoke_apikey(context: str):
     assert context.apikey is not None
     assert uuid.UUID(context.apikey) is not None
 
-
     with requests.Session() as session:
         session.cookies.update(context.cookies)
 
-        # Delete new API key
+        # Revoke the last created API key
         response = session.get(urljoin(os.getenv("APIKEY_URL"),
             f'/auth/api_key/revoke?api-key={context.apikey}'))
-
         response.raise_for_status()
  
 
