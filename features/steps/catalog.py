@@ -90,8 +90,8 @@ def step_remove_user_collections(context, user: int):
     
 
 
-@given('He creates the collection "{name}"')
-@when ('He creates the collection "{name}"')
+@given('the collection "{name}" is created')
+@when ('the collection "{name}" is created')
 def step_create_collection(context, name):
     """
     Create a single collection with fake description.
@@ -117,7 +117,7 @@ def step_create_collection(context, name):
     #print()
 
 
-@then ('The count of collection is {number:d}')
+@then ('The count of collection should be {number:d}')
 def step_check_collection_count(context, number):
     """
     Count the number of collection owned by the user and check it with the number provided.
