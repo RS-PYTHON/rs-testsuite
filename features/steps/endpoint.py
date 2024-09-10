@@ -8,6 +8,27 @@ import json
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 from urllib.parse import urljoin
+import subprocess
+
+
+@when('we call the prometheus query {query}')
+def step_request_prometheus(context: str, query:str):
+    """
+    Call prometheus query
+    """
+    request_str = 'prometheus/api/v1/query?query=' + query
+    print(request_str)
+    print()
+    step_request_service(context, 'monitoring', request_str)
+
+
+@then ('almost one prometheus result is provided')
+def step_check_prometheus_result(context: str):
+    """
+    Check Prometheus answer
+    """
+    step_check_json_prometheus_is_not_null (context, 'data', 'result')
+
 
 
 @when('the rs-python service {service} is requested with the path {path}')
@@ -18,9 +39,6 @@ def step_request_service(context: str, service:str, path:str):
     
     """
     # Check that the user environment variables are set
-    assert context.login is not None
-    assert context.passw is not None
-    
     # Check that the oauth2 authentication has been held.
     assert context.cookies is not None
     
@@ -34,39 +52,37 @@ def step_request_service(context: str, service:str, path:str):
         # Call the endpoint
         url = "https://" + service.lstrip('/') + "." + os.getenv("RS_PYTHON_URL").rstrip('/') + "/" + path.lstrip('/')
         print(f"url {url}")
-        response = session.get(url)
-        print(response.text)
+        
+        headers = {
+        "Accept": "application/json"
+        }
+        
+        #there is a need to perform the request twice
+        # The first time, we get redirected to the home page of the service (prometheus)
+        # The second time we get the JSON data result
+        response = session.get(url, headers=headers)
+        response = session.get(url, headers=headers)
         response.raise_for_status()
 
         # Store the result
         context.response_status_code = response.status_code
-        context.response = response.text
-        print()
+        context.response = response
 
-        
         
 
 @then('the server should answer with the code {code:d}')
-def step_request_service(context: str, code:int):
+def step_request_code(context: str, code:int):
     """
     Check that the Server has answered with a given status code.
-    
     """
-    # Check that the request has been sent to the server
-    assert context.response_status_code is not None
-    
-    # check the server answer
     assert (context.response_status_code == code)
         
 
 def is_valid_json(chain:str):
-    print(f"test de la chaine {chain}.")
     try:
         json.loads(chain)
-        print("c'est OK")
         return True
     except :
-        print("c'est pas OK")
         return False
     
 
@@ -75,12 +91,11 @@ def step_check_json_prometheus_is_not_null(context: str, level1:str, level2:str)
     """
     Very specific check. Check that the answer is on JSON format and the level1.level2 is a list of almost one element.
     """
-    assert context.response_status_code is not None
-    # Only answwer 200 are taken into account (which make previous step un-usefull)
     assert context.response_status_code == 200
-    assert (is_valid_json(context.response)==True)
+    assert (is_valid_json(context.response.text)==True)
+
     
-    data = context.response.json
+    data = json.loads (context.response.text )
     assert len(data[level1][level2])> 0
     
     
