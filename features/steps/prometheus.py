@@ -3,12 +3,10 @@ from behave import use_step_matcher
 
 import os
 import requests
-import uuid
 import json
 from bs4 import BeautifulSoup
 from datetime import datetime, timezone
 from urllib.parse import urljoin
-import subprocess
 
 
 @when('we call the prometheus query {query}')
@@ -16,10 +14,7 @@ def step_request_prometheus(context: str, query:str):
     """
     Call prometheus query
     """
-    request_str = 'prometheus/api/v1/query?query=' + query
-    print(request_str)
-    print()
-    step_request_service(context, 'monitoring', request_str)
+    step_request_service(context, 'monitoring', 'prometheus/api/v1/query?query=' + query)
 
 
 @then ('almost one prometheus result is provided')
@@ -38,7 +33,6 @@ def step_request_service(context: str, service:str, path:str):
     and register the status code.
     
     """
-    # Check that the user environment variables are set
     # Check that the oauth2 authentication has been held.
     assert context.cookies is not None
     
@@ -57,8 +51,8 @@ def step_request_service(context: str, service:str, path:str):
         "Accept": "application/json"
         }
         
-        #there is a need to perform the request twice
-        # The first time, we get redirected to the home page of the service (prometheus)
+        # There is a need to perform the request twice
+        # The first time, we get redirected to the home page of the service (we test prometheus)
         # The second time we get the JSON data result
         response = session.get(url, headers=headers)
         response = session.get(url, headers=headers)
@@ -94,7 +88,6 @@ def step_check_json_prometheus_is_not_null(context: str, level1:str, level2:str)
     assert context.response_status_code == 200
     assert (is_valid_json(context.response.text)==True)
 
-    
     data = json.loads (context.response.text )
     assert len(data[level1][level2])> 0
     
