@@ -2,7 +2,7 @@ from prefect import flow, task
 from prefect.artifacts import create_markdown_artifact
 
 @task
-def generate_report():
+def generate_report() -> str
     report = "# Rapport de flux\n test Hello World"
     return report
 
