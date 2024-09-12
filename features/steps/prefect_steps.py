@@ -5,62 +5,46 @@ import requests
 import os
 from prefect import client
 
-
-@given('the flow {flow} is deployed')
-def step_flow_is_deployed(context: str, flow: str):
+# GET command
+def get_request(context, endpoint : str, parameters : str) -> str:
     assert "PREFECT_API_URL" in os.environ
     assert context.cookies is not None
     
-    context.prefect_server= os.getenv("PREFECT_API_URL")       
-    
+    prefect_server= os.getenv("PREFECT_API_URL")       
+    url = f"{os.getenv("PREFECT_API_URL")}{endpoint}/{parameters}"
+    print (f"url = {url}")
+        
     with requests.Session() as session:
         session.cookies.update(context.cookies)
-
-        chain = f"{context.prefect_server}/api/flows/name/{flow}"
-        print(chain)
-        
-        response = session.get(chain)     
-        response = session.get(chain)     
-        
+        # WARNING : need to call twice. We do not know why yet !!!
+        session.get(url)
+        response=session.get(url)
         print(response.status_code, flush=True)
-        print (response.text, flush=True)
-        
+        print(response.text, flush=True)        
+        return response
 
-        data = json.loads (response.text )
-        context.flow_id = data['id']
-        assert context.flow_id is not None
-        
-        print(f"Flow id = {context.flow_id}.")
+
+@given('the flow {flow} is deployed')
+def step_flow_is_deployed(context: str, flow: str):
+    response = get_request(context, '/api/flows/name', flow)    
+    data = json.loads (response.text )
+    context.flow_id = data['id']
+    assert context.flow_id is not None    
+    print(f"Flow id = {context.flow_id}.")
         
 
 @given('the flow {flow} is deployed on deployment {deployment}')
 def step_flow_is_deployed(context: str, flow: str, deployment: str):
-    assert "PREFECT_API_URL" in os.environ
-    assert context.cookies is not None
-    
-    context.prefect_server= os.getenv("PREFECT_API_URL")       
-    
-    with requests.Session() as session:
-        session.cookies.update(context.cookies)
+    response = get_request(context, '/api/deployments/name', flow + '/' + deployment)      
 
-        chain = f"{context.prefect_server}/api/deployments/name/{flow}/{deployment}"
-        print(chain)
+    data = json.loads (response.text )
+    context.deployment_id = data['id']
+    context.flow_id = data['flow_id']
+    assert context.deployment_id is not None
+    assert context.flow_id is not None
         
-        #TWICE !!!
-        response = session.get(chain)     
-        response = session.get(chain)     
-        
-        print(response.status_code, flush=True)
-        print (response.text, flush=True)
-        
-
-        data = json.loads (response.text )
-        context.deployment_id = data['id']
-        assert context.deployment_id is not None
-        context.flow_id = data['flow_id']
-        assert context.flow_id is not None
-        
-        print(f"Flow id = {context.flow_id}.")        
+    print(f"Flow id = {context.flow_id}.")        
+    print(f"Deployment id = {context.deployment_id}.")        
         
 
 @when('we start the flow')
