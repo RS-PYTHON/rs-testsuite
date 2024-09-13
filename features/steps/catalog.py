@@ -53,11 +53,6 @@ def get_user_collections(context, headers):
             if item not in collections_without_duplicate:
                 collections_without_duplicate.append(item)
 
-        # Print the unfiltered list of collections
-        #print("List of STAC Collections reachable by the user (unfiltered):")
-        #for collection in collections_without_duplicate:
-            #print(f"ID: {collection['id']}, Title: {collection['owner']}")
-
         # Filter collections to extract those owned by the user
         user_collections = [collection for collection in collections_without_duplicate if collection['id'].startswith(context.login)]
         
@@ -114,7 +109,7 @@ def step_create_collection(context, name):
         response = session.post(url, data=json.dumps(collection_json),headers=headers)        
         response.raise_for_status() 
         assert(response.status_code == 200)        
-    #print()
+
 
 
 @then ('The count of collection should be {number:d}')

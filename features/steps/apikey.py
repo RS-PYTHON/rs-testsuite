@@ -23,14 +23,21 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    """Login to keycloak"""
     assert "APIKEY_URL" in os.environ
+    step_login_into_url(context,os.getenv("APIKEY_URL"))
+
+
+@given('he is logged in on url {url}')
+def step_login_into_url(context, url : str):
+    """Login to keycloak"""
+    assert url is not None
     assert context.login is not None
     assert context.passw is not None
 
     with requests.Session() as session:
         # Step 1: Connect to API key manager to be redirected to Keycloak login form
-        response = session.get(os.getenv("APIKEY_URL"))
+        response = session.get(url)
+        #response = session.get(os.getenv("APIKEY_URL"))
         response.raise_for_status()
 
         # Step 2: Parse html login form
