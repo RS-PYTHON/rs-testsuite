@@ -1,0 +1,52 @@
+{
+    "state": {
+      "type": "SCHEDULED",
+      "name": "string",
+      "message": "string",
+      "data": null,
+      "state_details": {
+        "flow_run_id": "ad45a578-ec24-4062-9323-4b1919b75b1a",
+        "task_run_id": "7f0ef9d7-e7b5-4d52-8247-ce8351652f8b",
+        "child_flow_run_id": "da812b02-15bb-48a9-8a93-bfcf654f163d",
+        "scheduled_time": "2019-08-24T14:15:22Z",
+        "cache_key": "string",
+        "cache_expiration": "2019-08-24T14:15:22Z",
+        "untrackable_result": false,
+        "pause_timeout": "2019-08-24T14:15:22Z",
+        "pause_reschedule": false,
+        "pause_key": "string",
+        "run_input_keyset": {
+          "property1": "string",
+          "property2": "string"
+        },
+        "refresh_cache": true,
+        "retriable": true,
+        "transition_id": "7a776551-a629-491a-b81a-3d501604a9fd",
+        "task_parameters_id": "233127a1-1850-4bb7-b89f-8d54168541d7"
+      },
+      "timestamp": "2019-08-24T14:15:22Z",
+      "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+    },
+    "name": "my-flow-run",
+    "parameters": {},
+    "context": {},
+    "infrastructure_document_id": "ce9a08a7-d77b-4b3f-826a-53820cfe01fa",
+    "empirical_policy": {
+      "max_retries": 0,
+      "retry_delay_seconds": 0,
+      "retries": 0,
+      "retry_delay": 0,
+      "pause_keys": [
+        null
+      ],
+      "resuming": false
+    },
+    "tags": [
+      "tag-1",
+      "tag-2"
+    ],
+    "idempotency_key": "string",
+    "parent_task_run_id": "8724d26e-d0dd-4802-b7e1-96df48d34683",
+    "work_queue_name": "string",
+    "job_variables": {}
+  }
