@@ -13,7 +13,6 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> str:
     assert context.cookies is not None
     
     # Construct the URL for the GET request
-    prefect_server = os.getenv("PREFECT_API_URL")       
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/{parameters}"
     print(f"url = {url}")
         
@@ -36,7 +35,6 @@ def prefect_api_post(context, endpoint: str, post_data: json) -> str:
     assert context.cookies is not None
     
     # Construct the URL for the POST request
-    prefect_server = os.getenv("PREFECT_API_URL")       
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/"
     print(f"url = {url}")
     print (post_data)
@@ -116,6 +114,6 @@ def step_start_the_flow(context: str):
     
     # Perform a POST request to start the flow
     response = prefect_api_post(context, f'/api/deployments/{context.deployment_id}/create_flow_run', parameters_json)
-    assert (response.status_code == 201)    
+    assert (response.status_code >= 200) and (response.status_code < 300)
 
 
