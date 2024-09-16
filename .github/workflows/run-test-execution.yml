@@ -71,6 +71,10 @@ jobs:
         RSPY_TEST_USER_1: ${{ secrets.RSPY_TEST_USER_1 }}
         RSPY_TEST_PASS_1: ${{ secrets.RSPY_TEST_PASS_1 }}
         RSPY_TEST_APIK_1: ${{ secrets.RSPY_TEST_APIK_1 }}
+        RSPY_STAC_API_URL: ${{ vars.STAC_API_URL }}
+        RS_PYTHON_URL: ${{ vars.RS_PYTHON_URL }}
+        PREFECT_API_URL: ${{ vars.PREFECT_API_URL }}
+
       run: |
         behave --junit -f json.pretty -o reports/results.json
 
