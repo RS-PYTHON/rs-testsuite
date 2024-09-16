@@ -14,18 +14,16 @@ class ReportManager:
         self.report.append ( {step, description, 'NOK'})
 
 
-    def add_report_as_artefact(self, key_value, description_value):
-        
-        
+    def add_report_as_artefact(self, key_value, description_value):                
+        # Artifact key must only contain lowercase letters, numbers, and dashes. (type=value_error)
 
-        # Obtenir la date et l'heure actuelles
         now = datetime.now()
 
         # Formater la date et l'heure en texte
         date_texte = now.strftime("%A %d %B %Y, %H:%M:%S")
 
         return create_table_artifact(
-            key=key_value,
+            key=key_value.lower(),
             table=self.report,
             description= description_value + " - " + date_texte
         )

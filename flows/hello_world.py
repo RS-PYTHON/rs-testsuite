@@ -27,7 +27,7 @@ def my_flow5() -> str:
     step2()
     step3()
     step4()
-    report_manager.add_report_as_artefact("Hello World test", "Template" )
+    report_manager.add_report_as_artefact("hello-world-test", "Template" )
     return "Hello, world!"
 
 if __name__ == "__main__":
