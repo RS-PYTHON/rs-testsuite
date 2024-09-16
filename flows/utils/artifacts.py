@@ -7,11 +7,21 @@ class ReportManager:
 
 
     def success_step(self, step:int, description:str):
-        self.report.append ( {step, description, 'OK'})
+        item = {
+            'step' : step,
+            'description' : f'{description}',
+            'status' : 'OK',            
+        }
+        self.report.append ( item )
 
 
     def failed_step(self, step:int, description:str):
-        self.report.append ( {step, description, 'NOK'})
+        item = {
+            'step' : step,
+            'description' : f'{description}',
+            'status' : 'NOK',            
+        }
+        self.report.append ( item )
 
 
     def add_report_as_artefact(self, key_value, description_value):                
