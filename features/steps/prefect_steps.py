@@ -59,7 +59,7 @@ def prefect_api_post(context, endpoint: str, post_data: json) -> str:
     flow_id will be added to the context at the end. 
     ########################################################################## """
 @given('the flow {flow} is deployed')
-def step_flow_is_deployed(context: str, flow: str):
+def step_flow_is_deployed(context, flow: str):
     # Perform a GET request to check the flow deployment
     response = prefect_api_get(context, '/api/flows/name', flow)    
 
@@ -77,7 +77,7 @@ def step_flow_is_deployed(context: str, flow: str):
     flow_id and deployment_id will be added to the context at the end. 
  ########################################################################## """
 @given('the flow {flow} is deployed on deployment {deployment}')
-def step_flow_is_deployed(context: str, flow: str, deployment: str):
+def step_flow_is_deployed(context, flow: str, deployment: str):
     # Perform a GET request to check the flow deployment on a specific deployment
     response = prefect_api_get(context, '/api/deployments/name', flow + '/' + deployment)      
 
@@ -99,7 +99,7 @@ def step_flow_is_deployed(context: str, flow: str, deployment: str):
     flow_id and deployment_id will be added to the context at the end. 
  ########################################################################## """
 @when('we start the flow')
-def step_start_the_flow(context: str):
+def step_start_the_flow(context):
     # Ensure the flow ID and cookies are not None
     assert context.flow_id is not None
     assert context.deployment_id is not None
