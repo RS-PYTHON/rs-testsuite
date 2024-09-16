@@ -6,11 +6,13 @@ class ReportManager:
     def __init__(self, number_steps:int):
         self.number_steps = number_steps
         self.report = []
-        self.progress_artifact_id = create_progress_artifact(
+        """
+            wait for v3
+            self.progress_artifact_id = create_progress_artifact(
             progress=0.0,
             description="Test progress...",
             )
-
+        """
 
     def success_step(self, step:int, description:str):
         item = {
