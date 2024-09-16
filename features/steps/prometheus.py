@@ -1,8 +1,9 @@
 from behave import given, when, then
-
+from behave import use_step_matcher
 import os
 import requests
 import json
+
 
 @when('we call the prometheus query {query}')
 def step_request_prometheus(context: str, query: str):
