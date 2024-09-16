@@ -1,5 +1,5 @@
 from prefect.artifacts import create_table_artifact
-from prefect.artifacts import create_progress_artifact, update_progress_artifact
+# wait for v3 - from prefect.artifacts import create_progress_artifact, update_progress_artifact
 from datetime import datetime
 
 class ReportManager:
@@ -19,7 +19,7 @@ class ReportManager:
             'status' : 'OK',            
         }
         self.report.append ( item )
-        self.__progress(step)
+        #self.__progress(step)
 
     def failed_step(self, step:int, description:str):
         item = {
@@ -28,11 +28,11 @@ class ReportManager:
             'status' : 'NOK',            
         }
         self.report.append ( item )
-        self.__progress(step)
+        #self.__progress(step)
 
 
-    def __progress(self, step:int):
-        update_progress_artifact(self.progress_artifact_id, step / self.number_steps)
+    #def __progress(self, step:int):
+    #    update_progress_artifact(self.progress_artifact_id, step / self.number_steps)
         
 
     def add_report_as_artefact(self, key_value, description_value):                
