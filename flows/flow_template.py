@@ -1,8 +1,8 @@
 from prefect import flow, task
 from utils.artifacts import ReportManager
 
+report_manager = ReportManager(4)
 
-report_manager = ReportManager()
 
 @task
 def step1():
@@ -22,15 +22,17 @@ def step4():
     
     
 @flow
-def my_flow5() -> str:
+def flow_template() -> str:
     step1()
     step2()
     step3()
     step4()
     report_manager.add_report_as_artefact("hello-world-test", "Template" )
-    return "Hello, world!"
+    return "This is a flow template"
+
+
 
 if __name__ == "__main__":
-    my_flow5() 
+    flow_template() 
     
     
