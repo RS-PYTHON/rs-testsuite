@@ -27,9 +27,8 @@ def flow_template() -> str:
     step2()
     step3()
     step4()
-    report_manager.add_report_as_artefact("hello-world-test", "Template" )
+    report_manager.add_report_as_artefact("flow-template-test", "Template" )
     return "This is a flow template"
-
 
 
 if __name__ == "__main__":
