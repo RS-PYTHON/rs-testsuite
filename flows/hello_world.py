@@ -1,16 +1,33 @@
 from prefect import flow, task
-from prefect.artifacts import create_markdown_artifact
+from utils.artifacts import ReportManager
+
+
+report_manager = ReportManager()
 
 @task
-def generate_report() -> str:
-    report = "# Rapport de flux\n test Hello World \n yes "
-    report += "AAAA \n "
-    report += "BBB \n "
-    return report
+def step1():
+    report_manager.success_step(1, "Step1 description")
 
+@task
+def step2():
+    report_manager.success_step(2, "Step2 description")
+
+@task
+def step3():
+    report_manager.failed_step(3, "Step3 description")
+
+@task
+def step4():
+    report_manager.success_step(4, "Step4 description")
+    
+    
 @flow
 def my_flow5() -> str:
-    create_markdown_artifact(key="rapport5", markdown=generate_report())
+    step1()
+    step2()
+    step3()
+    step4()
+    report_manager.add_report_as_artefact("Hello World test", "Template" )
     return "Hello, world!"
 
 if __name__ == "__main__":

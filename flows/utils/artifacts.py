@@ -1,0 +1,31 @@
+from prefect.artifacts import create_table_artifact
+from datetime import datetime
+
+class ReportManager:
+    def __init__(self):
+        self.report = []
+
+
+    def success_step(self, step:int, description:str):
+        self.report.append ( {step, description, 'OK'})
+
+
+    def failed_step(self, step:int, description:str):
+        self.report.append ( {step, description, 'NOK'})
+
+
+    def add_report_as_artefact(self, key_value, description_value):
+        
+        
+
+        # Obtenir la date et l'heure actuelles
+        now = datetime.now()
+
+        # Formater la date et l'heure en texte
+        date_texte = now.strftime("%A %d %B %Y, %H:%M:%S")
+
+        return create_table_artifact(
+            key=key_value,
+            table=self.report,
+            description= description_value + " - " + date_texte
+        )
