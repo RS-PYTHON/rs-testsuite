@@ -1,0 +1,244 @@
+{
+    "sort": "ID_DESC",
+    "offset": 0,
+    "artifacts": {
+        "operator": "and_",
+        "id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "key": {
+            "any_": [
+                "string"
+            ],
+            "like_": "my-artifact-%",
+            "exists_": true
+        },
+        "flow_run_id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "task_run_id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "type": {
+            "any_": [
+                "string"
+            ],
+            "not_any_": [
+                "string"
+            ]
+        }
+    },
+    "flow_runs": {
+        "operator": "and_",
+        "id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ],
+            "not_any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "name": {
+            "any_": [
+                "my-flow-run-1",
+                "my-flow-run-2"
+            ],
+            "like_": "marvin"
+        },
+        "tags": {
+            "operator": "and_",
+            "all_": [
+                "tag-1",
+                "tag-2"
+            ],
+            "is_null_": true
+        },
+        "deployment_id": {
+            "operator": "and_",
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ],
+            "is_null_": true
+        },
+        "work_queue_name": {
+            "operator": "and_",
+            "any_": [
+                "work_queue_1",
+                "work_queue_2"
+            ],
+            "is_null_": true
+        },
+        "state": {
+            "operator": "and_",
+            "type": {
+                "any_": [
+                    "SCHEDULED"
+                ]
+            },
+            "name": {
+                "any_": [
+                    "string"
+                ]
+            }
+        },
+        "flow_version": {
+            "any_": [
+                "string"
+            ]
+        },
+        "start_time": {
+            "before_": "2019-08-24T14:15:22Z",
+            "after_": "2019-08-24T14:15:22Z",
+            "is_null_": true
+        },
+        "expected_start_time": {
+            "before_": "2019-08-24T14:15:22Z",
+            "after_": "2019-08-24T14:15:22Z"
+        },
+        "next_scheduled_start_time": {
+            "before_": "2019-08-24T14:15:22Z",
+            "after_": "2019-08-24T14:15:22Z"
+        },
+        "parent_flow_run_id": {
+            "operator": "and_",
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "parent_task_run_id": {
+            "operator": "and_",
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ],
+            "is_null_": true
+        },
+        "idempotency_key": {
+            "any_": [
+                "string"
+            ],
+            "not_any_": [
+                "string"
+            ]
+        }
+    },
+    "task_runs": {
+        "operator": "and_",
+        "id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "name": {
+            "any_": [
+                "my-task-run-1",
+                "my-task-run-2"
+            ],
+            "like_": "marvin"
+        },
+        "tags": {
+            "operator": "and_",
+            "all_": [
+                "tag-1",
+                "tag-2"
+            ],
+            "is_null_": true
+        },
+        "state": {
+            "operator": "and_",
+            "type": {
+                "any_": [
+                    "SCHEDULED"
+                ]
+            },
+            "name": {
+                "any_": [
+                    "string"
+                ]
+            }
+        },
+        "start_time": {
+            "before_": "2019-08-24T14:15:22Z",
+            "after_": "2019-08-24T14:15:22Z",
+            "is_null_": true
+        },
+        "subflow_runs": {
+            "exists_": true
+        },
+        "flow_run_id": {
+            "operator": "and_",
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ],
+            "is_null_": false
+        }
+    },
+    "flows": {
+        "operator": "and_",
+        "id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "deployment": {
+            "operator": "and_",
+            "is_null_": true
+        },
+        "name": {
+            "any_": [
+                "my-flow-1",
+                "my-flow-2"
+            ],
+            "like_": "marvin"
+        },
+        "tags": {
+            "operator": "and_",
+            "all_": [
+                "tag-1",
+                "tag-2"
+            ],
+            "is_null_": true
+        }
+    },
+    "deployments": {
+        "operator": "and_",
+        "id": {
+            "any_": [
+                "497f6eca-6276-4993-bfeb-53cbbbba6f08"
+            ]
+        },
+        "name": {
+            "any_": [
+                "my-deployment-1",
+                "my-deployment-2"
+            ],
+            "like_": "marvin"
+        },
+        "paused": {
+            "eq_": true
+        },
+        "is_schedule_active": {
+            "eq_": true
+        },
+        "tags": {
+            "operator": "and_",
+            "all_": [
+                "tag-1",
+                "tag-2"
+            ],
+            "is_null_": true
+        },
+        "work_queue_name": {
+            "any_": [
+                "work_queue_1",
+                "work_queue_2"
+            ]
+        }
+    },
+    "limit": 0
+}
