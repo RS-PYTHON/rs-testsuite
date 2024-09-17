@@ -23,10 +23,10 @@ def step4():
     
 @flow
 def flow_template() -> str:
-    step1().submit
-    step2().submit
-    step3().submit
-    step4().submit
+    step1.submit()
+    step2.submit()
+    step3.submit()
+    step4.submit()
     report_manager.add_report_as_artefact("flow-template-test", "Template" )
     return "This is a flow template"
 
