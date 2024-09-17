@@ -7,15 +7,18 @@ report_manager = ReportManager(4)
 @task
 def step1():
     report_manager.success_step(1, "Step1 description")
+    step2()
 
 @task
 def step2():
     report_manager.success_step(2, "Step2 description")
-
+    step3()
+    
 @task
 def step3():
     report_manager.failed_step(3, "Step3 description")
-
+    step4()
+    
 @task
 def step4():
     report_manager.success_step(4, "Step4 description")
@@ -24,9 +27,6 @@ def step4():
 @flow
 def flow_template() -> str:
     step1()
-    step2()
-    step3()
-    step4()
     report_manager.add_report_as_artefact("flow-template-test", "Template" )
     return "This is a flow template"
 
