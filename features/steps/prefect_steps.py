@@ -53,11 +53,16 @@ def prefect_api_post(context, endpoint: str, post_data: json) -> str:
     
     
     
-""" ##########################################################################
-    Step definition to check if a flow is deployed.
-    Code with assertion.
-    flow_id will be added to the context at the end. 
-    ########################################################################## """
+"""
+Step definition to check if a flow is deployed.
+
+Args:
+    context: The context object provided by Behave.
+    flow (str): The name of the flow to check.
+
+Asserts:
+    The flow ID is not None.
+"""
 @given('the flow {flow} is deployed')
 def step_flow_is_deployed(context, flow: str):
     # Perform a GET request to check the flow deployment
@@ -71,11 +76,17 @@ def step_flow_is_deployed(context, flow: str):
     print(f"Flow id = {context.flow_id}.")
 
 
-""" ##########################################################################
-    Step definition to check if a flow is deployed on a specific deployment
-    Code with assertion.
-    flow_id and deployment_id will be added to the context at the end. 
- ########################################################################## """
+"""
+Step definition to check if a flow is deployed on a specific deployment.
+
+Args:
+    context: The context object provided by Behave.
+    flow (str): The name of the flow to check.
+    deployment (str): The name of the deployment to check.
+
+Asserts:
+    The deployment ID and flow ID are not None.
+"""
 @given('the flow {flow} is deployed on deployment {deployment}')
 def step_flow_is_deployed(context, flow: str, deployment: str):
     # Perform a GET request to check the flow deployment on a specific deployment
@@ -93,11 +104,16 @@ def step_flow_is_deployed(context, flow: str, deployment: str):
     print(f"Deployment id = {context.deployment_id}.")
 
 
-""" ##########################################################################
-    Step definition to start the flow
-    Code with assertion.
-    flow_id and deployment_id will be added to the context at the end. 
- ########################################################################## """
+"""
+Step definition to start the flow.
+
+Args:
+    context: The context object provided by Behave.
+
+Asserts:
+    The flow ID and deployment ID are not None.
+    The response status code is between 200 and 299.
+"""
 @when('we start the flow')
 def step_start_the_flow(context):
     # Ensure the flow ID and cookies are not None

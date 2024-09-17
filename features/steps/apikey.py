@@ -21,7 +21,7 @@ def step_define_user(context, user: int):
     context.passw = os.getenv(f'RSPY_TEST_PASS_{user}')
 
 
-@given('XXXhe is logged in')
+@given('he is logged in')
 def step_login(context):
     assert "APIKEY_URL" in os.environ
     step_login_into_url(context,os.getenv("APIKEY_URL"))

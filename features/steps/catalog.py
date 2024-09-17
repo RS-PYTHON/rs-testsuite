@@ -1,12 +1,10 @@
 """STAC Catalog test steps"""
 
 from behave import given, when, then
-
 import os
 import requests
-import uuid
-import json
 from urllib.parse import urljoin
+import json
 
 
 """
@@ -14,7 +12,6 @@ Step to ensure that the API-KEY is set on environment variable.
 We will avoid to create an API-KEY for each test.
 There is a dedicated test to check API-KEY creation.
 """
-
 @given('user {user:d} has got an apikey')
 def step_check_apikey(context, user: int):
     """Checks that user APIKEY is set on environment variable"""
@@ -22,21 +19,20 @@ def step_check_apikey(context, user: int):
     context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')
 
 
-import os
-import requests
-from urllib.parse import urljoin
+"""
 
+Fetches the list of collections reachable by the user and filters them based on the user's login.
+
+Parameters:
+context (object): An object containing user context, including the login.
+headers (dict): A dictionary of HTTP headers to include in the request.
+
+Returns:
+list: A list of collections owned by the user.
+
+"""
 def get_user_collections(context, headers):
-    """
-    Fetches the list of collections reachable by the user and filters them based on the user's login.
 
-    Parameters:
-    context (object): An object containing user context, including the login.
-    headers (dict): A dictionary of HTTP headers to include in the request.
-
-    Returns:
-    list: A list of collections owned by the user.
-    """
     with requests.Session() as session:
         # Perform an HTTP GET request to fetch collections
         response = session.get(urljoin(os.getenv("STAC_API_URL"), '/catalog/collections'), headers=headers)
@@ -58,11 +54,13 @@ def get_user_collections(context, headers):
 
     
 
+"""
+
+Clean the Collection from one user.
+
+"""    
 @given('user {user:d} has deleted all his collections')
 def step_remove_user_collections(context, user: int):
-    """
-    Clean the Collection from one user.
-    """    
     # Push API-KEY on the header
     headers = {"x-api-key": f"{context.apikey}"}
 
@@ -81,13 +79,15 @@ def step_remove_user_collections(context, user: int):
             
     
 
+"""
 
+Create a single collection with fake description.
+
+"""
 @given('the collection "{name}" is created')
 @when ('the collection "{name}" is created')
 def step_create_collection(context, name):
-    """
-    Create a single collection with fake description.
-    """
+
     # Push API-KEY on the header
     headers = {"x-api-key": f"{context.apikey}"}
     context.new_collection = name
@@ -109,11 +109,13 @@ def step_create_collection(context, name):
 
 
 
+"""
+
+Count the number of collection owned by the user and check it with the number provided.
+
+"""
 @then ('The count of collection should be {number:d}')
 def step_check_collection_count(context, number):
-    """
-    Count the number of collection owned by the user and check it with the number provided.
-    """
     # Push API-KEY on the header
     headers = {"x-api-key": f"{context.apikey}"}
     

@@ -29,11 +29,15 @@ def flow_template() -> str:
     future3 = step3.submit()
     future4 = step4.submit()
     
-    # Wait them to finish
+    
+    # Wait all of them to finish
     future1.wait()
     future2.wait()
     future3.wait()
     future4.wait()
+
+    # To start tasks in sequence, remove submit() and remove wait()
+
     
     report_manager.add_report_as_artefact("flow-template-test", "Template" )
     return "This is a flow template"
