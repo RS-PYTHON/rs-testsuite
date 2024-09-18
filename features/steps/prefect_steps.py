@@ -2,7 +2,7 @@ from behave import given, when, then
 
 import requests
 import json
-import os, sys
+import os, time
 
 
 
@@ -24,6 +24,7 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> str:
         response = session.get(url)
         # Print the response status code and text
         print(response.status_code, flush=True)
+
         assert (response.status_code == 200)
         print(response.text, flush=True)        
         return response
@@ -132,17 +133,34 @@ def step_start_the_flow(context):
     # Perform a POST request to start the flow
     response = prefect_api_post(context, f'/api/deployments/{context.deployment_id}/create_flow_run', parameters_json)
     data = json.loads(response.text)
+    print(data)
     context.flow_run_id = data['id']
     assert context.flow_run_id is not None 
+
     assert (response.status_code >= 200) and (response.status_code < 300)
 
 
-@then('the flow ends without error')
-def step_check_flow_artefacts(context):
-    # Ensure the flow ID and cookies are not None
-    assert context.flow_run_id is not None
 
-    # Define the parameters for the POST request to start the flow
+@then('the flow ends with status completed')
+def step_wait_the_flow_to_complete(context):
+    assert context.flow_run_id is not None 
+    
+    status = "UNKNOWN"
+    while ( status != 'COMPLETED'):
+        time.sleep(1)
+        
+        response = prefect_api_get(context, '/api/flow_runs', context.flow_run_id)      
+        data = json.loads(response.text)
+        flow_state_id = data['state_id']
+        
+        response = prefect_api_get(context, '/api/flow_run_states', flow_state_id)      
+        # Parse the response JSON and extract the deployment and flow IDs
+        data = json.loads(response.text)
+        status = data['type']
+        
+        
+        
+    # Get test results
     parameters_json = {
         "artifacts": {
             "flow_run_id": {
@@ -150,20 +168,47 @@ def step_check_flow_artefacts(context):
         }}}
     
     
-    
-    #{"flow_run_id":  [f"{context.flow_run_id}"]}
-    
-    
     # Perform a POST request to start the flow
     response = prefect_api_post(context, f'/api/artifacts/latest/filter', parameters_json)
     assert (response.status_code >= 200) and (response.status_code < 300)
     data = json.loads(response.text)
-    print (data)
+    context.steps_result = json.loads(data[0]['data'])
     
-    steps = json.loads(data[0]['data'])
+    
 
+@then('the flow ends without error')
+def step_check_flow_results(context):
+    assert context.steps_result is not None
+    context.steps_result
+    
     # Vérifier si tous les steps sont "OK"
-    all_ok = all(step['status'] == 'OK' for step in steps)
+    all_ok = all(step['status'] == 'OK' for step in context.steps_result)
     assert (all_ok)
 
+    
+@then('the flow step {step:d} ends with status OK')
+def step_check_flow_step(context, step:int):
+    assert context.steps_result is not None
+    
+    status = 'None'
+    for item in context.steps_result:
+        if item['step'] == step:
+            status = item['status']
+            break
 
+    assert (status == 'OK')
+    
+    
+@then('the flow step {step:d} ends with status NOK')
+def step_check_flow_step(context, step:int):
+    assert context.steps_result is not None
+    
+    assert context.steps_result is not None
+    
+    status = 'None'
+    for item in context.steps_result:
+        if item['step'] == step:
+            status = item['status']
+            break
+                           
+    assert (status =='NOK')    

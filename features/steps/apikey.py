@@ -35,7 +35,7 @@ def step_login_into_url(context, url : str):
     assert context.passw is not None
 
     with requests.Session() as session:
-        # Step 1: Connect to API key manager to be redirected to Keycloak login form
+        # Step 1: Connect to API key manager to be redirected to URL login form
         response = session.get(url)
         #response = session.get(os.getenv("APIKEY_URL"))
         response.raise_for_status()
