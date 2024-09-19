@@ -125,7 +125,7 @@ def step_check_collection_count(context, number):
 Check the queryable interface proposal
 """
 @then ('the url /catalog proposes queryables')
-def step_check_queryables(context):
+def step_check_catalog_queryables(context):
     response = catalog_get(context, 'catalog/')
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
@@ -135,13 +135,23 @@ def step_check_queryables(context):
 Check the queryable interface
 """
 @then ('the url catalog/queryables has got 4 properties')
-def step_check_queryables(context):
+def step_check_catalog_queryables_properties(context):
     response = catalog_get(context, 'catalog/queryables')
     data = json.loads(response.text)
     assert (data['properties']['id'] is not None)
     assert (data['properties']['datetime'] is not None)
     assert (data['properties']['geometry'] is not None)
     assert (data['properties']['eo:cloud_cover'] is not None)            
+
+"""
+Check the queryable interface proposal
+"""
+@then ('the url /catalog/collections/ for {collection} proposes queryables')
+def step_check_collection_queryables(context, collection:str):
+    response = catalog_get(context, f'catalog/collections/{context.login}:{collection}')
+    data = json.loads(response.text)
+    exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
+    assert (exists == True)
 
 
 
