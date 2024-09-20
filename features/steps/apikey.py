@@ -20,17 +20,23 @@ def step_define_user(context, user: int):
     context.login = os.getenv(f'RSPY_TEST_USER_{user}')
     context.passw = os.getenv(f'RSPY_TEST_PASS_{user}')
 
-
 @given('he is logged in')
 def step_login(context):
-    """Login to keycloak"""
     assert "APIKEY_URL" in os.environ
+    step_login_into_url(context,os.getenv("APIKEY_URL"))
+
+
+@given('he is logged in on url {url}')
+def step_login_into_url(context, url : str):
+    """Login to keycloak"""
+    assert url is not None
     assert context.login is not None
     assert context.passw is not None
 
     with requests.Session() as session:
-        # Step 1: Connect to API key manager to be redirected to Keycloak login form
-        response = session.get(os.getenv("APIKEY_URL"))
+        # Step 1: Connect to API key manager to be redirected to URL login form
+        response = session.get(url)
+        #response = session.get(os.getenv("APIKEY_URL"))
         response.raise_for_status()
 
         # Step 2: Parse html login form
@@ -55,7 +61,6 @@ def step_login(context):
 
 
 use_step_matcher("re")
-
 
 @when('he creates a new (?P<key_type>permanent|temporary) API key')
 def step_create_apikey(context, key_type: str):
@@ -146,3 +151,14 @@ def step_check_apikey(context):
                 valid_key_found = True
 
     assert valid_key_found
+
+"""
+Step to ensure that the API-KEY is set on environment variable.
+We will avoid to create an API-KEY for each test.
+There is a dedicated test to check API-KEY creation.
+"""
+@given('user {user:d} has got an apikey')
+def step_check_apikey(context, user: int):
+    """Checks that user APIKEY is set on environment variable"""
+    assert f'RSPY_TEST_APIK_{user}' in os.environ
+    context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')

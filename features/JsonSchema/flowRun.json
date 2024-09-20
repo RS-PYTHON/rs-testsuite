@@ -1,0 +1,82 @@
+{
+  "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+  "created": "2019-08-24T14:15:22Z",
+  "updated": "2019-08-24T14:15:22Z",
+  "name": "my-flow-run",
+  "flow_id": "0746f03b-16cc-49fb-9833-df3713d407d2",
+  "state_id": "66648741-ea8b-4d02-902d-821b4000589e",
+  "deployment_id": "6ef0ac85-9892-4664-a2a5-58bf2af5a8a6",
+  "deployment_version": "1.0",
+  "work_queue_id": "872dd786-d18e-4b5b-837a-2412e7a1d08e",
+  "work_queue_name": "string",
+  "flow_version": "1.0",
+  "parameters": {},
+  "idempotency_key": "string",
+  "context": {
+    "my_var": "my_val"
+  },
+  "empirical_policy": {
+    "max_retries": 0,
+    "retry_delay_seconds": 0,
+    "retries": 0,
+    "retry_delay": 0,
+    "pause_keys": [
+      null
+    ],
+    "resuming": false
+  },
+  "tags": [
+    "tag-1",
+    "tag-2"
+  ],
+  "parent_task_run_id": "8724d26e-d0dd-4802-b7e1-96df48d34683",
+  "state_type": "SCHEDULED",
+  "state_name": "string",
+  "run_count": 0,
+  "expected_start_time": "2019-08-24T14:15:22Z",
+  "next_scheduled_start_time": "2019-08-24T14:15:22Z",
+  "start_time": "2019-08-24T14:15:22Z",
+  "end_time": "2019-08-24T14:15:22Z",
+  "total_run_time": 0,
+  "estimated_run_time": 0,
+  "estimated_start_time_delta": 0,
+  "auto_scheduled": false,
+  "infrastructure_document_id": "ce9a08a7-d77b-4b3f-826a-53820cfe01fa",
+  "infrastructure_pid": "string",
+  "created_by": {
+    "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    "type": "string",
+    "display_value": "string"
+  },
+  "work_pool_id": "6c80e923-2d7d-4888-8e35-30c5c5f5bdc4",
+  "work_pool_name": "my-work-pool",
+  "state": {
+    "id": "497f6eca-6276-4993-bfeb-53cbbbba6f08",
+    "type": "SCHEDULED",
+    "name": "string",
+    "timestamp": "2019-08-24T14:15:22Z",
+    "message": "Run started",
+    "data": null,
+    "state_details": {
+      "flow_run_id": "ad45a578-ec24-4062-9323-4b1919b75b1a",
+      "task_run_id": "7f0ef9d7-e7b5-4d52-8247-ce8351652f8b",
+      "child_flow_run_id": "da812b02-15bb-48a9-8a93-bfcf654f163d",
+      "scheduled_time": "2019-08-24T14:15:22Z",
+      "cache_key": "string",
+      "cache_expiration": "2019-08-24T14:15:22Z",
+      "untrackable_result": false,
+      "pause_timeout": "2019-08-24T14:15:22Z",
+      "pause_reschedule": false,
+      "pause_key": "string",
+      "run_input_keyset": {
+        "property1": "string",
+        "property2": "string"
+      },
+      "refresh_cache": true,
+      "retriable": true,
+      "transition_id": "7a776551-a629-491a-b81a-3d501604a9fd",
+      "task_parameters_id": "233127a1-1850-4bb7-b89f-8d54168541d7"
+    }
+  },
+  "job_variables": {}
+}
