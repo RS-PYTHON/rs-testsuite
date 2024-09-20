@@ -20,7 +20,6 @@ def step_define_user(context, user: int):
     context.login = os.getenv(f'RSPY_TEST_USER_{user}')
     context.passw = os.getenv(f'RSPY_TEST_PASS_{user}')
 
-
 @given('he is logged in')
 def step_login(context):
     assert "APIKEY_URL" in os.environ
@@ -62,7 +61,6 @@ def step_login_into_url(context, url : str):
 
 
 use_step_matcher("re")
-
 
 @when('he creates a new (?P<key_type>permanent|temporary) API key')
 def step_create_apikey(context, key_type: str):
@@ -153,3 +151,14 @@ def step_check_apikey(context):
                 valid_key_found = True
 
     assert valid_key_found
+
+"""
+Step to ensure that the API-KEY is set on environment variable.
+We will avoid to create an API-KEY for each test.
+There is a dedicated test to check API-KEY creation.
+"""
+@given('user {user:d} has got an apikey')
+def step_check_apikey(context, user: int):
+    """Checks that user APIKEY is set on environment variable"""
+    assert f'RSPY_TEST_APIK_{user}' in os.environ
+    context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')

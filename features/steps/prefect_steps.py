@@ -146,7 +146,10 @@ def step_wait_the_flow_to_complete(context):
     assert context.flow_run_id is not None 
     
     status = "UNKNOWN"
-    while ( status != 'COMPLETED'):
+    
+    
+    while ( status not in ['COMPLETED', 'FAILED', 'CANCELLED', 'CRASHED', 'CANCELLING']):
+        # Effectue!= 'COMPLETED'):
         time.sleep(1)
         
         response = prefect_api_get(context, '/api/flow_runs', context.flow_run_id)      
@@ -157,16 +160,15 @@ def step_wait_the_flow_to_complete(context):
         # Parse the response JSON and extract the deployment and flow IDs
         data = json.loads(response.text)
         status = data['type']
-        
-        
-        
+                
+    assert (status=='COMPLETED')
+                
     # Get test results
     parameters_json = {
         "artifacts": {
             "flow_run_id": {
             "any_": [f"{context.flow_run_id}"]
         }}}
-    
     
     # Perform a POST request to start the flow
     response = prefect_api_post(context, f'/api/artifacts/latest/filter', parameters_json)
