@@ -101,6 +101,8 @@ def step_create_collection(context, name):
         }
     # Call the endpoint to create the collection
     response = catalog_post(context,'/catalog/collections', collection_json )
+    response.raise_for_status() 
+    assert(response.status_code == 200)
 
 """
 Count the number of collection owned by the user and check it with the number provided.
