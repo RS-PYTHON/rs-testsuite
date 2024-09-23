@@ -18,7 +18,7 @@ def deploy_flow(entrypoint:str, deployment:str, workpool:str="on-demand-k8s-pool
 
 if __name__ == "__main__":
     if ( (len(sys.argv) < 3) or (len(sys.argv) > 6)  ):
-        print("Usage: python script.py <entrypoint> <deployment> [<workpool>] [<branch>] [<github_url>]")
+        print("Usage: python create_deployment.py <entrypoint> <deployment> [<workpool>] [<branch>] [<github_url>]")
     else:
         deploy_flow(*sys.argv[1:])
 

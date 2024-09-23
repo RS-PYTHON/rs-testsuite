@@ -1,43 +1,10 @@
 """STAC Catalog test steps"""
 
 from behave import given, when, then
-import os
+from rs_server import rs_server_get, rs_server_post, rs_server_delete
 import requests
 from urllib.parse import urljoin
 import json
-
-# Perform a Get call to the catalog and send back the response
-def catalog_get(context, url:str)-> str:
-    assert context.apikey is not None
-    assert os.getenv("STAC_API_URL") is not None
-    
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
-
-    
-    with requests.Session() as session:
-        response = session.get(os.getenv("STAC_API_URL") + url, headers=headers)
-        response.raise_for_status() 
-        assert(response.status_code == 200)
-        return response
-
-
-# Perform a POST call to the catalog and send back the response
-def catalog_post(context, url:str, parameter:json)-> str:
-    assert context.apikey is not None
-    assert os.getenv("STAC_API_URL") is not None
-    
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
-
-    with requests.Session() as session:
-        response = session.post(os.getenv("STAC_API_URL") + url, data=json.dumps(parameter), headers=headers)
-        response.raise_for_status() 
-        assert(response.status_code == 200)
-        return response
-
-
-
 
 """
 Fetches the list of collections reachable by the user and filters them based on the user's login.
@@ -50,7 +17,7 @@ Returns:
 list: A list of collections owned by the user.
 """
 def get_user_collections(context):
-    response = catalog_get (context, '/catalog/collections')
+    response = rs_server_get (context, '/catalog/collections')
     collections = response.json()['collections']
         
     # Remove duplicates from the collections list
@@ -67,23 +34,13 @@ def get_user_collections(context):
 """
 Delete all the Collection from one user.
 """    
-@given('user {user:d} has deleted all his collections')
-def step_remove_user_collections(context, user: int):
-    assert context.apikey is not None
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
-
+@given('user has deleted all his collections')
+def step_remove_user_collections(context):
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
     
-    with requests.Session() as session:
-        # Delete all collection owned by the user
-        for collection in user_collections:
-            response = session.delete(urljoin(os.getenv("STAC_API_URL"),
-                    f'/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}'),
-                    headers=headers)
-            response.raise_for_status() 
-            assert(response.status_code == 200)
+    for collection in user_collections:
+        rs_server_delete(context, f'/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}')
 
 """
 Create a single collection with fake description.
@@ -100,7 +57,7 @@ def step_create_collection(context, name):
             "owner": f"{context.login}",
         }
     # Call the endpoint to create the collection
-    response = catalog_post(context,'/catalog/collections', collection_json )
+    response = rs_server_post(context,'/catalog/collections', collection_json )
     response.raise_for_status() 
     assert(response.status_code == 200)
 
@@ -119,7 +76,7 @@ Check the queryable interface proposal
 """
 @then ('the url /catalog proposes queryables')
 def step_check_catalog_queryables(context):
-    response = catalog_get(context, 'catalog/')
+    response = rs_server_get(context, 'catalog/')
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
     assert (exists == True)
@@ -129,7 +86,7 @@ Check the queryable interface
 """
 @then ('the url catalog/queryables has got 4 properties')
 def step_check_catalog_queryables_properties(context):
-    response = catalog_get(context, 'catalog/queryables')
+    response = rs_server_get(context, 'catalog/queryables')
     data = json.loads(response.text)
     assert (data['properties']['id'] is not None)
     assert (data['properties']['datetime'] is not None)
@@ -141,7 +98,7 @@ Check the queryable interface proposal
 """
 @then ('the url /catalog/collections/ for {collection} proposes queryables')
 def step_check_collection_queryables(context, collection:str):
-    response = catalog_get(context, f'catalog/collections/{context.login}:{collection}')
+    response = rs_server_get(context, f'catalog/collections/{context.login}:{collection}')
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
     assert (exists == True)
@@ -153,5 +110,5 @@ Check the queryable interface
 """
 @then ('the queryables url for collection {collection} works')
 def step_check_queryables(context, collection:str):
-    response = catalog_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
+    response = rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
     data = json.loads(response.text)
