@@ -76,6 +76,7 @@ def step_create_apikey(context, key_type: str):
 
         url = f'/auth/api_key/new?name={name}&never_expires={never_expires}'
         response = session.get(urljoin(os.getenv("APIKEY_URL"), url))
+        response.raise_for_status()
         assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
         
         
