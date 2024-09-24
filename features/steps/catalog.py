@@ -1,6 +1,6 @@
 from behave import given, when, then
 from rs_server import rs_server_get, rs_server_post, rs_server_delete
-from json_utils import chek_json_path_is_not_null
+from json_utils import check_json_path_is_not_null
 import json
 
 """
@@ -14,7 +14,8 @@ Returns:
 list: A list of collections owned by the user.
 """
 def get_user_collections(context):
-    response = rs_server_get (context, '/catalog/collections')
+    assert context.login is not None, "Login has not be added to the set on the request header."
+    response = rs_server_get (context, '/catalog/collections', 200)
     collections = response.json()['collections']
         
     # Remove duplicates from the collections list
@@ -33,6 +34,7 @@ Delete all the Collection from one user.
 """    
 @given('user has deleted all his collections')
 def step_remove_user_collections(context):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
     
@@ -46,6 +48,7 @@ Create a single collection with fake description.
 @given('the collection "{name}" is created')
 @when ('the collection "{name}" is created')
 def step_create_collection(context, name):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     context.new_collection = name
     collection_json = {
             "id": f"{name}",
@@ -55,9 +58,7 @@ def step_create_collection(context, name):
             "owner": f"{context.login}",
         }
     # Call the endpoint to create the collection
-    response = rs_server_post(context,'/catalog/collections', collection_json )
-    response.raise_for_status() 
-    assert(response.status_code == 200)
+    rs_server_post(context,'/catalog/collections', collection_json, 200 )
 
 """
 Count the number of collection owned by the user and check it with the number provided.
@@ -75,7 +76,7 @@ Check the queryable interface proposal
 """
 @then ('the url /catalog proposes queryables')
 def step_check_catalog_queryables(context):
-    response = rs_server_get(context, 'catalog/')
+    response = rs_server_get(context, 'catalog/', 200)
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
     assert (exists == True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
@@ -85,18 +86,19 @@ Check the queryable interface
 """
 @then ('the url catalog/queryables has got 4 properties')
 def step_check_catalog_queryables_properties(context):
-    response = rs_server_get(context, 'catalog/queryables')
+    response = rs_server_get(context, 'catalog/queryables', 200)
     data = json.loads(response.text)
-    chek_json_path_is_not_null(data, 'properties', 'id')
-    chek_json_path_is_not_null(data, 'properties', 'datetime')    
-    chek_json_path_is_not_null(data, 'properties', 'geometry')
-    chek_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
+    check_json_path_is_not_null(data, 'properties', 'id')
+    check_json_path_is_not_null(data, 'properties', 'datetime')    
+    check_json_path_is_not_null(data, 'properties', 'geometry')
+    check_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
 
 """
 Check the queryable interface proposal
 """
 @then ('the url /catalog/collections/ for {collection} proposes queryables')
 def step_check_collection_queryables(context, collection:str):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     url = f'catalog/collections/{context.login}:{collection}'
     response = rs_server_get(context, url)
     data = json.loads(response.text)
@@ -110,5 +112,6 @@ Check the queryable interface
 """
 @then ('the queryables url for collection {collection} works')
 def step_check_queryables(context, collection:str):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
 
