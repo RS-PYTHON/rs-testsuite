@@ -20,7 +20,7 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    assert context.apikey is not None, "API-KEY is not set on context."
+    assert os.getenv("APIKEY_URL") is not None, "APIKEY_URL environment variable is not set."
     step_login_into_url(context,os.getenv("APIKEY_URL"))
 
 

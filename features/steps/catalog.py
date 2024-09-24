@@ -14,6 +14,7 @@ Returns:
 list: A list of collections owned by the user.
 """
 def get_user_collections(context):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     response = rs_server_get (context, '/catalog/collections', 200)
     collections = response.json()['collections']
         
@@ -33,6 +34,7 @@ Delete all the Collection from one user.
 """    
 @given('user has deleted all his collections')
 def step_remove_user_collections(context):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
     
@@ -46,6 +48,7 @@ Create a single collection with fake description.
 @given('the collection "{name}" is created')
 @when ('the collection "{name}" is created')
 def step_create_collection(context, name):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     context.new_collection = name
     collection_json = {
             "id": f"{name}",
@@ -95,6 +98,7 @@ Check the queryable interface proposal
 """
 @then ('the url /catalog/collections/ for {collection} proposes queryables')
 def step_check_collection_queryables(context, collection:str):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     url = f'catalog/collections/{context.login}:{collection}'
     response = rs_server_get(context, url)
     data = json.loads(response.text)
@@ -108,5 +112,6 @@ Check the queryable interface
 """
 @then ('the queryables url for collection {collection} works')
 def step_check_queryables(context, collection:str):
+    assert context.login is not None, "Login has not be added to the set on the request header."
     rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
 
