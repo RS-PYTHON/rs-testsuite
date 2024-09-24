@@ -1,6 +1,6 @@
 from behave import given, when, then
 from behave import use_step_matcher
-
+import hashlib
 import os
 import requests
 import uuid
@@ -76,7 +76,6 @@ def step_create_apikey(context, key_type: str):
 
         url = f'/auth/api_key/new?name={name}&never_expires={never_expires}'
         response = session.get(urljoin(os.getenv("APIKEY_URL"), url))
-        response.raise_for_status()
         assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
         
         
@@ -99,7 +98,7 @@ def step_revoke_apikey(context: str):
     with requests.Session() as session:
         session.cookies.update(context.cookies)
 
-        # Revoke the last created API key
+        # Revoke the last created API key             
         response = session.get(urljoin(os.getenv("APIKEY_URL"),
             f'/auth/api_key/revoke?api-key={context.apikey}'))
         response.raise_for_status()
@@ -119,9 +118,11 @@ def step_check_revocation_apikey(context):
         response = session.get(urljoin(os.getenv("APIKEY_URL"), '/auth/api_key/list'))
         response.raise_for_status()
 
+        hash_hex = encode_sha_256(context.apikey)
+
         valid_key_found = False
         for key in response.json():
-            if key['api_key'] == context.apikey:
+            if key['api_key'] == hash_hex:
                 assert key['is_active'] == False, "Key is still active."
                 valid_key_found = True
 
@@ -143,9 +144,12 @@ def step_check_apikey(context):
         response = session.get(urljoin(os.getenv("APIKEY_URL"), '/auth/api_key/list'))
         response.raise_for_status()
 
+        
+        hash_hex = encode_sha_256(context.apikey)
+        
         valid_key_found = False
         for key in response.json():
-            if key['api_key'] == context.apikey:
+            if key['api_key'] == hash_hex:
                 assert key['is_active'] == True, "Key is inactive."
                 valid_key_found = True
 
@@ -161,3 +165,9 @@ def step_check_apikey(context, user: int):
     """Checks that user APIKEY is set on environment variable"""
     assert f'RSPY_TEST_APIK_{user}' in os.environ, f"RSPY_TEST_APIK_{user} environment varibale has not been set."
     context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')
+    
+    
+def encode_sha_256 (key:str)->str:
+    chaine_bytes = key.encode('utf-8')
+    hash_obj = hashlib.sha256(chaine_bytes)
+    return hash_obj.hexdigest()
