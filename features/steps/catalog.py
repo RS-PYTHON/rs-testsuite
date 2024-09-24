@@ -1,9 +1,6 @@
-"""STAC Catalog test steps"""
-
 from behave import given, when, then
 from rs_server import rs_server_get, rs_server_post, rs_server_delete
-import requests
-from urllib.parse import urljoin
+from json_utils import chek_json_path_is_not_null
 import json
 
 """
@@ -40,7 +37,8 @@ def step_remove_user_collections(context):
     user_collections = get_user_collections(context)
     
     for collection in user_collections:
-        rs_server_delete(context, f'/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}')
+        url = f"/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}"
+        rs_server_delete(context, url)
 
 """
 Create a single collection with fake description.
@@ -68,7 +66,8 @@ Count the number of collection owned by the user and check it with the number pr
 def step_check_collection_count(context, number):
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
-    assert(len(user_collections) == number)
+    count = len(user_collections) 
+    assert(count == number), f"Count is {count} and not {number}."
     
 
 """
@@ -79,7 +78,7 @@ def step_check_catalog_queryables(context):
     response = rs_server_get(context, 'catalog/')
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
-    assert (exists == True)
+    assert (exists == True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
 
 """
 Check the queryable interface
@@ -88,20 +87,21 @@ Check the queryable interface
 def step_check_catalog_queryables_properties(context):
     response = rs_server_get(context, 'catalog/queryables')
     data = json.loads(response.text)
-    assert (data['properties']['id'] is not None)
-    assert (data['properties']['datetime'] is not None)
-    assert (data['properties']['geometry'] is not None)
-    assert (data['properties']['eo:cloud_cover'] is not None)            
+    chek_json_path_is_not_null(data, 'properties', 'id')
+    chek_json_path_is_not_null(data, 'properties', 'datetime')    
+    chek_json_path_is_not_null(data, 'properties', 'geometry')
+    chek_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
 
 """
 Check the queryable interface proposal
 """
 @then ('the url /catalog/collections/ for {collection} proposes queryables')
 def step_check_collection_queryables(context, collection:str):
-    response = rs_server_get(context, f'catalog/collections/{context.login}:{collection}')
+    url = f'catalog/collections/{context.login}:{collection}'
+    response = rs_server_get(context, url)
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
-    assert (exists == True)
+    assert (exists == True), f"Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found from url {url}."
 
 
 
@@ -110,5 +110,5 @@ Check the queryable interface
 """
 @then ('the queryables url for collection {collection} works')
 def step_check_queryables(context, collection:str):
-    response = rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
-    data = json.loads(response.text)
+    rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
+

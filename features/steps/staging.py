@@ -1,9 +1,5 @@
 from behave import given, when, then
 from rs_server import rs_server_get, rs_server_post , rs_server_delete
-import os
-import requests
-from urllib.parse import urljoin
-import json
 
 
 """

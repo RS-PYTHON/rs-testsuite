@@ -2,16 +2,18 @@ from behave import given, when, then
 from behave import use_step_matcher
 import json
 import re
-from endpoints import step_request_service, is_valid_json
+from service import step_request_service
+from json_utils import is_valid_json
+
 
 container_tab = [
-    ('prefect',                 ('.*prefect-server.*',          '',                           ':(\d+\.\d+\.\d+)-')   ),
+    ('prefect',                 ('.*prefect-server.*',          '',                           ":(\\d+\\.\\d+\\.\\d+)-")   ),
     ('rs-server-frontend',      ('.*rs-server-frontend.*',      '',                           ':([0-9a-zA-Z.]+)$')   ),
     ('rs-server-adgs',          ('.*rs-server-adgs.*',          '',                           ':([0-9a-zA-Z.]+)$')   ),
     ('rs-server-cadip',         ('.*rs-server-cadip.*',         '',                           ':([0-9a-zA-Z.]+)$')   ),
     ('rs-server-staging',       ('.*rs-server-staging.*',       '',                           ':([0-9a-zA-Z.]+)$')   ),
     ('rs-server-catalog',       ('.*server-catalog.*',          '.*server-catalog-db.*',      ':([0-9a-zA-Z.]+)$')   ),
-    ('pgstac',                  ('.*server-catalog-db.*',       '',                           'v(\d+\.\d+\.\d+)')   )
+    ('pgstac',                  ('.*server-catalog-db.*',       '',                           'v(\\d+\\.\\d+\\.\\d+)')   )
     ]
 
 

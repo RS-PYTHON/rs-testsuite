@@ -8,10 +8,10 @@ import json
 @when('the rs-python service {service} is requested with the path {path}')
 def step_request_service(context: str, service: str, path: str)->str:
     # Ensure that OAuth2 authentication has been performed.
-    assert context.cookies is not None
+    assert context.cookies is not None, "Cookies have not be set on header."
     
     # Ensure that the RS-Python URL is defined.
-    assert os.getenv("RS_PYTHON_URL") is not None
+    assert os.getenv("RS_PYTHON_URL"), "RS_PYTHON_URL environment variable is not set."
     
     with requests.Session() as session:
         session.cookies.update(context.cookies)
@@ -22,7 +22,6 @@ def step_request_service(context: str, service: str, path: str)->str:
         
         # Send the GET request and get the JSON response
         response = session.get(url, headers=headers)
-        response.raise_for_status()
 
         # Store the response status code and the response itself
         context.response_status_code = response.status_code
@@ -31,12 +30,6 @@ def step_request_service(context: str, service: str, path: str)->str:
         
 # Check that the server responded with the specified status code.    
 @then('the server should answer with the code {code:d}')
-def step_request_code(context: str, code: int):
-    assert context.response_status_code == code
+def step_request_code(context: str, status: int):
+    assert(context.response.status_code == status), f'Status is {context.response.status_code} and not {status}.'
 
-def is_valid_json(chain: str):
-    try:
-        json.loads(chain)
-        return True
-    except:
-        return False
