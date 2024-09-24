@@ -1,6 +1,6 @@
 from behave import given, when, then
 from rs_server import rs_server_get, rs_server_post, rs_server_delete
-from json_utils import chek_json_path_is_not_null
+from json_utils import check_json_path_is_not_null
 import json
 
 """
@@ -88,10 +88,10 @@ Check the queryable interface
 def step_check_catalog_queryables_properties(context):
     response = rs_server_get(context, 'catalog/queryables', 200)
     data = json.loads(response.text)
-    chek_json_path_is_not_null(data, 'properties', 'id')
-    chek_json_path_is_not_null(data, 'properties', 'datetime')    
-    chek_json_path_is_not_null(data, 'properties', 'geometry')
-    chek_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
+    check_json_path_is_not_null(data, 'properties', 'id')
+    check_json_path_is_not_null(data, 'properties', 'datetime')    
+    check_json_path_is_not_null(data, 'properties', 'geometry')
+    check_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
 
 """
 Check the queryable interface proposal

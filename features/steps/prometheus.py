@@ -2,8 +2,8 @@ from behave import given, when, then
 from behave import use_step_matcher
 import json
 import re
-from service import step_request_service, chek_json_path_is_not_null
-from json_utils import is_valid_json
+from service import step_request_service
+from json_utils import is_valid_json, check_json_path_is_not_null
 
 
 container_tab = [
@@ -38,7 +38,7 @@ def step_check_json_prometheus_is_not_null(context: str, level1: str, level2: st
     assert is_valid_json(context.response.text) == True, "Invalid JSON answer."
 
     data = json.loads(context.response.text)
-    chek_json_path_is_not_null (data, level1, level2)
+    check_json_path_is_not_null (data, level1, level2)
 
 
 use_step_matcher("re")
