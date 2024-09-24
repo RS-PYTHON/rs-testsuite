@@ -14,7 +14,7 @@ Returns:
 list: A list of collections owned by the user.
 """
 def get_user_collections(context):
-    response = rs_server_get (context, '/catalog/collections')
+    response = rs_server_get (context, '/catalog/collections', 200)
     collections = response.json()['collections']
         
     # Remove duplicates from the collections list
@@ -73,7 +73,7 @@ Check the queryable interface proposal
 """
 @then ('the url /catalog proposes queryables')
 def step_check_catalog_queryables(context):
-    response = rs_server_get(context, 'catalog/')
+    response = rs_server_get(context, 'catalog/', 200)
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
     assert (exists == True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
@@ -83,7 +83,7 @@ Check the queryable interface
 """
 @then ('the url catalog/queryables has got 4 properties')
 def step_check_catalog_queryables_properties(context):
-    response = rs_server_get(context, 'catalog/queryables')
+    response = rs_server_get(context, 'catalog/queryables', 200)
     data = json.loads(response.text)
     chek_json_path_is_not_null(data, 'properties', 'id')
     chek_json_path_is_not_null(data, 'properties', 'datetime')    
