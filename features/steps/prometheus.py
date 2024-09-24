@@ -2,7 +2,7 @@ from behave import given, when, then
 from behave import use_step_matcher
 import json
 import re
-from service import step_request_service
+from service import step_request_service, chek_json_path_is_not_null
 from json_utils import is_valid_json
 
 
@@ -38,7 +38,7 @@ def step_check_json_prometheus_is_not_null(context: str, level1: str, level2: st
     assert is_valid_json(context.response.text) == True, "Invalid JSON answer."
 
     data = json.loads(context.response.text)
-    assert len(data[level1][level2]) > 0, f"No data found on JSON path {level1}.{level2} for data \n:{data} "
+    chek_json_path_is_not_null (data, level1, level2)
 
 
 use_step_matcher("re")
