@@ -42,4 +42,4 @@ Asserts:
 """
 @given('the file {filename} exists on the github url {github_url}')
 def step_check_github_entry(context: str, filename: str, github_url: str):
-    assert(check_file_exists(github_url, filename))
+    assert(check_file_exists(github_url, filename)), f"The file {filename} cannot be found on GitHub url {github_url}."

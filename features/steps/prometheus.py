@@ -34,11 +34,11 @@ def step_check_prometheus_result(context: str):
 # Specific check: Ensure the response is in JSON format and that the path level1.level2 contains at least one element.
 @then('the answer is a json with almost one element on the path {level1}.{level2}')
 def step_check_json_prometheus_is_not_null(context: str, level1: str, level2: str):
-    assert context.response_status_code == 200
-    assert is_valid_json(context.response.text) == True
+    assert context.response_status_code == 200, f'Request status is {context.response_status_code} instead of 200.'
+    assert is_valid_json(context.response.text) == True, "Invalid JSON answer."
 
     data = json.loads(context.response.text)
-    assert len(data[level1][level2]) > 0
+    assert len(data[level1][level2]) > 0, f"No data found on JSON path {level1}.{level2} for data \n:{data} "
 
 
 use_step_matcher("re")
@@ -63,6 +63,6 @@ def step_check_container_version(context: str, container: str, version: str):
     version_extracted = match.group(1)
     
     # Assert that the extracted version matches the expected version
-    assert (version_extracted == version)
+    assert (version_extracted == version), f"Version extracted is {version_extracted} instead of {version}."
 
 

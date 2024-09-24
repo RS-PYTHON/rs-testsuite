@@ -55,9 +55,7 @@ def step_create_collection(context, name):
             "owner": f"{context.login}",
         }
     # Call the endpoint to create the collection
-    response = rs_server_post(context,'/catalog/collections', collection_json )
-    response.raise_for_status() 
-    assert(response.status_code == 200)
+    rs_server_post(context,'/catalog/collections', collection_json, 200 )
 
 """
 Count the number of collection owned by the user and check it with the number provided.
