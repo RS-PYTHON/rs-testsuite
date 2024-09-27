@@ -8,6 +8,6 @@ Check the staging url
 @then ('staging post url succeeds')
 def step_check_staging(context):
     process_json = {}
-    
+    rs_server_post(context, 'processes/staging/execution', process_json, 200)
     
     

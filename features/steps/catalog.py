@@ -50,13 +50,36 @@ Create a single collection with fake description.
 def step_create_collection(context, name):
     assert context.login is not None, "Login has not be added to the set on the request header."
     context.new_collection = name
+    
     collection_json = {
-            "id": f"{name}",
-            "type": "Collection",
-            "description": f"{name} default description",
-            "stac_version": "1.0.0",            
-            "owner": f"{context.login}",
-        }
+        "id": f"{name}",
+        "title": f"{name} default title",
+        "description": f"{name} default description",
+        "extent": {
+            "spatial": {
+            "bbox": [
+                [100.0, 0.0, 105.0, 1.0]
+            ]
+            },
+            "temporal": {
+            "interval": [
+                ["2024-01-01T00:00:00Z", "2025-12-31T23:59:59Z"]
+            ]
+            }
+        },
+        "links": [
+            {
+            "rel": "self",
+            "href": "http://example.com/catalog/collections/nouvelle-collection"
+            },
+            {
+            "rel": "parent",
+            "href": "http://example.com/catalog"
+            }
+        ],
+        "license": "proprietary",
+        "keywords": ["satellite", "imagery", "earth observation"]
+    }
     # Call the endpoint to create the collection
     rs_server_post(context,'/catalog/collections', collection_json, 200 )
 
