@@ -52,34 +52,61 @@ def step_create_collection(context, name):
     context.new_collection = name
     
     collection_json = {
-        "id": f"{name}",
-        "title": f"{name} default title",
-        "description": f"{name} default description",
-        "extent": {
-            "spatial": {
-            "bbox": [
-                [100.0, 0.0, 105.0, 1.0]
-            ]
-            },
-            "temporal": {
-            "interval": [
-                ["2024-01-01T00:00:00Z", "2025-12-31T23:59:59Z"]
-            ]
-            }
-        },
-        "links": [
-            {
-            "rel": "self",
-            "href": "http://example.com/catalog/collections/nouvelle-collection"
-            },
-            {
-            "rel": "parent",
-            "href": "http://example.com/catalog"
-            }
-        ],
-        "license": "proprietary",
-        "keywords": ["satellite", "imagery", "earth observation"]
+  "id": "nouvelle-collection",
+  "description": "Une description de la nouvelle collection",
+  "stac_version": "1.0.0",
+  "links": [
+    {
+      "href": "http://example.com/catalog/collections/nouvelle-collection",
+      "rel": "self",
+      "type": "application/json",
+      "title": "Nouvelle Collection"
     }
+  ],
+  "stac_extensions": [],
+  "title": "Nouvelle Collection",
+  "type": "Collection",
+  "assets": {
+    "thumbnail": {
+      "href": "http://example.com/thumbnail.jpg",
+      "type": "image/jpeg",
+      "title": "Thumbnail",
+      "description": "A thumbnail image",
+      "roles": ["thumbnail"]
+    }
+  },
+  "license": "proprietary",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [100.0, 0.0, 105.0, 1.0]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        ["2020-01-01T00:00:00Z", "2020-12-31T23:59:59Z"]
+      ]
+    }
+  },
+  "keywords": ["satellite", "imagery", "earth observation"],
+  "providers": [
+    {
+      "name": "Provider Name",
+      "description": "Description of the provider",
+      "roles": ["producer", "licensor"],
+      "url": "http://provider.com"
+    }
+  ],
+  "summaries": {
+    "eo:bands": {
+      "minimum": 1,
+      "maximum": 12
+    }
+  }
+}
+
+    
+    
     # Call the endpoint to create the collection
     rs_server_post(context,'/catalog/collections', collection_json, 200 )
 
