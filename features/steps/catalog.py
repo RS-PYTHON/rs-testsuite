@@ -51,64 +51,41 @@ def step_create_collection(context, name):
     assert context.login is not None, "Login has not be added to the set on the request header."
     context.new_collection = name
     
-    collection_json = {
-            "id": f"{name}",
-            "description": "Une description de la nouvelle collection",
-            "stac_version": "1.0.0",
-            "links": [
-                {
-                "href": "http://example.com/catalog/collections/nouvelle-collection",
-                "rel": "self",
-                "type": "application/json",
-                "title": "Nouvelle Collection"
-                }
-            ],
-            "stac_extensions": [],
-            "title": "Nouvelle Collection",
-            "type": "Collection",
-            "assets": {
-                "thumbnail": {
-                "href": "http://example.com/thumbnail.jpg",
-                "type": "image/jpeg",
-                "title": "Thumbnail",
-                "description": "A thumbnail image",
-                "roles": ["thumbnail"]
-                }
-            },
-            "license": "proprietary",
-            "extent": {
-                "spatial": {
-                "bbox": [
-                    [100.0, 0.0, 105.0, 1.0]
-                ]
-                },
-                "temporal": {
-                "interval": [
-                    ["2020-01-01T00:00:00Z", "2020-12-31T23:59:59Z"]
-                ]
-                }
-            },
-            "keywords": ["satellite", "imagery", "earth observation"],
-            "providers": [
-                {
-                "name": "Provider Name",
-                "description": "Description of the provider",
-                "roles": ["producer", "licensor"],
-                "url": "http://provider.com"
-                }
-            ],
-            "summaries": {
-                "eo:bands": {
-                "minimum": 1,
-                "maximum": 12
-                }
-            }
-            }
-
+    collection_json =  {
+      "id": f"{name}",
+      "type": "Collection",
+      "links": [],
+      "owner": f"{context.login}",
+      "extent": {
+        "spatial": {
+          "bbox": [
+            [
+              -180,
+              -90,
+              180,
+              90
+            ]
+          ]
+        },
+        "temporal": {
+          "interval": [
+            [
+              "2000-01-01T00:00:00Z",
+              "2030-01-01T00:00:00Z"
+            ]
+          ]
+        }
+      },
+      "license": "public-domain",
+      "description": f"{name} default description",
+      "stac_version": "1.0.0"
+    }
+    
+    
     
     
     # Call the endpoint to create the collection
-    rs_server_post(context,'/catalog/collections', collection_json, 200 )
+    rs_server_post(context,'/catalog/collections', collection_json, 201 )
 
 """
 Count the number of collection owned by the user and check it with the number provided.
