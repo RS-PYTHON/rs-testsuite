@@ -35,6 +35,7 @@ def step_login_into_url(context, url : str):
         # Step 1: Connect to API key manager to be redirected to URL login form
         response = session.get(url)
         #response = session.get(os.getenv("APIKEY_URL"))
+        assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
         response.raise_for_status()
 
         # Step 2: Parse html login form
@@ -47,12 +48,12 @@ def step_login_into_url(context, url : str):
 
         # Step 3: Submit form to get authorization code
         response = session.post(form['action'], data=form_data)
-        response.raise_for_status()
+        assert(response.status_code == 200), f'status for POST is {response.status_code} and not 200'
 
         # Step 4: Perform redirect
         redirect_url = response.url
         response = session.get(redirect_url)
-        response.raise_for_status()
+        assert(response.status_code == 200), f'status for POST is {response.status_code} and not 200'
 
         # Save cookies to be authenticated in future sessions
         context.cookies = session.cookies
@@ -74,8 +75,8 @@ def step_create_apikey(context, key_type: str):
         name = f'test_{now}'
         never_expires = True if "permanent" == key_type else False
 
-        url = f'/auth/api_key/new?name={name}&never_expires={never_expires}'
-        response = session.get(urljoin(os.getenv("APIKEY_URL"), url))
+        url = f'{os.getenv("APIKEY_URL")}/auth/api_key/new?name={name}&never_expires={never_expires}'
+        response = session.get(url)
         assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
         
         
