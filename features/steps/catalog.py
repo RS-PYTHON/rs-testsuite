@@ -26,7 +26,8 @@ def get_user_collections(context):
             collections_without_duplicate.append(item)
 
     # Filter collections to extract those owned by the user
-    user_collections = [collection for collection in collections_without_duplicate if collection['id'].startswith(context.login)]
+    user_collections = [collection for collection in collections_without_duplicate
+                        if collection['id'].startswith(context.login)]
 
     return user_collections
 

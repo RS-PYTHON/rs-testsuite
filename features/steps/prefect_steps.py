@@ -89,9 +89,8 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
         The deployment ID and flow ID are not None.
     """
     # Perform a GET request to check the flow deployment on a specific deployment
-    response = prefect_api_get(context, '/api/deployments/name', flow + '/' + deployment)      
+    response = prefect_api_get(context, '/api/deployments/name', flow + '/' + deployment)
     assert response.status_code == 200, f'GET request ends with status {response.status_code}. Not a 200 answer.'
-
 
     # Parse the response JSON and extract the deployment and flow IDs
     data = json.loads(response.text)

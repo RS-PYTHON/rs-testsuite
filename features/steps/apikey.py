@@ -58,7 +58,6 @@ def step_login_into_url(context, url: str):
 
         # Save cookies to be authenticated in future sessions
         context.cookies = session.cookies
-        
 
 
 use_step_matcher("re")
