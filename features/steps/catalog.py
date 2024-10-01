@@ -18,7 +18,7 @@ def get_user_collections(context):
     assert context.login is not None, "Login has not be added to the set on the request header."
     response = rs_server_get(context, '/catalog/collections', 200)
     collections = response.json()['collections']
-        
+
     # Remove duplicates from the collections list
     collections_without_duplicate = []
     for item in collections:
@@ -27,7 +27,7 @@ def get_user_collections(context):
 
     # Filter collections to extract those owned by the user
     user_collections = [collection for collection in collections_without_duplicate if collection['id'].startswith(context.login)]
-    
+
     return user_collections
 
 
@@ -37,7 +37,7 @@ def step_remove_user_collections(context):
     Delete all the Collection from one user.
     """
     assert context.login is not None, "Login has not be added to the set on the request header."
-    # Get the list of the user collection 
+    # Get the list of the user collection
     user_collections = get_user_collections(context)
 
     for collection in user_collections:
@@ -93,9 +93,9 @@ def step_check_collection_count(context, number):
     """
     Count the number of collection owned by the user and check it with the number provided.
     """
-    # Get the list of the user collection 
+    # Get the list of the user collection
     user_collections = get_user_collections(context)
-    count = len(user_collections) 
+    count = len(user_collections)
     assert (count == number), f"Count is {count} and not {number}."
 
 
@@ -106,7 +106,7 @@ def step_check_catalog_queryables(context):
     """
     response = rs_server_get(context, 'catalog/', 200)
     data = json.loads(response.text)
-    exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
+    exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))
     assert (exists is True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
 
 
@@ -118,9 +118,9 @@ def step_check_catalog_queryables_properties(context):
     response = rs_server_get(context, 'catalog/queryables', 200)
     data = json.loads(response.text)
     check_json_path_is_not_null(data, 'properties', 'id')
-    check_json_path_is_not_null(data, 'properties', 'datetime')    
+    check_json_path_is_not_null(data, 'properties', 'datetime')
     check_json_path_is_not_null(data, 'properties', 'geometry')
-    check_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
+    check_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')
 
 
 @then('the url /catalog/collections/ for {collection} proposes queryables')
@@ -132,7 +132,7 @@ def step_check_collection_queryables(context, collection: str):
     url = f'catalog/collections/{context.login}:{collection}'
     response = rs_server_get(context, url)
     data = json.loads(response.text)
-    exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
+    exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))
     assert (exists is True), f"Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found from url {url}."
 
 

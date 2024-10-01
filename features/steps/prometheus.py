@@ -33,7 +33,7 @@ def step_check_prometheus_result(context: str):
 @then('the answer is a json with almost one element on the path {level1}.{level2}')
 def step_check_json_prometheus_is_not_null(context: str, level1: str, level2: str):
     assert context.response_status_code == 200, f'Request status is {context.response_status_code} instead of 200.'
-    assert is_valid_json(context.response.text) == True, "Invalid JSON answer."
+    assert is_valid_json(context.response.text), "Invalid JSON answer."
 
     data = json.loads(context.response.text)
     check_json_path_is_not_null(data, level1, level2)

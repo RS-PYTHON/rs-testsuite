@@ -21,8 +21,9 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    assert os.getenv("APIKEY_URL") is not None, "APIKEY_URL environment variable is not set."
-    step_login_into_url(context, os.getenv("APIKEY_URL"))
+    assert os.getenv("RS_PYTHON_URL") is not None, "RS_PYTHON_URL environment variable is not set."
+    step_login_into_url(context, "https://monitoring." + os.getenv("RS_PYTHON_URL") + "/prometheus")
+    # export APIKEY_URL="https://apikeymanager.ops.rs-python.eu"
 
 
 @given('he is logged in on url {url}')
@@ -100,7 +101,7 @@ def step_revoke_apikey(context: str):
     with requests.Session() as session:
         session.cookies.update(context.cookies)
 
-        # Revoke the last created API key             
+        # Revoke the last created API key
         response = session.get(urljoin(os.getenv("APIKEY_URL"), f'/auth/api_key/revoke?api-key={context.apikey}'))
         response.raise_for_status()
 
@@ -131,7 +132,7 @@ def step_check_revocation_apikey(context):
 
 
 @then('the API key should be valid')
-def step_check_apikey(context):
+def step_check_apikey_validity(context):
     """Check API key existence and validity"""
     assert "APIKEY_URL" in os.environ, "APIKEY_URL environment variable has not been set."
     assert context.cookies is not None, "Cookies are missing on context."
@@ -155,14 +156,13 @@ def step_check_apikey(context):
     assert valid_key_found, "No valid key has been found"
 
 
-"""
-Step to ensure that the API-KEY is set on environment variable.
-We will avoid to create an API-KEY for each test.
-There is a dedicated test to check API-KEY creation.
-"""
 @given('user {user:d} has got an apikey')
 def step_check_apikey(context, user: int):
-    """Checks that user APIKEY is set on environment variable"""
+    """
+    Step to ensure that the API-KEY is set on environment variable.
+    We will avoid to create an API-KEY for each test.
+    There is a dedicated test to check API-KEY creation.
+    """
     assert f'RSPY_TEST_APIK_{user}' in os.environ, f"RSPY_TEST_APIK_{user} environment varibale has not been set."
     context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')
 

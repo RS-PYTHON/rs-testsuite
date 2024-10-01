@@ -11,7 +11,7 @@ def check_file_exists(github_repository, filename):
         filename (str): The name of the file to check.
 
     Returns:
-        bool: True if the file exists, False if the file does not exist, 
+        bool: True if the file exists, False if the file does not exist,
                 None if there is an error other than 404.
     """
     url = f"{github_repository}/{filename}"
