@@ -18,14 +18,15 @@ def step_define_user(context, user: int):
     context.login = os.getenv(f'RSPY_TEST_USER_{user}')
     context.passw = os.getenv(f'RSPY_TEST_PASS_{user}')
 
+
 @given('he is logged in')
 def step_login(context):
     assert os.getenv("APIKEY_URL") is not None, "APIKEY_URL environment variable is not set."
-    step_login_into_url(context,os.getenv("APIKEY_URL"))
+    step_login_into_url(context, os.getenv("APIKEY_URL"))
 
 
 @given('he is logged in on url {url}')
-def step_login_into_url(context, url : str):
+def step_login_into_url(context, url: str):
     """Login to keycloak"""
     assert url is not None, "url parameter is missing."
     assert context.login is not None, "Login has not be added to the set on the request header."
@@ -34,8 +35,7 @@ def step_login_into_url(context, url : str):
     with requests.Session() as session:
         # Step 1: Connect to API key manager to be redirected to URL login form
         response = session.get(url)
-        #response = session.get(os.getenv("APIKEY_URL"))
-        assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
+        assert (response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
         response.raise_for_status()
 
         # Step 2: Parse html login form
@@ -48,18 +48,19 @@ def step_login_into_url(context, url : str):
 
         # Step 3: Submit form to get authorization code
         response = session.post(form['action'], data=form_data)
-        assert(response.status_code == 200), f'status for POST is {response.status_code} and not 200'
+        assert (response.status_code == 200), f'status for POST is {response.status_code} and not 200'
 
         # Step 4: Perform redirect
         redirect_url = response.url
         response = session.get(redirect_url)
-        assert(response.status_code == 200), f'status for POST is {response.status_code} and not 200'
+        assert (response.status_code == 200), f'status for POST is {response.status_code} and not 200'
 
         # Save cookies to be authenticated in future sessions
         context.cookies = session.cookies
 
 
 use_step_matcher("re")
+
 
 @when('he creates a new (?P<key_type>permanent|temporary) API key')
 def step_create_apikey(context, key_type: str):
@@ -77,9 +78,8 @@ def step_create_apikey(context, key_type: str):
 
         url = f'{os.getenv("APIKEY_URL")}/auth/api_key/new?name={name}&never_expires={never_expires}'
         response = session.get(url)
-        assert(response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
-        
-        
+        assert (response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200'
+
         # Save API key
         context.apikey = response.json()
         assert context.apikey is not None, "apikey cannot be retrieve from request answer."
@@ -87,6 +87,7 @@ def step_create_apikey(context, key_type: str):
 
 
 use_step_matcher("parse")
+
 
 @when('he revokes the last created API key')
 def step_revoke_apikey(context: str):
@@ -100,10 +101,9 @@ def step_revoke_apikey(context: str):
         session.cookies.update(context.cookies)
 
         # Revoke the last created API key             
-        response = session.get(urljoin(os.getenv("APIKEY_URL"),
-            f'/auth/api_key/revoke?api-key={context.apikey}'))
+        response = session.get(urljoin(os.getenv("APIKEY_URL"), f'/auth/api_key/revoke?api-key={context.apikey}'))
         response.raise_for_status()
- 
+
 
 @then('the last created API key should be revoked')
 def step_check_revocation_apikey(context):
@@ -124,11 +124,10 @@ def step_check_revocation_apikey(context):
         valid_key_found = False
         for key in response.json():
             if key['api_key'] == hash_hex:
-                assert key['is_active'] == False, "Key is still active."
+                assert key['is_active'] is False, "Key is still active."
                 valid_key_found = True
 
     assert valid_key_found
-
 
 
 @then('the API key should be valid')
@@ -145,16 +144,16 @@ def step_check_apikey(context):
         response = session.get(urljoin(os.getenv("APIKEY_URL"), '/auth/api_key/list'))
         response.raise_for_status()
 
-        
         hash_hex = encode_sha_256(context.apikey)
-        
+
         valid_key_found = False
         for key in response.json():
             if key['api_key'] == hash_hex:
-                assert key['is_active'] == True, "Key is inactive."
+                assert key['is_active'] is True, "Key is inactive."
                 valid_key_found = True
 
     assert valid_key_found, "No valid key has been found"
+
 
 """
 Step to ensure that the API-KEY is set on environment variable.
@@ -166,9 +165,9 @@ def step_check_apikey(context, user: int):
     """Checks that user APIKEY is set on environment variable"""
     assert f'RSPY_TEST_APIK_{user}' in os.environ, f"RSPY_TEST_APIK_{user} environment varibale has not been set."
     context.apikey = os.getenv(f'RSPY_TEST_APIK_{user}')
-    
-    
-def encode_sha_256 (key:str)->str:
+
+
+def encode_sha_256(key: str) -> str:
     chaine_bytes = key.encode('utf-8')
     hash_obj = hashlib.sha256(chaine_bytes)
     return hash_obj.hexdigest()

@@ -3,19 +3,20 @@ from rs_server import rs_server_get, rs_server_post, rs_server_delete
 from json_utils import check_json_path_is_not_null
 import json
 
-"""
-Fetches the list of collections reachable by the user and filters them based on the user's login.
 
-Parameters:
-context (object): An object containing user context, including the login.
-headers (dict): A dictionary of HTTP headers to include in the request.
-
-Returns:
-list: A list of collections owned by the user.
-"""
 def get_user_collections(context):
+    """
+    Fetches the list of collections reachable by the user and filters them based on the user's login.
+
+    Parameters:
+    context (object): An object containing user context, including the login.
+    headers (dict): A dictionary of HTTP headers to include in the request.
+
+    Returns:
+    list: A list of collections owned by the user.
+    """
     assert context.login is not None, "Login has not be added to the set on the request header."
-    response = rs_server_get (context, '/catalog/collections', 200)
+    response = rs_server_get(context, '/catalog/collections', 200)
     collections = response.json()['collections']
         
     # Remove duplicates from the collections list
@@ -29,29 +30,31 @@ def get_user_collections(context):
     
     return user_collections
 
-"""
-Delete all the Collection from one user.
-"""    
+
 @given('user has deleted all his collections')
 def step_remove_user_collections(context):
+    """
+    Delete all the Collection from one user.
+    """
     assert context.login is not None, "Login has not be added to the set on the request header."
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
-    
+
     for collection in user_collections:
         url = f"/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}"
         rs_server_delete(context, url)
 
-"""
-Create a single collection with fake description.
-"""
+
 @given('the collection "{name}" is created')
-@when ('the collection "{name}" is created')
+@when('the collection "{name}" is created')
 def step_create_collection(context, name):
+    """
+    Create a single collection with fake description.
+    """
     assert context.login is not None, "Login has not be added to the set on the request header."
     context.new_collection = name
-    
-    collection_json =  {
+
+    collection_json = {
       "id": f"{name}",
       "type": "Collection",
       "links": [],
@@ -80,39 +83,38 @@ def step_create_collection(context, name):
       "description": f"{name} default description",
       "stac_version": "1.0.0"
     }
-    
-    
-    
-    
-    # Call the endpoint to create the collection
-    rs_server_post(context,'/catalog/collections', collection_json, 201 )
 
-"""
-Count the number of collection owned by the user and check it with the number provided.
-"""
-@then ('the count of collection should be {number:d}')
+    # Call the endpoint to create the collection
+    rs_server_post(context, '/catalog/collections', collection_json, 201)
+
+
+@then('the count of collection should be {number:d}')
 def step_check_collection_count(context, number):
+    """
+    Count the number of collection owned by the user and check it with the number provided.
+    """
     # Get the list of the user collection 
     user_collections = get_user_collections(context)
     count = len(user_collections) 
-    assert(count == number), f"Count is {count} and not {number}."
-    
+    assert (count == number), f"Count is {count} and not {number}."
 
-"""
-Check the queryable interface proposal
-"""
-@then ('the url /catalog proposes queryables')
+
+@then('the url /catalog proposes queryables')
 def step_check_catalog_queryables(context):
+    """
+    Check the queryable interface proposal
+    """
     response = rs_server_get(context, 'catalog/', 200)
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
-    assert (exists == True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
+    assert (exists is True), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
 
-"""
-Check the queryable interface
-"""
-@then ('the url catalog/queryables has got 4 properties')
+
+@then('the url catalog/queryables has got 4 properties')
 def step_check_catalog_queryables_properties(context):
+    """
+    Check the queryable interface
+    """
     response = rs_server_get(context, 'catalog/queryables', 200)
     data = json.loads(response.text)
     check_json_path_is_not_null(data, 'properties', 'id')
@@ -120,25 +122,24 @@ def step_check_catalog_queryables_properties(context):
     check_json_path_is_not_null(data, 'properties', 'geometry')
     check_json_path_is_not_null(data, 'properties', 'eo:cloud_cover')        
 
-"""
-Check the queryable interface proposal
-"""
-@then ('the url /catalog/collections/ for {collection} proposes queryables')
-def step_check_collection_queryables(context, collection:str):
+
+@then('the url /catalog/collections/ for {collection} proposes queryables')
+def step_check_collection_queryables(context, collection: str):
+    """
+    Check the queryable interface proposal
+    """
     assert context.login is not None, "Login has not be added to the set on the request header."
     url = f'catalog/collections/{context.login}:{collection}'
     response = rs_server_get(context, url)
     data = json.loads(response.text)
     exists = any(link.get('rel') == 'http://www.opengis.net/def/rel/ogc/1.0/queryables' for link in data.get('links', []))       
-    assert (exists == True), f"Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found from url {url}."
+    assert (exists is True), f"Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found from url {url}."
 
 
-
-"""
-Check the queryable interface
-"""
-@then ('the queryables url for collection {collection} works')
-def step_check_queryables(context, collection:str):
+@then('the queryables url for collection {collection} works')
+def step_check_queryables(context, collection: str):
+    """
+    Check the queryable interface
+    """
     assert context.login is not None, "Login has not be added to the set on the request header."
     rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
-
