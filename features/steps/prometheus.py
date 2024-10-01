@@ -43,8 +43,8 @@ use_step_matcher("re")
 
 
 # Check the version of a specific container
-@given('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')
-@then('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')
+@given('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')  # noqa: E501
+@then('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')  # noqa: E501
 def step_check_container_version(context: str, container: str, version: str):
     # Retrieve the configuration for the specified container from container_tab
     configuration = next((valeurs for key, valeurs in container_tab if key == container), None)
