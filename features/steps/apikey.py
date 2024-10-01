@@ -21,8 +21,7 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    assert os.getenv("RS_PYTHON_URL") is not None, "RS_PYTHON_URL environment variable is not set."
-    step_login_into_url(context, "https://monitoring." + os.getenv("RS_PYTHON_URL") + "/prometheus")
+    step_login_into_url(context, "https://apikeymanager.ops.rs-python.eu/docs")
     # export APIKEY_URL="https://apikeymanager.ops.rs-python.eu"
 
 

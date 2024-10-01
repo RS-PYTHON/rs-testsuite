@@ -38,6 +38,8 @@ def step_remove_user_collections(context):
     Delete all the Collection from one user.
     """
     assert context.login is not None, "Login has not be added to the set on the request header."
+    assert context.apikey is not None, "apikey has not be added to the set on the request header."
+
     # Get the list of the user collection
     user_collections = get_user_collections(context)
 
