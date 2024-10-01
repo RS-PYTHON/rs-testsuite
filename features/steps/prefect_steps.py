@@ -26,7 +26,7 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> str:
 
         assert (response.status_code == 200), f'status for GET {url} is {response.status_code} and not 200.'
 
-        print(response.text, flush=True)        
+        print(response.text, flush=True)
         return response
 
 
@@ -65,7 +65,7 @@ def step_flow_is_deployed(context, flow: str):
         The flow ID is not None.
     """
     # Perform a GET request to check the flow deployment
-    response = prefect_api_get(context, '/api/flows/name', flow)    
+    response = prefect_api_get(context, '/api/flows/name', flow)
 
     # Parse the response JSON and extract the flow ID
     data = json.loads(response.text)
@@ -76,7 +76,7 @@ def step_flow_is_deployed(context, flow: str):
 
 
 @given('the flow {flow} is deployed on deployment {deployment}')
-def step_flow_is_deployed(context, flow: str, deployment: str):
+def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
     """
     Step definition to check if a flow is deployed on a specific deployment.
 
@@ -89,7 +89,8 @@ def step_flow_is_deployed(context, flow: str, deployment: str):
         The deployment ID and flow ID are not None.
     """
     # Perform a GET request to check the flow deployment on a specific deployment
-    response = prefect_api_get(context, '/api/deployments/name', flow + '/' + deployment)      
+    response = prefect_api_get(context, '/api/deployments/name', flow + '/' + deployment)
+    assert response.status_code == 200, f'GET request ends with status {response.status_code}. Not a 200 answer.'
 
     # Parse the response JSON and extract the deployment and flow IDs
     data = json.loads(response.text)
@@ -99,22 +100,22 @@ def step_flow_is_deployed(context, flow: str, deployment: str):
     assert context.deployment_id is not None, "Deployment id is not set on the context environment."
     assert context.flow_id is not None, "Flow id is not set on the context environment."
 
-    print(f"Flow id = {context.flow_id}.")        
+    print(f"Flow id = {context.flow_id}.")
     print(f"Deployment id = {context.deployment_id}.")
 
 
-"""
-Step definition to start the flow.
-
-Args:
-    context: The context object provided by Behave.
-
-Asserts:
-    The flow ID and deployment ID are not None.
-    The response status code is between 200 and 299.
-"""
 @when('we start the flow')
 def step_start_the_flow(context):
+    """
+    Step definition to start the flow.
+
+    Args:
+    context: The context object provided by Behave.
+
+    Asserts:
+    The flow ID and deployment ID are not None.
+    The response status code is between 200 and 299.
+    """
     # Ensure the flow ID and cookies are not None
     assert context.flow_id is not None, "Flow id is not set on the context environment."
     assert context.deployment_id is not None,  "Deployment id is not set on the context environment."
@@ -133,9 +134,9 @@ def step_start_the_flow(context):
     data = json.loads(response.text)
     print(data)
     context.flow_run_id = data['id']
-    assert context.flow_run_id is not None, f"Flow run identifier could not be extraced from data['id'] :\n {data}." 
-
-    assert (response.status_code >= 200) and (response.status_code < 300), f'POST request ends with status {response.status_code}. Not a 2XX answer.'
+    assert context.flow_run_id is not None, f"Flow run identifier could not be extraced from data['id'] :\n {data}."
+    assert (response.status_code >= 200) and (response.status_code < 300), \
+        f'POST request ends with status {response.status_code}. Not a 2XX answer.'
 
 
 @then('the flow ends with status completed')
@@ -148,11 +149,11 @@ def step_wait_the_flow_to_complete(context):
         # Effectue!= 'COMPLETED'):
         time.sleep(1)
 
-        response = prefect_api_get(context, '/api/flow_runs', context.flow_run_id)      
+        response = prefect_api_get(context, '/api/flow_runs', context.flow_run_id)
         data = json.loads(response.text)
         flow_state_id = data['state_id']
 
-        response = prefect_api_get(context, '/api/flow_run_states', flow_state_id)      
+        response = prefect_api_get(context, '/api/flow_run_states', flow_state_id)
         # Parse the response JSON and extract the deployment and flow IDs
         data = json.loads(response.text)
         status = data['type']
@@ -163,12 +164,13 @@ def step_wait_the_flow_to_complete(context):
     parameters_json = {
         "artifacts": {
             "flow_run_id": {
-            "any_": [f"{context.flow_run_id}"]
-        }}}
+                "any_": [f"{context.flow_run_id}"]
+            }}}
 
     # Perform a POST request to start the flow
-    response = prefect_api_post(context, f'/api/artifacts/latest/filter', parameters_json)
-    assert (response.status_code >= 200) and (response.status_code < 300), f'POST request ends with status {response.status_code}. Not a 2XX answer.'
+    response = prefect_api_post(context, '/api/artifacts/latest/filter', parameters_json)
+    assert (response.status_code >= 200) and (response.status_code < 300), \
+        f'POST request ends with status {response.status_code}. Not a 2XX answer.'
     data = json.loads(response.text)
     context.steps_result = json.loads(data[0]['data'])
 
@@ -197,7 +199,7 @@ def step_check_flow_step(context, step: int):
 
 
 @then('the flow step {step:d} ends with status NOK')
-def step_check_flow_step(context, step: int):
+def step_check_flow_step_nok(context, step: int):
     assert context.steps_result is not None
 
     assert context.steps_result is not None
