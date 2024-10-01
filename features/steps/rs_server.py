@@ -42,5 +42,5 @@ def rs_server_delete(context, url: str, status: int = 200) -> str:
 
     with requests.Session() as session:
         response = session.delete(os.getenv("STAC_API_URL") + url, headers=headers)
-        response.raise_for_status() 
+        response.raise_for_status()
         assert (response.status_code == status), f'status for DELETE {url} is {response.status_code} and not {status}'
