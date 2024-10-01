@@ -20,9 +20,9 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    assert os.getenv("APIKEY_URL") is not None, "APIKEY_URL environment variable is not set."
-    step_login_into_url(context,os.getenv("APIKEY_URL"))
-
+    assert os.getenv("RS_PYTHON_URL") is not None, "RS_PYTHON_URL environment variable is not set."
+    step_login_into_url(context, "https://monitoring." + os.getenv("RS_PYTHON_URL") + "/prometheus")
+    # export APIKEY_URL="https://apikeymanager.ops.rs-python.eu"
 
 @given('he is logged in on url {url}')
 def step_login_into_url(context, url : str):
@@ -57,6 +57,7 @@ def step_login_into_url(context, url : str):
 
         # Save cookies to be authenticated in future sessions
         context.cookies = session.cookies
+        
 
 
 use_step_matcher("re")
