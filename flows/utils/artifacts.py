@@ -1,9 +1,10 @@
-from prefect.artifacts import create_table_artifact, create_markdown_artifact
+from prefect.artifacts import create_table_artifact
 # wait for v3 - from prefect.artifacts import create_progress_artifact, update_progress_artifact
 from datetime import datetime
 
+
 class ReportManager:
-    def __init__(self, number_steps:int):
+    def __init__(self, number_steps: int):
         self.number_steps = number_steps
         self.report = []
         """
@@ -14,30 +15,23 @@ class ReportManager:
             )
         """
 
-    def success_step(self, step:int, description:str):
+    def success_step(self, step: int, description: str):
         item = {
-            'step' : step,
-            'description' : f'{description}',
-            'status' : 'OK',            
+            'step': step,
+            'description': f'{description}',
+            'status': 'OK',
         }
-        self.report.append ( item )
-        #self.__progress(step)
+        self.report.append(item)
 
-    def failed_step(self, step:int, description:str):
+    def failed_step(self, step: int, description: str):
         item = {
-            'step' : step,
-            'description' : f'{description}',
-            'status' : 'NOK',            
+            'step': step,
+            'description': f'{description}',
+            'status': 'NOK',
         }
-        self.report.append ( item )
-        #self.__progress(step)
+        self.report.append(item)
 
-
-    #def __progress(self, step:int):
-    #    update_progress_artifact(self.progress_artifact_id, step / self.number_steps)
-        
-
-    def add_report_as_artefact(self, key_value, description_value):                
+    def add_report_as_artefact(self, key_value, description_value):
         # Artifact key must only contain lowercase letters, numbers, and dashes. (type=value_error)
 
         now = datetime.now()
@@ -48,5 +42,5 @@ class ReportManager:
         return create_table_artifact(
             key=key_value.lower(),
             table=self.report,
-            description= description_value + " - " + date_texte
+            description=description_value + " - " + date_texte
         )
