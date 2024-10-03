@@ -61,7 +61,6 @@ def step_login_into_url(context, url: str):
         for cookie in session.cookies:
             print(f'Cookie: {cookie.name}')
         print('.')
-        print('.')
 
 
 use_step_matcher("re")

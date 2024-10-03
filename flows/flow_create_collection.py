@@ -1,16 +1,11 @@
-from resources.utils import *
 from prefect import task, flow
-
-import rs_client
 import rs_common
-import rs_workflows
-import json
 from rs_client.rs_client import RsClient
-from rs_common.config import ECadipStation
 import os
 from utils.artifacts import ReportManager
 from prefect.blocks.system import Secret
-import requests
+from pystac import Collection, Extent, SpatialExtent, TemporalExtent
+from datetime import datetime
 
 # Set logger level to info
 import logging
@@ -30,15 +25,18 @@ def step1():
     stac_client = generic_client.get_stac_client()
     aCollection = "S100_L0"
     stac_client.remove_collection(aCollection)
+    # Define a search interval
+    start_date = datetime(2010, 1, 1, 12, 0, 0)
+    stop_date = datetime(2024, 1, 1, 12, 0, 0)
     response = stac_client.add_collection(
-    Collection(
-        id=aCollection,
-        description=None, # rs-client will provide a default description for us
-        extent=Extent(
-            spatial=SpatialExtent(bboxes=[-180.0, -90.0, 180.0, 90.0]),
-            temporal=TemporalExtent([start_date, stop_date])
-        )
-    ))
+        Collection(
+            id=aCollection,
+            description=None,
+            extent=Extent(
+                spatial=SpatialExtent(bboxes=[-180.0, -90.0, 180.0, 90.0]),
+                temporal=TemporalExtent([start_date, stop_date])
+            )
+        ))
     response.raise_for_status()
 
 
@@ -51,5 +49,3 @@ def step2():
 def hello_world6():
     step1()
     step2()
-    print("\nDisplay the Stac catalog as a treeview in notebook:")
-    display(stac_client)

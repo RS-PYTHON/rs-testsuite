@@ -3,5 +3,5 @@ import time
 
 
 @when('i wait for {seconds:d} seconds')
-def step_impl(context, seconds: int):
+def step_sleep(context, seconds: int):
     time.sleep(seconds)
