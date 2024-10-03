@@ -21,8 +21,10 @@ def step_define_user(context, user: int):
 
 @given('he is logged in')
 def step_login(context):
-    step_login_into_url(context, "https://apikeymanager.ops.rs-python.eu/docs")
-    # export APIKEY_URL="https://apikeymanager.ops.rs-python.eu"
+    step_login_into_url(context, "https://monitoring.ops.rs-python.eu/prometheus")
+    # "https://apikeymanager.ops.rs-python.eu/docs" do not work
+    # "https://monitoring.ops.rs-python.eu"
+    # https://monitoring.ops.rs-python.eu/prometheus
 
 
 @given('he is logged in on url {url}')
@@ -40,23 +42,26 @@ def step_login_into_url(context, url: str):
 
         # Step 2: Parse html login form
         form = BeautifulSoup(response.content, 'html.parser').find('form')
+        url2 = form.get('action')
         form_data = {input_tag['name']: input_tag.get('value', '') for input_tag in form.find_all('input')}
-
-        # Fill form with user credentials
         form_data['username'] = context.login
         form_data['password'] = context.passw
 
         # Step 3: Submit form to get authorization code
-        response = session.post(form['action'], data=form_data)
-        assert (response.status_code == 200), f'status for POST is {response.status_code} and not 200'
+        response = session.post(url2, data=form_data)
+        assert (response.status_code == 200), f'status for POST on url {url2} is {response.status_code} and not 200'
 
         # Step 4: Perform redirect
         redirect_url = response.url
         response = session.get(redirect_url)
-        assert (response.status_code == 200), f'status for POST is {response.status_code} and not 200'
+        assert (response.status_code == 200), f'status for POST on url {redirect_url} is {response.status_code} and not 200'
 
         # Save cookies to be authenticated in future sessions
         context.cookies = session.cookies
+        for cookie in session.cookies:
+            print(f'Cookie: {cookie.name}')
+        print('.')
+        print('.')
 
 
 use_step_matcher("re")
