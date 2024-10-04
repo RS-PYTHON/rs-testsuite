@@ -28,7 +28,7 @@ def check_file_exists(github_repository, filename):
 
 
 @given('the file {filename} exists on the github url {github_url}')
-def step_check_github_entry(context: str, filename: str, github_url: str):
+def step_check_github_entry(context, filename: str, github_url: str):
     """
     Step definition to check if a file exists in the specified GitHub repository.
 

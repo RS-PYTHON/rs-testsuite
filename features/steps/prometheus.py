@@ -19,19 +19,19 @@ container_tab = [
 
 # Call Prometheus query
 @when('we call the prometheus query {query}')
-def step_request_prometheus(context: str, query: str):
+def step_request_prometheus(context, query: str):
     step_request_service(context, 'monitoring', 'prometheus/api/v1/query?query=' + query)
 
 
 # Check that the Prometheus query send back almost one item
 @then('almost one prometheus result is provided')
-def step_check_prometheus_result(context: str):
+def step_check_prometheus_result(context):
     step_check_json_prometheus_is_not_null(context, 'data', 'result')
 
 
 # Specific check: Ensure the response is in JSON format and that the path level1.level2 contains at least one element.
 @then('the answer is a json with almost one element on the path {level1}.{level2}')
-def step_check_json_prometheus_is_not_null(context: str, level1: str, level2: str):
+def step_check_json_prometheus_is_not_null(context, level1: str, level2: str):
     assert context.response_status_code == 200, f'Request status is {context.response_status_code} instead of 200.'
     assert is_valid_json(context.response.text), "Invalid JSON answer."
 
@@ -45,7 +45,7 @@ use_step_matcher("re")
 # Check the version of a specific container
 @given('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')  # noqa: E501
 @then('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')  # noqa: E501
-def step_check_container_version(context: str, container: str, version: str):
+def step_check_container_version(context, container: str, version: str):
     # Retrieve the configuration for the specified container from container_tab
     configuration = next((valeurs for key, valeurs in container_tab if key == container), None)
 

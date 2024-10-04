@@ -90,7 +90,7 @@ use_step_matcher("parse")
 
 
 @when('he revokes the last created API key')
-def step_revoke_apikey(context: str):
+def step_revoke_apikey(context):
     """Revoke the last created API key"""
     assert "APIKEY_URL" in os.environ, "APIKEY_URL environment variable has not been set."
     assert context.cookies is not None, "Cookies are missing on context."
