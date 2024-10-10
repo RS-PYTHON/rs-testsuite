@@ -56,7 +56,14 @@ jobs:
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
       run: |
         python jira_export_features.py
-        unzip -u -o -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
+
+    - name: Check FeatureBundle.zip existence
+      run: |
+        while [ ! -f ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip ]; do
+          echo "Waiting for FeatureBundle.zip to be downloaded..."
+          sleep 5
+        done
+        unzip -u -o -d features ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip  
 
     - name: Upload features as artifact
       uses: actions/upload-artifact@v4
