@@ -146,4 +146,3 @@ def step_check_queryables(context, collection: str):
     """
     assert context.login is not None, "Login has not be added to the set on the request header."
     rs_server_get(context, f'catalog/collections/{context.login}:{context.new_collection}/queryables')
-    

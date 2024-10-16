@@ -8,5 +8,6 @@ requests>=2.32.3
 beautifulsoup4>=4.12.3
 stac-api-validator>=0.6.3
 opentelemetry-instrumentation-asyncio>=0.48b0
+opentelemetry-instrumentation-httpx>=0.48b0
 rs-client-libraries==0.2a5
 
