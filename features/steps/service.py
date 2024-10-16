@@ -6,7 +6,7 @@ import requests
 
 # Call Get on the endpoint "https://" + service + "." + RS_PYTHON_URL + "/" + path
 @when('the rs-python service {service} is requested with the path {path}')
-def step_request_service(context: str, service: str, path: str) -> str:
+def step_request_service(context, service: str, path: str) -> str:
     # Ensure that OAuth2 authentication has been performed.
     assert context.cookies is not None, "Cookies have not be set on header."
 
@@ -31,5 +31,5 @@ def step_request_service(context: str, service: str, path: str) -> str:
 
 # Check that the server responded with the specified status code.
 @then('the server should answer with the code {code:d}')
-def step_request_code(context: str, status: int):
+def step_request_code(context, status: int):
     assert (context.response.status_code == status), f'Status is {context.response.status_code} and not {status}.'
