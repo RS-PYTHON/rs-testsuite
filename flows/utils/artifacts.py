@@ -31,7 +31,7 @@ class ReportManager:
         }
         self.report.append(item)
 
-    def add_report_as_artefact(self, key_value, description_value):                
+    def add_report_as_artefact(self, key_value, description_value):
         # Artifact key must only contain lowercase letters, numbers, and dashes. (type=value_error)
         now = datetime.now()
 
