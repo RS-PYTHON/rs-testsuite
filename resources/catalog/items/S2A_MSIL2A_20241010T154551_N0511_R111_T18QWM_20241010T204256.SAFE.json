@@ -1,0 +1,90 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/alternate-assets/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
+  ],
+  "id": "S2A_MSIL2A_20241010T154551_N0511_R111_T18QWM_20241010T204256.SAFE",
+  "collection": "SENTINEL-2",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          -73.92468268370597,
+          23.515085808467497
+        ],
+        [
+          -73.91725659335916,
+          24.409556001949852
+        ],
+        [
+          -75.00019727075322,
+          24.413427907412203
+        ],
+        [
+          -75.00019577051116,
+          23.421672178773655
+        ],
+        [
+          -73.94991288521797,
+          23.4180603289417
+        ],
+        [
+          -73.92468268370597,
+          23.515085808467497
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "origin": "ESA",
+    "tileId": "18QWM",
+    "cloudCover": 40.474021,
+    "datastripId": "S2A_OPER_MSI_L2A_DS_2APS_20241010T204256_S20241010T154545_N05.11",
+    "orbitNumber": 48585,
+    "sourceProduct": "S2A_OPER_MSI_L2A_TL_2APS_20241010T204256_A048585_T18QWM_N05.11,S2A_OPER_MSI_L2A_DS_2APS_20241010T204256_S20241010T154545_N05.11",
+    "processingDate": "2024-10-10T20:42:56.000000+00:00",
+    "productGroupId": "GS2A_20241010T154551_048585_N05.11",
+    "operationalMode": "INS-NOBS",
+    "processingLevel": "S2MSI2A",
+    "processorVersion": "05.11",
+    "granuleIdentifier": "S2A_OPER_MSI_L2A_TL_2APS_20241010T204256_A048585_T18QWM_N05.11",
+    "platformShortName": "SENTINEL-2",
+    "instrumentShortName": "MSI",
+    "relativeOrbitNumber": 111,
+    "sourceProductOriginDate": "2024-10-10T21:28:34Z,2024-10-10T21:28:22Z",
+    "platformSerialIdentifier": "A",
+    "datetime": "2024-10-10T15:45:51.024000Z",
+    "end_datetime": "2024-10-10T15:45:51.024000Z",
+    "start_datetime": "2024-10-10T15:45:51.024000Z",
+    "productType": "S2MSI2A"
+  },
+  "bbox": [
+    -75.00019727075322,
+    23.4180603289417,
+    -73.91725659335916,
+    24.413427907412203
+  ],
+  "links": [
+    {
+      "rel": "root",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac"
+    },
+    {
+      "rel": "self",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac/collections/SENTINEL-2/items/S2A_MSIL2A_20241010T154551_N0511_R111_T18QWM_20241010T204256.SAFE"
+    },
+    {
+      "rel": "collection",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac/collections/SENTINEL-2"
+    }
+  ],
+  "assets": {
+  }
+}
+
