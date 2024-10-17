@@ -76,7 +76,7 @@ jobs:
         PREFECT_API_URL: ${{ vars.PREFECT_API_URL }}
 
       run: |
-        behave --junit -f json.pretty -o reports/results.json || true
+        behave --junit -f json.pretty --logging-level DEBUG -o reports/results.json || true
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
