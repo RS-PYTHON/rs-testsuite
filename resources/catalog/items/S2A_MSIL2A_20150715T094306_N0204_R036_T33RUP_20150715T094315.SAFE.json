@@ -1,0 +1,93 @@
+{
+  "type": "Feature",
+  "stac_version": "1.0.0",
+  "stac_extensions": [
+    "https://stac-extensions.github.io/alternate-assets/v1.1.0/schema.json",
+    "https://stac-extensions.github.io/storage/v1.0.0/schema.json"
+  ],
+  "id": "S2A_MSIL2A_20150715T094306_N0204_R036_T33RUP_20150715T094315.SAFE",
+  "collection": "SENTINEL-2",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          12.919589649628,
+          30.3267205737849
+        ],
+        [
+          12.9322232058805,
+          29.7260490259321
+        ],
+        [
+          14.067231054158,
+          29.738916596051
+        ],
+        [
+          14.0578296375946,
+          30.7296502517376
+        ],
+        [
+          13.0201265893352,
+          30.7175332738018
+        ],
+        [
+          12.9891710637694,
+          30.5974370485916
+        ],
+        [
+          12.951124478714,
+          30.4495692104874
+        ],
+        [
+          12.919589649628,
+          30.3267205737849
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "origin": "CLOUDFERRO",
+    "tileId": "33RUP",
+    "cloudCover": 0.0,
+    "orbitNumber": 319,
+    "orbitDirection": "DESCENDING",
+    "productGroupId": "GS2A_20150715T094306_000319_N02.04",
+    "processingLevel": "S2MSI2A",
+    "processorVersion": "02.05",
+    "platformShortName": "SENTINEL-2",
+    "instrumentShortName": "MSI",
+    "relativeOrbitNumber": 36,
+    "platformSerialIdentifier": "A",
+    "datetime": "2015-07-15T09:43:06.029000Z",
+    "end_datetime": "2015-07-15T09:43:06.029000Z",
+    "start_datetime": "2015-07-15T09:43:06.029000Z",
+    "productType": "S2MSI2A"
+  },
+  "bbox": [
+    12.919589649628,
+    29.7260490259321,
+    14.067231054158,
+    30.7296502517376
+  ],
+  "links": [
+    {
+      "rel": "root",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac"
+    },
+    {
+      "rel": "self",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac/collections/SENTINEL-2/items/S2A_MSIL2A_20150715T094306_N0204_R036_T33RUP_20150715T094315.SAFE"
+    },
+    {
+      "rel": "collection",
+      "type": "application/json",
+      "href": "https://catalogue.dataspace.copernicus.eu/stac/collections/SENTINEL-2"
+    }
+  ],
+  "assets": {
+  }
+}
+
