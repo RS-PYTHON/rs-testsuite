@@ -1,0 +1,32 @@
+{
+  "stac_version": "1.0.0",
+  "stac_extensions": [],
+  "id": "SENTINEL-2",
+  "title": "SENTINEL-2",
+  "description": "The Copernicus Sentinel-2 mission consists of two polar-orbiting satellites that are positioned in the same sun-synchronous orbit, with a phase difference of 180°. It aims to monitor changes in land surface conditions. The satellites have a wide swath width (290 km) and a high revisit time. Sentinel-2 is equipped with an optical instrument payload that samples 13 spectral bands: four bands at 10 m, six bands at 20 m and three bands at 60 m spatial resolution [https://dataspace.copernicus.eu/explore-data/data-collections/sentinel-data/sentinel-2].",
+  "type": "Collection",
+  "license": "proprietary",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -180.0,
+          -90.0,
+          180.0,
+          90.0
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2015-07-01T00:00:00Z",
+          null
+        ]
+      ]
+    }
+  },
+  "links": [
+  ]
+}
+
