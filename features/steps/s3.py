@@ -1,7 +1,8 @@
-from behave import given
+from behave import given, when, then
 import os
 import boto3
 from botocore.exceptions import ClientError
+from botocore.exceptions import NoCredentialsError
 
 
 @given('s3 access is configured')
@@ -29,12 +30,14 @@ def step_s3_bucket_dont_exist(context, bucket: str):
     assert s3_bucket_existence(context, bucket) is False, f"The bucket {bucket} exists."
 
 
+@then('the file {file_path} exists on the s3 bucket {bucket}')
 @given('the file {file_path} exists on the s3 bucket {bucket}')
 def step_s3_file_bucket_exist(context, file_path: str, bucket: str):
     assert s3_file_bucket_existence(context, file_path, bucket) is True, \
         f"The file {file_path} does not exist on the bucket {bucket}."
 
 
+@then('the file {file_path} does not exist on the s3 bucket {bucket}')
 @given('the file {file_path} does not exist on the s3 bucket {bucket}')
 def step_s3_file_bucket_dont_exist(context, file_path: str, bucket: str):
     assert s3_file_bucket_existence(context, file_path, bucket) is False, \
@@ -70,3 +73,33 @@ def s3_file_bucket_existence(context, file_path: str, bucket: str) -> bool:
             raise e
 
     return result
+
+
+@when('the file {file_path} is created on the s3 bucket {bucket}')
+def step_s3_file_creation(context, file_path: str, bucket: str):
+    assert context.s3_client is not None, "s3 client is not configured (call 'given s3 access is configured' first)."
+
+    # Create local file
+    with open("temp.txt", 'w') as file:
+        file.write("FAKE content for file " + file_path)
+
+    # Upload on the bucket S3
+    try:
+        context.s3_client.upload_file("temp.txt", bucket, file_path)
+    except FileNotFoundError:
+        assert False, f"file {file_path} is unreachable."
+    except NoCredentialsError:
+        assert False, "Bad S3 credentials."
+
+
+@when('the file {file_path} is deleted from the s3 bucket {bucket}')
+def step_s3_file_deletion(context, file_path: str, bucket: str):
+    assert context.s3_client is not None, "s3 client is not configured (call 'given s3 access is configured' first)."
+
+    # Delete the file
+    try:
+        context.s3_client.delete_object(Bucket=bucket, Key=file_path)
+    except ClientError:
+        assert False, f"Error while deleting the file {file_path}."
+    except NoCredentialsError:
+        assert False, "Bad S3 credentials."
