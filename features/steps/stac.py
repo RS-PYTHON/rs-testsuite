@@ -195,7 +195,7 @@ def step_then_no_stac_api_warnings(context):
 def create_pystac_client(context) -> Client:
     assert context.apikey is not None, "API-KEY is not set."
     assert context.stac_api_root_url is not None, "STAC API instance has not been defined."
-    return Client.open(context.stac_api_root_url)
+    return Client.open(context.stac_api_root_url, {'x-api-key': context.apikey})
 
 
 def create_rs_stac_client(context) -> RsClient:

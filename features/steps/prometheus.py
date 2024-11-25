@@ -8,11 +8,11 @@ from json_utils import is_valid_json, check_json_path_is_not_null
 
 container_tab = [
     ('prefect',                 ('.*prefect-server.*',          '',                           ":(\\d+\\.\\d+\\.\\d+)-")),
-    ('rs-server-frontend',      ('.*rs-server-frontend.*',      '',                           ':([0-9a-zA-Z.]+)$')),
-    ('rs-server-adgs',          ('.*rs-server-adgs.*',          '',                           ':([0-9a-zA-Z.]+)$')),
-    ('rs-server-cadip',         ('.*rs-server-cadip.*',         '',                           ':([0-9a-zA-Z.]+)$')),
-    ('rs-server-staging',       ('.*rs-server-staging.*',       '',                           ':([0-9a-zA-Z.]+)$')),
-    ('rs-server-catalog',       ('.*server-catalog.*',          '.*server-catalog-db.*',      ':([0-9a-zA-Z.]+)$')),
+    ('rs-server-frontend',      ('.*rs-server-frontend.*',      '',                           ':([0-9a-zA-Z.\\-]+)$')),
+    ('rs-server-adgs',          ('.*rs-server-adgs.*',          '',                           ':([0-9a-zA-Z.\\-]+)$')),
+    ('rs-server-cadip',         ('.*rs-server-cadip.*',         '',                           ':([0-9a-zA-Z.\\-]+)$')),
+    ('rs-server-staging',       ('.*rs-server-staging.*',       '',                           ':([0-9a-zA-Z.\\-]+)$')),
+    ('rs-server-catalog',       ('.*server-catalog.*',          '.*server-catalog-db.*',      ':([0-9a-zA-Z.\\-]+)$')),
     ('pgstac',                  ('.*server-catalog-db.*',       '',                           'v(\\d+\\.\\d+\\.\\d+)'))
     ]
 
@@ -47,7 +47,7 @@ use_step_matcher("re")
 @then('the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac) has got version (?P<version>[^"]+)')  # noqa: E501
 def step_check_container_version(context, container: str, version: str):
     # Retrieve the configuration for the specified container from container_tab
-    configuration = next((valeurs for key, valeurs in container_tab if key == container), None)
+    configuration = next((values for key, values in container_tab if key == container), None)
 
     # Get container information from Prometheus
     query = f'kube_pod_container_info{{  pod=~"{configuration[0]}", pod!~"{configuration[1]}"  }}'
@@ -59,6 +59,7 @@ def step_check_container_version(context, container: str, version: str):
 
     # Use regex to find the version in the image value
     match = re.search(fr'{configuration[2]}', image_value)
+    assert match is not None, f"regex {configuration[2]} does not match image version: {image_value}"
     version_extracted = match.group(1)
 
     # Assert that the extracted version matches the expected version
