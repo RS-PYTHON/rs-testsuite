@@ -1,3 +1,4 @@
+import logging
 import os
 import requests
 import json
@@ -5,48 +6,69 @@ from behave import then
 from requests import Response
 
 
-# Perform a Get call to the catalog and send back the response
+logger = logging.getLogger(__name__)
+
+
+def rs_server_http_call(context, verb: str, url: str, status: int = 200) -> Response:
+    assert context.apikey is not None, "API-KEY is not set."
+    assert os.getenv("RS_SERVER_URL") is not None, "RS_SERVER_URL is not set."
+
+    # Push API-KEY on the header
+    headers = {"x-api-key": f"{context.apikey}"}
+
+    with requests.Session() as session:
+        rs_server_url = os.environ['RS_SERVER_URL']
+        full_url = rs_server_url + (url[1:] if rs_server_url.endswith('/') and url.startswith('/') else url)
+        logger.info(f"{verb} {full_url}")
+        response = session.request(verb, full_url, headers=headers)
+        assert (response.status_code == status), \
+            f'status for {verb} {url} is {response.status_code} and not {status}: {response.text}'
+        return response
+
+
 @then('rs-server get {url} ends with status {status:d}')
 def rs_server_get(context, url: str, status: int = 200) -> Response:
-    assert context.apikey is not None, "API-KEY is not set."
-    assert os.getenv("STAC_API_URL") is not None, "STAC_API_URL is not set."
-
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
-
-    with requests.Session() as session:
-        response = session.get(os.environ['STAC_API_URL'] + url, headers=headers)
-        assert (response.status_code == status), \
-            f'status for GET {url} is {response.status_code} and not {status}: {response.text}'
-        return response
+    """
+    Perform a GET call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'GET', url, status)
 
 
-# Perform a POST call to the catalog and send back the response
 @then('rs-server post {url} ends with status {status:d}')
 def rs_server_post(context, url: str, parameter: json, status: int = 200) -> Response:
-    assert context.apikey is not None, "API-KEY is not set."
-    assert os.getenv("STAC_API_URL") is not None, "STAC_API_URL is not set."
+    """
+    Perform a POST call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'POST', url, status)
 
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
 
-    with requests.Session() as session:
-        response = session.post(os.environ['STAC_API_URL'] + url, data=json.dumps(parameter), headers=headers)
-        assert (response.status_code == status), \
-            f'status for POST {url} is {response.status_code} and not {status}: {response.text}'
-        return response
+@then('rs-server put {url} ends with status {status:d}')
+def rs_server_put(context, url: str, parameter: json, status: int = 200) -> Response:
+    """
+    Perform a PUT call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'PUT', url, status)
+
+
+@then('rs-server patch {url} ends with status {status:d}')
+def rs_server_patch(context, url: str, parameter: json, status: int = 200) -> Response:
+    """
+    Perform a PATCH call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'PATCH', url, status)
+
+
+@then('rs-server options {url} ends with status {status:d}')
+def rs_server_options(context, url: str, parameter: json, status: int = 200) -> Response:
+    """
+    Perform a OPTIONS call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'OPTIONS', url, status)
 
 
 @then('rs-server delete {url} ends with status {status:d}')
 def rs_server_delete(context, url: str, status: int = 200) -> Response:
-    assert context.apikey is not None, "API-KEY is not set."
-    assert os.getenv("STAC_API_URL") is not None, "STAC_API_URL is not set."
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
-
-    with requests.Session() as session:
-        response = session.delete(os.environ['STAC_API_URL'] + url, headers=headers)
-        response.raise_for_status()
-        assert (response.status_code == status), \
-            f'status for DELETE {url} is {response.status_code} and not {status}: {response.text}'
-        return response
+    """
+    Perform a DELETE call to the catalog and send back the response
+    """
+    return rs_server_http_call(context, 'DELETE', url, status)
