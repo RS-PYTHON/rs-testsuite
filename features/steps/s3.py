@@ -12,7 +12,7 @@ def step_check_s3_configuration(context):
     assert 'S3_SECRET_ACCESS_KEY' in os.environ, "S3_SECRET_ACCESS_KEY environment variable is not set."
     assert 'S3_DOMAIN_URL' in os.environ, "S3_DOMAIN_URL environment variable is not set."
 
-    context.s3_client = boto3.client(
+    # context.s3_client = boto3.client(
         's3',
         aws_access_key_id=os.getenv('S3_ACCESS_KEY'),
         aws_secret_access_key=os.getenv('S3_SECRET_ACCESS_KEY'),
