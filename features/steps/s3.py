@@ -86,6 +86,7 @@ def step_s3_file_creation(context, file_path: str, bucket: str):
     # Upload on the bucket S3
     try:
         context.s3_client.upload_file("temp.txt", bucket, file_path)
+        os.remove("temp.txt")
     except FileNotFoundError:
         assert False, f"file {file_path} is unreachable."
     except NoCredentialsError:
