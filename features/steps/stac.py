@@ -6,6 +6,7 @@ from rs_client.rs_client import RsClient
 from stac_api_validator.validations import QueryConfig
 from stac_api_validator.validations import validate_api
 
+import json
 import logging
 import os
 
@@ -40,8 +41,10 @@ def step_given_stac_conformance_classes(context):
 
 
 @given('the bbox {bbox}')
-def step_given_stac_bbox(context, bbox: list[float]):
-    context.stac_geometry = bbox
+def step_given_stac_bbox(context, bbox: str):
+    bb = json.loads(bbox)
+    context.stac_geometry = json.dumps({
+        "type": "Polygon", "coordinates": [[[bb[0], bb[1]], [bb[0], bb[3]], [bb[2], bb[3]], [bb[2], bb[1]]]]})
 
 
 @given('the collection "{collection}" exists')
@@ -130,14 +133,13 @@ def step_then_stac_items_exist(context, items: str):
 
 def do_stac_items_exist(context, item_ids: list[str]) -> bool:
     # Needed until CADIP implements both POST /search AND search without collection, see RSPY-449
-    found_items = create_pystac_client(context).search(
+    found_items = list(create_pystac_client(context).search(
         method="GET",
         ids=item_ids,
-        collections=context.stac_collections).items()
-    if found_items is not None:
-        logging.debug(f"Found items: {list(found_items)}")
+        collections=context.stac_collections).items() or [])
+    logging.debug(f"Found {len(found_items)} items for {len(item_ids)} expected: {found_items}")
     # found_items = create_pystac_client(context).get_items(*item_ids)
-    return found_items is not None and len(list(found_items)) == len(item_ids)
+    return found_items is not None and len(found_items) == len(item_ids)
 
 
 @when('he checks the validity of STAC API')
