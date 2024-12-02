@@ -11,6 +11,7 @@ boto3>=1.35.72
 #stac-validator>=3.4.0
 git+https://github.com/vprivat-ads/stac-api-validator.git@fix_http_calls_in_stac_validator#egg=stac-api-validator
 git+https://github.com/vprivat-ads/stac-validator.git@http_headers#egg=stac-validator
+git+https://github.com/vprivat-ads/stac-check.git@http_headers#egg=stac-check
 opentelemetry-instrumentation-asyncio==0.48b0
 opentelemetry-instrumentation-httpx==0.48b0
 rs-client-libraries>=0.2a7
