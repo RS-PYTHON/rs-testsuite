@@ -67,13 +67,20 @@ jobs:
     - name: Run tests with behave 
       env:
         APIKEY_URL: ${{ vars.APIKEY_URL }}
-        STAC_API_URL: ${{ vars.STAC_API_URL }}
+        AUXIP_STAC_API_URL: ${{ vars.AUXIP_STAC_API_URL }}
+        CADIP_STAC_API_URL: ${{ vars.CADIP_STAC_API_URL }}
+        CATALOG_STAC_API_URL: ${{ vars.CATALOG_STAC_API_URL }}
+        KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
+        LTA_STAC_API_URL: ${{ vars.LTA_STAC_API_URL }}
+        PREFECT_API_URL: ${{ vars.PREFECT_API_URL }}
+        PRIP_STAC_API_URL: ${{ vars.PRIP_STAC_API_URL }}
+        RSPY_REALM: ${{ vars.RSPY_REALM }}
         RSPY_TEST_USER_1: ${{ secrets.RSPY_TEST_USER_1 }}
         RSPY_TEST_PASS_1: ${{ secrets.RSPY_TEST_PASS_1 }}
         RSPY_TEST_APIK_1: ${{ secrets.RSPY_TEST_APIK_1 }}
-        RSPY_STAC_API_URL: ${{ vars.STAC_API_URL }}
         RS_PYTHON_URL: ${{ vars.RS_PYTHON_URL }}
-        PREFECT_API_URL: ${{ vars.PREFECT_API_URL }}
+        RS_SERVER_URL: ${{ vars.RS_SERVER_URL }}
+        S3_DOMAIN_URL: ${{ vars.S3_DOMAIN_URL }}
 
       run: |
         behave --junit -f json.pretty --logging-level DEBUG -o reports/results.json || true

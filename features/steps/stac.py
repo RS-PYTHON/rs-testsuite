@@ -19,10 +19,10 @@ use_step_matcher("re")
 
 @given('the (?P<stac_instance>CATALOG|CADIP|AUXIP|LTA|PRIP) STAC API')
 def step_given_stac_api(context, stac_instance: str):
-    for url in ['STAC_API_URL', 'CADIP_STAC_API_URL', 'AUXIP_STAC_API_URL', 'LTA_STAC_API_URL', 'PRIP_STAC_API_URL']:
+    for url in ['CATALOG_STAC_API_URL', 'CADIP_STAC_API_URL', 'AUXIP_STAC_API_URL', 'LTA_STAC_API_URL', 'PRIP_STAC_API_URL']:
         assert os.getenv(url) is not None, url + " is not set."
     context.stac_api_root_url = os.environ[{
-                'CATALOG': 'STAC_API_URL',
+                'CATALOG': 'CATALOG_STAC_API_URL',
                 'CADIP': 'CADIP_STAC_API_URL',
                 'AUXIP': 'AUXIP_STAC_API_URL',
                 'LTA': 'LTA_STAC_API_URL',
@@ -175,6 +175,7 @@ def step_check_stac_api(context):
                 query_in_values=None,
             ),
             transaction_collection=None,
+            open_assets_urls=False,
         )
     context.stac_api_warnings = warnings
     context.stac_api_errors = errors
@@ -201,14 +202,14 @@ def create_pystac_client(context) -> Client:
 
 
 def create_rs_stac_client(context) -> RsClient:
-    assert os.getenv("STAC_API_URL") is not None, "STAC_API_URL is not set."
+    assert os.getenv("CATALOG_STAC_API_URL") is not None, "CATALOG_STAC_API_URL is not set."
     assert os.getenv("RSPY_HOST_CATALOG") is not None, "RSPY_HOST_CATALOG is not set."
-    local_mode = "localhost" in os.getenv("STAC_API_URL")
+    local_mode = "localhost" in os.getenv("CATALOG_STAC_API_URL")
     if local_mode:
         return RsClient(rs_server_href=None, rs_server_api_key=None).get_stac_client()
     else:
         assert context.apikey is not None, "API-KEY is not set."
-        return RsClient(rs_server_href=os.getenv("STAC_API_URL"), rs_server_api_key=context.apikey).get_stac_client()
+        return RsClient(rs_server_href=os.getenv("CATALOG_STAC_API_URL"), rs_server_api_key=context.apikey).get_stac_client()
 
 
 @when("he adds the collection {collection_id}")
