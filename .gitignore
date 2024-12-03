@@ -165,4 +165,5 @@ reports
 junit.xml
 newbadge.svg
 features/*.feature
+*.out
 

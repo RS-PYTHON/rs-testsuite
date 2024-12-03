@@ -9,6 +9,9 @@ from stac_api_validator.validations import validate_api
 import json
 import logging
 import os
+import cProfile
+import pstats
+import pyprof2calltree
 
 
 logger = logging.getLogger(__name__)
@@ -149,6 +152,9 @@ def step_check_stac_api(context):
     assert context.stac_api_root_url is not None, "STAC API instance has not been defined."
     assert context.stac_conformance_classes is not None, "STAC conformance classes are not set."
 
+    profiler = cProfile.Profile()
+    profiler.enable()
+
     (warnings, errors) = validate_api(
             root_url=context.stac_api_root_url,
             ccs_to_validate=context.stac_conformance_classes,
@@ -179,6 +185,12 @@ def step_check_stac_api(context):
         )
     context.stac_api_warnings = warnings
     context.stac_api_errors = errors
+
+    profiler.disable()
+    stats = pstats.Stats(profiler)
+    conv = pyprof2calltree.CalltreeConverter(stats)
+    with open("callgrind-step_check_stac_api.out", 'w') as fd:
+        conv.output(fd)
 
 
 @then("no STAC API validation error occurs")

@@ -13,4 +13,5 @@ git+https://github.com/vprivat-ads/stac-api-validator.git@fix_http_calls_in_stac
 git+https://github.com/vprivat-ads/stac-validator.git@http_headers#egg=stac-validator
 opentelemetry-instrumentation-asyncio==0.48b0
 opentelemetry-instrumentation-httpx==0.48b0
+pyprof2calltree>=1.4.5
 rs-client-libraries>=0.2a7
