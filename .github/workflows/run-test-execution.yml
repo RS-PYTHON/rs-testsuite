@@ -70,6 +70,7 @@ jobs:
         AUXIP_STAC_API_URL: ${{ vars.AUXIP_STAC_API_URL }}
         CADIP_STAC_API_URL: ${{ vars.CADIP_STAC_API_URL }}
         CATALOG_STAC_API_URL: ${{ vars.CATALOG_STAC_API_URL }}
+        RSPY_HOST_CATALOG: ${{ vars.RSPY_HOST_CATALOG }}
         KEYCLOAK_URL: ${{ vars.KEYCLOAK_URL }}
         LTA_STAC_API_URL: ${{ vars.LTA_STAC_API_URL }}
         PREFECT_API_URL: ${{ vars.PREFECT_API_URL }}
