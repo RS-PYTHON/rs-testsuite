@@ -8,10 +8,10 @@ requests>=2.32.3
 beautifulsoup4>=4.12.3
 boto3>=1.37.7
 stac-api-validator>=0.6.4
-stac-validator>=3.5.0
+stac-validator>=3.6.0
 #git+https://github.com/vprivat-ads/stac-api-validator.git@fix_http_calls_in_stac_validator#egg=stac-api-validator
 #git+https://github.com/vprivat-ads/stac-validator.git@http_headers#egg=stac-validator
 opentelemetry-instrumentation-asyncio==0.51b0
 opentelemetry-instrumentation-httpx==0.51b0
 pyprof2calltree>=1.4.5
-rs-client-libraries>=0.2a10
+rs-client-libraries>=0.2a11
