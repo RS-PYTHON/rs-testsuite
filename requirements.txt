@@ -9,10 +9,12 @@ beautifulsoup4>=4.12.3
 boto3>=1.37.7
 stac-api-validator>=0.6.4
 stac-validator>=3.6.0
+stac-check>=1.6.0
 #git+https://github.com/vprivat-ads/stac-api-validator.git@fix_http_calls_in_stac_validator#egg=stac-api-validator
 #git+https://github.com/vprivat-ads/stac-validator.git@http_headers#egg=stac-validator
-opentelemetry-instrumentation-asyncio==0.52b0
-opentelemetry-instrumentation-httpx==0.52b0
+#git+https://github.com/vprivat-ads/stac-check.git@fix/relax-bbox-check#egg=stac-check
+opentelemetry-instrumentation-asyncio>=0.52b0
+opentelemetry-instrumentation-httpx>=0.52b0
 pyprof2calltree>=1.4.5
 #rs-client-libraries>=0.2a11
 git+https://github.com/RS-PYTHON/rs-client-libraries.git@develop#egg=rs-client-libraries
