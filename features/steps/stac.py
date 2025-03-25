@@ -230,9 +230,25 @@ def step_then_no_stac_api_errors(context):
     assert (
         context.stac_api_errors is not None
     ), "STAC API validation has not been performed"
+    stac_api_errors: list[str] = list(context.stac_api_errors)
+    if context.stac_api_root_url in [
+        os.environ["CATALOG_STAC_API_URL"],
+        os.environ["CADIP_STAC_API_URL"],
+    ]:
+        # Ignore bbox errors for CADIP/AUXIP as we have items without geometry
+        for ignored_cadip_auxip_error in [
+            "[Item Search] GET Search with ids and non-intersecting bbox returned results, "
+            "indicating the ids parameter is overriding the bbox parameter. "
+            "All parameters are applied equally since STAC API 1.0.0-beta.1",
+            "[Item Search] POST Search with ids and non-intersecting bbox returned results, "
+            "indicating the ids parameter is overriding the bbox parameter. "
+            "All parameters are applied equally since STAC API 1.0.0-beta.1",
+        ]:
+            if ignored_cadip_auxip_error in stac_api_errors:
+                stac_api_errors.remove(ignored_cadip_auxip_error)
     assert (
-        not context.stac_api_errors
-    ), f"STAC API validation errors:\n - {'\n - '.join(context.stac_api_errors)}"
+        not stac_api_errors
+    ), f"STAC API validation errors:\n - {'\n - '.join(stac_api_errors)}"
 
 
 @then("no STAC API validation warning occurs")
@@ -240,9 +256,10 @@ def step_then_no_stac_api_warnings(context):
     assert (
         context.stac_api_warnings is not None
     ), "STAC API validation has not been performed"
+    stac_api_warnings: list[str] = list(context.stac_api_warnings)
     assert (
-        not context.stac_api_warnings
-    ), f"STAC API validation warnings:\n - {'\n - '.join(context.stac_api_warnings)}"
+        not stac_api_warnings
+    ), f"STAC API validation warnings:\n - {'\n - '.join(stac_api_warnings)}"
 
 
 def create_pystac_client(context) -> Client:
