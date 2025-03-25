@@ -2,26 +2,22 @@
 
 import json
 import logging
-import os
 from pathlib import Path
+
 import requests
 from junitparser import JUnitXml
-from jira_utils import firefox_browser, login_to_jira, get_cookies
 
-cfg = {}
-cfg["user"] = os.environ["XRAY_USER"]
-cfg["password"] = os.environ["XRAY_PASSWORD"]
-cfg["jira_key"] = os.environ["INPUT_XRAY_KEY"]
-cfg["jira_url"] = os.environ["XRAY_BASE_URL"]
+from jira_conf import cfg
+from jira_utils import firefox_browser, get_cookies, login_to_jira
 
-FILENAME = 'junit.xml'
-FILENAME2 = 'results.json'
+FILENAME = "junit.xml"
+FILENAME2 = "results.json"
 
 xml = JUnitXml()
 # Merge JUnit reports together
-print(':: Merging JUnit reports')
-for path in Path('reports').glob('**/*.xml'):
-    print('Merging '+str(path))
+print(":: Merging JUnit reports")
+for path in Path("reports").glob("**/*.xml"):
+    print("Merging " + str(path))
     xml += JUnitXml.fromfile(path)
 xml.write(FILENAME)
 
@@ -51,17 +47,21 @@ try:
     requests_log.propagate = True
 
     # https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-JUnitXMLresults
-#    with open(FILENAME, 'rb') as file:
-#        r = requests.post(cfg["jira_url"] +
-#                          "rest/raven/1.0/import/execution/junit?testExecKey=" + cfg["jira_key"],
-#                          files={'file': (FILENAME, file, 'text/xml')},
-#                          cookies=get_cookies(browser), timeout=30)
-#        r.raise_for_status()
+    #    with open(FILENAME, 'rb') as file:
+    #        r = requests.post(cfg["jira_url"] +
+    #                          "rest/raven/1.0/import/execution/junit?testExecKey=" + cfg["jira_key"],
+    #                          files={'file': (FILENAME, file, 'text/xml')},
+    #                          cookies=get_cookies(browser), timeout=30)
+    #        r.raise_for_status()
 
     # https://docs.getxray.app/display/XRAY/Import+Execution+Results+-+REST#ImportExecutionResultsREST-BehaveJSONresults
-    with open('reports/' + FILENAME2, 'rb') as file:
-        r = requests.post(cfg["jira_url"] + "rest/raven/1.0/import/execution/behave",
-                          json=json.load(file), cookies=get_cookies(browser), timeout=30)
+    with open("reports/" + FILENAME2, "rb") as file:
+        r = requests.post(
+            cfg["jira_url"] + "rest/raven/1.0/import/execution/behave",
+            json=json.load(file),
+            cookies=get_cookies(browser),
+            timeout=30,
+        )
         r.raise_for_status()
 
 finally:

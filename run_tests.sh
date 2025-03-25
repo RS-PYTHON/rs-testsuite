@@ -1,3 +1,2 @@
 #!/bin/sh
-behave $1 --logging-level=debug --no-logcapture 
-
+behave $1 --logging-level=debug --no-logcapture

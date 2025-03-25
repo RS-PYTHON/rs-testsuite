@@ -4,15 +4,16 @@ import logging
 import os
 import subprocess
 from pathlib import Path
+
 import geckodriver_autoinstaller
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, WebDriverException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
-from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.firefox import GeckoDriverManager
 
 
@@ -37,13 +38,17 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
     options = Options()
     options.add_argument("-headless")
     options.enable_downloads = True
-    options.log.level = "fatal"  # WARNING enabling logs in debug/trace will reveal secrets
+    options.log.level = (
+        "fatal"  # WARNING enabling logs in debug/trace will reveal secrets
+    )
     options.set_preference("browser.download.folderList", 2)
     options.set_preference("browser.download.manager.showWhenStarting", False)
     options.set_preference("browser.download.manager.closeWhenDone", True)
     options.set_preference("browser.download.dir", download_dir)
-    options.set_preference("browser.helperApps.neverAsk.saveToDisk",
-                           "application/octet-stream, application/x-gzip, application/zip")
+    options.set_preference(
+        "browser.helperApps.neverAsk.saveToDisk",
+        "application/octet-stream, application/x-gzip, application/zip",
+    )
 
     # Create Firefox profile with JavaScript enabled
     firefox_profile = FirefoxProfile()
@@ -52,9 +57,13 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
 
     # Start browser and navigate to page
     print(":: Starting Firefox")
-    browser = webdriver.Firefox(options,
-                                Service(executable_path=GeckoDriverManager().install(),
-                                        log_output=subprocess.STDOUT))  # DEVNULL if needed
+    browser = webdriver.Firefox(
+        options,
+        Service(
+            executable_path=GeckoDriverManager().install(),
+            log_output=subprocess.STDOUT,
+        ),
+    )  # DEVNULL if needed
     return firefox_profile, browser, download_dir
 
 
@@ -71,13 +80,15 @@ def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, passwor
 
             # NetScaler Gateway Login Page
             print(":: Waiting for NetScaler Gateway Login Page")
-            WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.ID, "login")))
+            WebDriverWait(browser, 30).until(
+                EC.element_to_be_clickable((By.ID, "login")),
+            )
             success = True
             break
         except (TimeoutException, WebDriverException) as e:
             logging.error(e)
     if not success:
-        raise Exception("Failed to connect to JIRA/XRay")
+        raise OSError("Failed to connect to JIRA/XRay")
     browser.find_element(By.ID, "login").send_keys(login)
     browser.find_element(By.ID, "passwd").send_keys(password)
     browser.find_element(By.ID, "nsg-x1-logon-button").click()
@@ -89,7 +100,9 @@ def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, passwor
 
     # JIRA login form
     print(":: Waiting for JIRA login form")
-    WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.ID, "login-form-username")))
+    WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.ID, "login-form-username")),
+    )
     browser.find_element(By.ID, "login-form-username").send_keys(login)
     browser.find_element(By.ID, "login-form-password").send_keys(password)
     browser.find_element(By.ID, "login").click()
@@ -102,5 +115,5 @@ def get_cookies(browser: webdriver.Firefox):
     """Return the browser cookies"""
     cookies_dict = {}
     for cookie in browser.get_cookies():
-        cookies_dict[cookie['name']] = cookie['value']
+        cookies_dict[cookie["name"]] = cookie["value"]
     return cookies_dict
