@@ -8,4 +8,3 @@ rm -f features/*.feature && \
 unzip -u -o -d features $BUNDLE && \
 rm -f $BUNDLE && \
 ls -l features
-
