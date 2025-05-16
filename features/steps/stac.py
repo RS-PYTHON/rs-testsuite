@@ -8,7 +8,11 @@ import pyprof2calltree
 from behave import given, then, use_step_matcher, when
 from pystac import Collection, Item
 from pystac_client import Client
+from rs_client.auxip_client import AuxipClient
+from rs_client.cadip_client import CadipClient
+from rs_client.catalog_client import CatalogClient
 from rs_client.rs_client import RsClient
+from rs_client.stac_base import StacBase
 from stac_api_validator.validations import QueryConfig, validate_api
 
 logger = logging.getLogger(__name__)
@@ -36,6 +40,11 @@ def step_given_stac_api(context, stac_instance: str):
             "PRIP": "PRIP_STAC_API_URL",
         }[stac_instance]
     ]
+    context.rs_stac_client = {
+        "CATALOG": create_rs_stac_client_catalog,
+        "CADIP": create_rs_stac_client_cadip,
+        "AUXIP": create_rs_stac_client_auxip,
+    }[stac_instance](context)
 
 
 use_step_matcher("parse")
@@ -225,6 +234,41 @@ def step_check_stac_api(context):
         conv.output(fd)
 
 
+@when(
+    'he searches the {which_item} item of type "{product_type}" for platform "{platform}" in collection "{collection}"',
+)
+def step_search_stac_item(
+    context,
+    which_item: str,
+    product_type: str,
+    platform: str,
+    collection: str,
+):
+    assert (
+        context.rs_stac_client is not None
+    ), "STAC API client has not been initialized"
+    stac_client: StacBase = context.rs_stac_client
+    context.stac_item = stac_client.search(
+        method="POST",
+        max_items=1,
+        limit=1,
+        collections=collection,
+        stac_filter={
+            "op": "and",
+            "args": [
+                {"op": "=", "args": [{"property": "product:type"}, product_type]},
+                {"op": "=", "args": [{"property": "platform"}, platform]},
+            ],
+        },
+        sortby=[
+            {
+                "field": "start_datetime",
+                "direction": "asc" if which_item == "oldest" else "desc",
+            },
+        ],
+    )[0]
+
+
 @then("no STAC API validation error occurs")
 def step_then_no_stac_api_errors(context):
     assert (
@@ -262,6 +306,14 @@ def step_then_no_stac_api_warnings(context):
     ), f"STAC API validation warnings:\n - {'\n - '.join(stac_api_warnings)}"
 
 
+@then('the item "{item_id}" is returned')
+def step_then_item_returned(context, item_id: str):
+    assert context.stac_item is not None, "STAC Item Search has not been performed"
+    assert (
+        item_id == context.stac_item.id
+    ), f"Retrieved: {context.stac_item.id}\n^^^^^^^^^^^^^^^^  Expected : {item_id}"
+
+
 def create_pystac_client(context) -> Client:
     assert context.apikey is not None, "API-KEY is not set."
     assert (
@@ -270,27 +322,41 @@ def create_pystac_client(context) -> Client:
     return Client.open(context.stac_api_root_url, {"x-api-key": context.apikey})
 
 
-def create_rs_stac_client(context) -> RsClient:
-    assert (
-        os.getenv("CATALOG_STAC_API_URL") is not None
-    ), "CATALOG_STAC_API_URL is not set."
-    assert os.getenv("RSPY_HOST_CATALOG") is not None, "RSPY_HOST_CATALOG is not set."
-    local_mode = "localhost" in os.getenv("CATALOG_STAC_API_URL")
+def create_rs_stac_client_auxip(context) -> AuxipClient:
+    return create_rs_stac_client(context, "auxip")
+
+
+def create_rs_stac_client_cadip(context) -> CadipClient:
+    return create_rs_stac_client(context, "cadip")
+
+
+def create_rs_stac_client_catalog(context) -> CatalogClient:
+    return create_rs_stac_client(context, "catalog")
+
+
+def create_rs_stac_client(context, instance: str) -> RsClient:
+    env_var = f"{instance.upper()}_STAC_API_URL"
+    stac_api_url = os.getenv(env_var)
+    assert stac_api_url is not None, f"{env_var} is not set."
+
+    local_mode = "localhost" in stac_api_url
     if local_mode:
-        return RsClient(
-            rs_server_href=None,
-            rs_server_api_key=None,
-        ).get_catalog_client()
-    assert context.apikey is not None, "API-KEY is not set."
-    return RsClient(
-        rs_server_href=os.getenv("CATALOG_STAC_API_URL"),
-        rs_server_api_key=context.apikey,
-    ).get_catalog_client()
+        client = RsClient(rs_server_href=None, rs_server_api_key=None)
+    else:
+        rspy_host = os.getenv("RSPY_HOST_CATALOG")
+        assert rspy_host is not None, "RSPY_HOST_CATALOG is not set."
+        assert context.apikey is not None, "API-KEY is not set."
+        client = RsClient(
+            rs_server_href=rspy_host,
+            rs_server_api_key=context.apikey,
+        )
+
+    return getattr(client, f"get_{instance.lower()}_client")()
 
 
 @when("he adds the collection {collection_id}")
 def step_when_stac_create_collection(context, collection_id: str):
-    response = create_rs_stac_client(context).add_collection(
+    response = create_rs_stac_client_catalog(context).add_collection(
         collection=Collection.from_file(
             "resources/catalog/collections/" + collection_id + ".json",
         ),
@@ -304,7 +370,7 @@ def step_when_stac_create_collection(context, collection_id: str):
 
 @when("he adds the item {item_id} to collection {collection_id}")
 def step_when_stac_add_item(context, item_id: str, collection_id: str):
-    response = create_rs_stac_client(context).add_item(
+    response = create_rs_stac_client_catalog(context).add_item(
         item=Item.from_file("resources/catalog/items/" + item_id + ".json"),
         collection_id=collection_id,
     )
