@@ -18,9 +18,12 @@ def connect():
 def retrieve_sessions(to, tf):
     report_manager.success_step(2, f"Retrieve sessions between {to} and {tf} for all S1 stations.")
     time.sleep(2)
-    start_session_ingestion.submit(3, "MTI", "S1A_20241114143038056332")
-    start_session_ingestion.submit(4, "MPS", "S1A_20251314143031111111")
-    start_session_ingestion.submit(5, "MTI", "S1A_20231144143348056552")
+    session1 = start_session_ingestion.submit(3, "MTI", "S1A_20241114143038056332")
+    session2 = start_session_ingestion.submit(4, "MPS", "S1A_20251314143031111111")
+    session3 = start_session_ingestion.submit(5, "MTI", "S1A_20231144143348056552")
+    session1.wait()
+    session2.wait()
+    session3.wait()
 
 
 @task(name="launch-aio", description="Launch generic S1-AIO processing")
