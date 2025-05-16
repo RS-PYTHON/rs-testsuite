@@ -1,5 +1,6 @@
 from prefect import flow, task
 from prefect.events import emit_event
+from prefect.deployments import run_deployment
 from datetime import datetime, timedelta
 from flows.utils.artifacts import ReportManager
 import time
@@ -7,25 +8,29 @@ import time
 report_manager = ReportManager(2)
 
 
-@task(name="station-connection", description="Connect to the station")
+@task(name="station-connection", description="Connect to all stations")
 def connect():
     report_manager.success_step(1, "Connect to station")
     time.sleep(1)
 
-@task(name="get-session", description="Retrieve the list of sessions between two dates")
-def retrieve_session(to, tf):
-    report_manager.success_step(2, f"Retrieve sessions between {to} and {tf}")
-    time.sleep(2)
 
-@task
-def send_events():
-    send_event(3, "MTI", "S1A_20241114143038056332")
-    send_event(4, "MPS", "S1A_20251314143031111111")
-    send_event(5, "MTI", "S1A_20231144143348056552")
+@task(name="get-session-list", description="Retrieve the list of sessions between two dates")
+def retrieve_sessions(to, tf):
+    report_manager.success_step(2, f"Retrieve sessions between {to} and {tf} for all S1 stations.")
+    time.sleep(2)
+    start_session_ingestion(3, "MTI", "S1A_20241114143038056332")
+    start_session_ingestion(4, "MPS", "S1A_20251314143031111111")
+    start_session_ingestion(5, "MTI", "S1A_20231144143348056552")
+
+
+@task(name="launch-aio", description="Launch generic S1-AIO processing")
+def start_session_ingestion(step, station, session_id):
+    run_deployment("s1-start-aio", as_subflow=False)
+    send_event(step, station, session_id)
 
 
 def send_event(step, station, session_id):
-    event_json = {
+    payload_json = {
         "mission": "s1",
         "level": "raw",
         "station": f"{station}",
@@ -33,7 +38,7 @@ def send_event(step, station, session_id):
     }
     # prefect.resource.name  emit_event(event=f"{name}.sent.event!", resource={"prefect.resource.id": f"coder.{name}"})
 
-    emit_event(event="s1.session.available", resource={"prefect.resource.id": f"{station}.cadip"}, payload=event_json)
+    emit_event(event="s1.session.available", resource={"prefect.resource.id": f"{station}.cadip"}, payload=payload_json)
     report_manager.success_step(step, f"Send event for session {session_id}")
 
 
@@ -53,8 +58,7 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
 
     # Start the 2 tasks in sequence
     connect()
-    retrieve_session(before, now)
-    send_events()
+    retrieve_sessions(before, now)
 
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
 
