@@ -1,9 +1,8 @@
 from prefect import flow, task
 from prefect.events import emit_event
-from prefect.deployments import run_deployment
-from datetime import datetime, timedelta
 from flows.utils.artifacts import ReportManager
 import time
+import random
 
 report_manager = ReportManager(2)
 
@@ -12,12 +11,12 @@ report_manager = ReportManager(2)
 def retrieve_all_cadus():
     report_manager.success_step(1, "Retrieve all cadus")
     tasks = [retrieve_one_cadu.submit(i) for i in range(50)]
-    results = [t.wait() for t in tasks]
+    [t.wait() for t in tasks]
 
 
 @task(name="ingest-a-single-cadu", description="Retrieve one CADU chunk.")
 def retrieve_one_cadu(i : int):
-    time.sleep(2)
+    time.sleep(random.randint(1, 5))
     report_manager.success_step(i+1, f"Retrieve cadu number {i}.")
 
 
@@ -28,11 +27,12 @@ def send_event(mission: str, station: str, session_id: str):
         "station": f"{station}",
         "session_ingested_id": f"{session_id}"
     }
-    emit_event(event=f"${mission}.session.ingested", resource={"prefect.resource.id": f"{station}.cadip"}, payload=payload_json)
+    emit_event(event=f"${mission}.session.ingested", resource={"prefect.resource.id": f"{station}.cadip"},
+               payload=payload_json)
 
 
 @flow
-def generic_retrieve_session(mission: str, station: str, session_id: str)
+def generic_retrieve_session(mission: str, station: str, session_id: str):
     retrieve_all_cadus()
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
