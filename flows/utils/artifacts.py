@@ -1,8 +1,6 @@
 # wait for v3 - from prefect.artifacts import create_progress_artifact, update_progress_artifact
 from datetime import datetime
-
-from prefect.artifacts import create_table_artifact
-
+from prefect.artifacts import create_table_artifact, create_markdown_artifact
 
 class ReportManager:
     """_summary_"""
@@ -45,4 +43,13 @@ class ReportManager:
             key=key_value.lower(),
             table=self.report,
             description=description_value + " - " + date_texte,
+        )
+
+    def add_markdown_as_artefact(self, key_value, markdown_report, description_value):
+        # Artifact key must only contain lowercase letters, numbers, and dashes. (type=value_error)
+
+        return create_markdown_artifact(
+            key=key_value.lower(),
+            markdown=markdown_report,
+            description=description_value
         )
