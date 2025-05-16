@@ -1,9 +1,6 @@
-import sys
-import os
 from prefect import flow, task
-from utils.artifacts import ReportManager
+from flows.utils.artifacts import ReportManager
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 report_manager = ReportManager(4)
 
 
