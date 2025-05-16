@@ -1,6 +1,7 @@
 """
 Sample:
-python create_deployment.py flows/flow_template.py:flow_template flow-template-deployment
+!python create_deployment.py flows/systematic/flow_retrieve_s1_session.py:retrieve_s1_list_of_sessions s1-retrieve-sessions s1,raw,systematic
+!python create_deployment.py flows/flow_template.py:flow_template flow_template
 """
 
 import sys
@@ -13,8 +14,9 @@ from prefect.runner.storage import GitRepository
 def deploy_flow(
     entrypoint: str,
     deployment: str,
-    workpool: str = "on-demand-k8s-pool",
-    branch: str = "feature/endpoint",
+    tags: list[str],
+    workpool: str = "systematic-processing-pool",
+    branch: str = "feat/systematic-processing",
     github_url: str = "https://github.com/RS-PYTHON/rs-testsuite.git",
 ):
     flow.from_source(
@@ -23,13 +25,16 @@ def deploy_flow(
             branch=branch,
         ),
         entrypoint=entrypoint,
-    ).deploy(name=deployment, work_pool_name=workpool)
+    ).deploy(name=deployment, work_pool_name=workpool, tags=tags)
 
 
 if __name__ == "__main__":
-    if (len(sys.argv) < 3) or (len(sys.argv) > 6):
+    if (len(sys.argv) < 4) or (len(sys.argv) > 6):
         print(
-            "Usage: python create_deployment.py <entrypoint> <deployment> [<workpool>] [<branch>] [<github_url>]",
+            "Usage: python create_deployment.py <entrypoint> <deployment> <tags(comma-separated)> [<workpool>] [<branch>] [<github_url>]",
         )
     else:
-        deploy_flow(*sys.argv[1:])
+        entrypoint = sys.argv[1]
+        deployment = sys.argv[2]
+        tags = sys.argv[3].split(",") 
+        deploy_flow(entrypoint, deployment, tags, *sys.argv[4:])

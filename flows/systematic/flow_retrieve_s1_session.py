@@ -33,7 +33,7 @@ def send_event(step, station, session_id):
     }
     # prefect.resource.name  emit_event(event=f"{name}.sent.event!", resource={"prefect.resource.id": f"coder.{name}"})
 
-    emit_event(event="s1.session.available", resource={"prefect.resource.id": "mti.cadip"})
+    emit_event(event="s1.session.available", resource={"prefect.resource.id": f"{station}.cadip"}, payload=event_json)
     report_manager.success_step(step, f"Send event for session {session_id}")
 
 
