@@ -24,14 +24,14 @@ def retrieve_sessions(to, tf):
 
 
 @task(name="launch-aio", description="Launch generic S1-AIO processing")
-def start_session_ingestion(step, station, session_id):
-    run_deployment("s1-aio-start/s1-start-aio", 
+def start_session_ingestion(step, station: str, session_id: str):
+    run_deployment("s1-aio-start/s1-start-aio",
                    parameters={"station": station, "session_id": session_id},
                    as_subflow=False)
     send_event(step, station, session_id)
 
 
-def send_event(step, station, session_id):
+def send_event(step, station: str, session_id: str):
     payload_json = {
         "mission": "s1",
         "level": "raw",
