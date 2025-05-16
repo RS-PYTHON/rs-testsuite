@@ -31,7 +31,10 @@ def send_event(step, station, session_id):
         "station": f"{station}",
         "session_id": f"{session_id}"
     }
-    emit_event(event="new.session.event", resource=event_json)
+    # prefect.resource.id 
+    # prefect.resource.name  emit_event(event=f"{name}.sent.event!", resource={"prefect.resource.id": f"coder.{name}"})
+
+    emit_event(event="new.session.event", resource={"prefect.resource.id": "coder.new.session.event"})
     report_manager.success_step(step, f"Send event for session {session_id}")
 
 
