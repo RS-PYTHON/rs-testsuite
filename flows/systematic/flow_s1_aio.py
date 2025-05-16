@@ -1,6 +1,5 @@
 from prefect import flow, task
 from prefect.events import emit_event
-from datetime import datetime, timedelta
 from flows.utils.artifacts import ReportManager
 import time
 
