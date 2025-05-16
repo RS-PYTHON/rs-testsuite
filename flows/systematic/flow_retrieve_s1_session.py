@@ -15,16 +15,16 @@ def connect():
 @task(name="get-session", description="Retrieve the list of sessions between two dates")
 def retrieve_session(to, tf):
     report_manager.success_step(2, f"Retrieve sessions between {to} and {tf}")
+    time.sleep(2)
 
 @task
 def send_events():
-    report_manager.success_step(3, "Send events")
-    send_event("MTI", "S1A_20241114143038056332")
-    send_event("MPS", "S1A_20251314143031111111")
-    send_event("MTI", "S1A_20231144143348056552")
+    send_event(3, "MTI", "S1A_20241114143038056332")
+    send_event(4, "MPS", "S1A_20251314143031111111")
+    send_event(5, "MTI", "S1A_20231144143348056552")
 
 
-def send_event(station, session_id):
+def send_event(step, station, session_id):
     event_json = {
         "mission": "s1",
         "level": "raw",
@@ -32,6 +32,7 @@ def send_event(station, session_id):
         "session_id": f"{session_id}"
     }
     emit_event(event="new.session.event", resource=event_json)
+    report_manager.success_step(step, f"Send event for session {session_id}")
 
 
 @flow
@@ -51,6 +52,7 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
     # Start the 2 tasks in sequence
     connect()
     retrieve_session(before, now)
+    send_events()
 
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
 
