@@ -18,9 +18,9 @@ def connect():
 def retrieve_sessions(to, tf):
     report_manager.success_step(2, f"Retrieve sessions between {to} and {tf} for all S1 stations.")
     time.sleep(2)
-    start_session_ingestion(3, "MTI", "S1A_20241114143038056332")
-    start_session_ingestion(4, "MPS", "S1A_20251314143031111111")
-    start_session_ingestion(5, "MTI", "S1A_20231144143348056552")
+    start_session_ingestion.submit(3, "MTI", "S1A_20241114143038056332")
+    start_session_ingestion.submit(4, "MPS", "S1A_20251314143031111111")
+    start_session_ingestion.submit(5, "MTI", "S1A_20231144143348056552")
 
 
 @task(name="launch-aio", description="Launch generic S1-AIO processing")
@@ -28,7 +28,7 @@ def start_session_ingestion(step, station: str, session_id: str):
     run_deployment("s1-aio-start/s1-start-aio",
                    parameters={"station": station, "session_id": session_id},
                    as_subflow=False)
-    send_event(step, station, session_id)
+    # send_event(step, station, session_id)
 
 
 def send_event(step, station: str, session_id: str):
