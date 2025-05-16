@@ -10,12 +10,13 @@ report_manager = ReportManager(2)
 @task(name="ingest-cadu-in-parallel", description="Retrieve all CADU chunks from one session")
 def retrieve_all_cadus():
     report_manager.success_step(1, "Retrieve all cadus")
-    tasks = [retrieve_one_cadu.submit(i) for i in range(50)]
-    [t.wait() for t in tasks]
+    tasks = [retrieve_one_cadu.submit(i) for i in range(10)]
+    for t in tasks:
+        t.wait()
 
 
 @task(name="ingest-a-single-cadu", description="Retrieve one CADU chunk.")
-def retrieve_one_cadu(i : int):
+def retrieve_one_cadu(i: int):
     time.sleep(random.randint(1, 5))
     report_manager.success_step(i+1, f"Retrieve cadu number {i}.")
 
