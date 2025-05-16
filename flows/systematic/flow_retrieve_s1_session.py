@@ -25,7 +25,7 @@ def retrieve_sessions(to, tf):
 
 @task(name="launch-aio", description="Launch generic S1-AIO processing")
 def start_session_ingestion(step, station, session_id):
-    run_deployment("s1-aio-start/s1-start-aio", as_subflow=False)
+    run_deployment("s1-aio-start/s1-start-aio", parameter=[station, session_id], as_subflow=False)
     send_event(step, station, session_id)
 
 
