@@ -47,7 +47,7 @@ def send_event(step, station: str, session_id: str):
 
 
 @flow
-def s1_session_retrieve(delta_time_seconds: int):
+def s1_session_retrieve(delta_time_seconds: int = 3600):
     now = datetime.now()
     before = now - timedelta(seconds=delta_time_seconds)
 
