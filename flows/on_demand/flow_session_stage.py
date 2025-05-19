@@ -8,11 +8,10 @@ import random
 report_manager = ReportManager(2)
 
 
-@task(name="Stage session {session_id} from station {station}",
-      description="Retrieve all CADU chunks from session {session_id}")
+@task(description="Retrieve all CADU chunks from session {session_id}")
 def retrieve_all_cadus(session_id, station):
     task_run_ctx = TaskRunContext.get()
-    task_run_ctx.task_run.name = f"Launch DPR AIO for session {session_id} on station {station}"
+    task_run_ctx.task_run.name = f"Stage session {session_id} from station {station}"
 
     report_manager.success_step(1, "Retrieve all cadus")
     tasks = [retrieve_one_cadu.submit(i) for i in range(50)]
