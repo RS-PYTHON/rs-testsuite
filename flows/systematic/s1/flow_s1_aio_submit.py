@@ -8,7 +8,7 @@ import time
 report_manager = ReportManager(2)
 
 
-@task(name="launch-s1-aio", description="Launch S1 AIO processing")
+@task(name="AIO processing session {session_id}", description="Call DPR processor with processor AIO to compute session {session_id}")
 def s1_aio(station: str, session_id: str):
     # report_manager.success_step(1, f"Start generic processing with S1-AIO on session name {session_id} on station {station}")
     time.sleep(1)
