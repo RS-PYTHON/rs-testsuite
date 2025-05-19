@@ -27,7 +27,7 @@ def send_event(mission: str, station: str, session_id: str):
         "mission": f"{mission}",
         "level": "raw",
         "station": f"{station}",
-        "session_ingested_id": f"{session_id}"
+        "session_id": f"{session_id}"
     }
     logger = get_run_logger()
     event_value = f"{mission}.session.ingested"
