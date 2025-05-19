@@ -7,8 +7,9 @@ import random
 report_manager = ReportManager(2)
 
 
-@task(name="ingest-cadu-in-parallel", description="Retrieve all CADU chunks from one session")
-def retrieve_all_cadus():
+@task(name="Stage session {session_id} from station {station}",
+      description="Retrieve all CADU chunks from session {session_id}")
+def retrieve_all_cadus(session_id, station):
     report_manager.success_step(1, "Retrieve all cadus")
     tasks = [retrieve_one_cadu.submit(i) for i in range(50)]
     for t in tasks:
@@ -37,7 +38,7 @@ def send_event(mission: str, station: str, session_id: str):
 
 @flow
 def session_stage(mission: str, station: str, session_id: str):
-    retrieve_all_cadus()
+    retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
 
