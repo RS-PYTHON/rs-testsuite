@@ -33,11 +33,11 @@ def send_event(mission: str, station: str, session_id: str):
 
 
 @flow
-def flow_session_stage(mission: str, station: str, session_id: str):
+def session_stage(mission: str, station: str, session_id: str):
     retrieve_all_cadus()
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
 
 
 if __name__ == "__main__":
-    flow_session_stage("fake_mission", "fake_station", "fake_session_name")
+    session_stage("fake_mission", "fake_station", "fake_session_name")
