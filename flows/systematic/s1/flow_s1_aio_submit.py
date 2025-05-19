@@ -1,4 +1,4 @@
-from prefect import flow, task
+from prefect import flow, task, get_run_logger
 from prefect.events import emit_event
 from flows.utils.artifacts import ReportManager
 # from prefect.deployments import run_deployment
@@ -8,10 +8,13 @@ report_manager = ReportManager(2)
 
 
 @task(name="launch-s1-aio", description="Launch S1 AIO processing")
-def s1_aio(station: str, session_id: str):
-    report_manager.success_step(1, f"Start generic processing with S1-AIO on session name {session_id} on station {station}")
+def s1_aio(param1, param2):
+    #report_manager.success_step(1, f"Start generic processing with S1-AIO on session name {session_id} on station {station}")
     time.sleep(1)
-    send_event(2, station, session_id)
+    logger = get_run_logger()
+    logger.info("param1" + param1)
+    logger.info("param2" + param2)
+    send_event(2, "station", "session_id")
 
 
 def send_event(step, station, session_id):
@@ -29,8 +32,8 @@ def send_event(step, station, session_id):
 
 
 @flow
-def s1_aio_submit(station: str, session_id: str):
-    s1_aio(station, session_id)
+def s1_aio_submit(param1, param2):
+    s1_aio(param1, param2)
 
 
 if __name__ == "__main__":
