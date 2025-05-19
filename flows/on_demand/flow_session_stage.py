@@ -28,16 +28,16 @@ def send_event(mission: str, station: str, session_id: str):
         "station": f"{station}",
         "session_ingested_id": f"{session_id}"
     }
-    emit_event(event=f"${mission}.session.ingested", resource={"prefect.resource.id": f"{station}.cadip"},
+    emit_event(event=f"{mission}.session.ingested", resource={"prefect.resource.id": f"{station}.cadip"},
                payload=payload_json)
 
 
 @flow
-def generic_retrieve_session(mission: str, station: str, session_id: str):
+def flow_session_stage(mission: str, station: str, session_id: str):
     retrieve_all_cadus()
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
 
 
 if __name__ == "__main__":
-    generic_retrieve_session("fake_mission", "fake_station", "fake_session_name")
+    flow_session_stage("fake_mission", "fake_station", "fake_session_name")
