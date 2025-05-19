@@ -1,4 +1,5 @@
 from prefect import flow, task, get_run_logger
+from prefect.context import FlowRunContext, TaskRunContext
 from prefect.events import emit_event
 from flows.utils.artifacts import ReportManager
 # import json
@@ -8,10 +9,13 @@ import time
 report_manager = ReportManager(2)
 
 
-@task(name="AIO processing session {{session_id}}",
-      description="Call DPR processor with processor AIO to compute session {session_id} from station {{station}}")
+@task(name="AIO processing session",
+      description="Call DPR processor with processor AIO to compute session.")
 def s1_aio(station: str, session_id: str):
     # report_manager.success_step(1, f"Start generic processing with S1-AIO on session name {session_id} on station {station}")
+    task_run_ctx = TaskRunContext.get()
+    task_run_ctx.task_run.name = f"Traitement-{session_id}"
+
     time.sleep(1)
     logger = get_run_logger()
     logger.info("station : " + station)
