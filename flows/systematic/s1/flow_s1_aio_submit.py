@@ -28,7 +28,7 @@ def s1_aio(station: str, session_id: str):
 def run_dpr_aio(session_id: str):
     run_deployment("dpr-process/dpr-process",
                    flow_run_name=f"dpr-process/dpr-process-aio-{session_id}",
-                   parameters={"input_product_list": f"[{session_id}]",
+                   parameters={"input_product_list": [f"{session_id}"],
                                "processor_name": "s1-aio",
                                "processor_version": "1.0.0",
                                "processing_unit": "AIO-PART",
