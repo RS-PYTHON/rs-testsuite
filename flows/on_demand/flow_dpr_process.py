@@ -27,8 +27,7 @@ def info_input(input_product_list: list[str], processor_name: ProcessorName,
     - **processor_version**: `{processor_version}`
     - **processing_unit**: `{processing_unit}`
     - **dask_cluster_id**: `{dask_cluster_id}`
-    - **aux_collection**:
-        {''.join(f'- `{key}`: `{value}`\n' for key, value in aux_collection)}
+    - **aux_collection**: `{aux_collection}`
     - **output_product_collection**: `{output_product_collection}`
     """
     report_manager.add_markdown_as_artefact("input", markdown_output, "")
