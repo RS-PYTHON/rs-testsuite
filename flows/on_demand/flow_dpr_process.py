@@ -1,4 +1,4 @@
-from prefect import flow
+from prefect import flow, task
 from flows.utils.artifacts import ReportManager
 import time
 from enum import Enum
@@ -15,11 +15,38 @@ class ProcessorName(Enum):
 report_manager = ReportManager(2)
 
 
+@task
+def info_input(input_product_list: list[str], processor_name: ProcessorName,
+               processor_version: str, processing_unit: str, dask_cluster_id: str,
+               aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]]):
+    markdown_output = f"""
+    # Input parameters when calling the flow :
+
+    - **input_product_list**: `{input_product_list}`
+    - **processor_name**: `{processor_name}`
+    - **processor_version**: `{processor_version}`
+    - **processing_unit**: `{processing_unit}`
+    - **dask_cluster_id**: `{dask_cluster_id}`
+    - **aux_collection**:
+        {''.join(f'- `{key}`: `{value}`\n' for key, value in aux_collection)}
+    - **output_product_collection**: `{output_product_collection}`
+    """
+    report_manager.add_markdown_as_artefact("input", markdown_output, "")
+
+
 @flow
 def dpr_process(input_product_list: list[str], processor_name: ProcessorName,
                 processor_version: str, processing_unit: str, dask_cluster_id: str,
                 aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]]):
     time.sleep(5)
+    info_input(
+        input_product_list,
+        processor_name,
+        processor_version,
+        processing_unit,
+        dask_cluster_id,
+        aux_collection,
+        output_product_collection)
 
 
 if __name__ == "__main__":
