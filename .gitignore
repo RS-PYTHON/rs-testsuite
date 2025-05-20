@@ -167,3 +167,15 @@ junit.xml
 newbadge.svg
 features/*.feature
 *.out
+env-pierre/lib64
+env-pierre/pyvenv.cfg
+env-pierre/bin/activate
+env-pierre/bin/activate.csh
+env-pierre/bin/activate.fish
+env-pierre/bin/Activate.ps1
+env-pierre/bin/pip
+env-pierre/bin/pip3
+env-pierre/bin/pip3.12
+env-pierre/bin/python
+env-pierre/bin/python3
+env-pierre/bin/python3.12
