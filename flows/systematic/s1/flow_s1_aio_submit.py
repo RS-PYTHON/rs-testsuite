@@ -1,7 +1,8 @@
 from prefect import flow, task, get_run_logger
 from prefect.context import TaskRunContext
-from prefect.events import emit_event
 from flows.utils.artifacts import ReportManager
+from prefect.deployments import run_deployment
+
 # import json
 # from prefect.deployments import run_deployment
 import time
@@ -20,21 +21,21 @@ def s1_aio(station: str, session_id: str):
     logger = get_run_logger()
     logger.info("station : " + station)
     logger.info("session_id : " + session_id)
-    send_event(2, "station", "session_id")
+    run_dpr_aio(session_id)
 
 
-def send_event(step, station, session_id):
-    payload_json = {
-        "mission": "s1",
-        "level": "raw",
-        "processor": "s1-aio",
-        "station": f"{station}",
-        "session_id": f"{session_id}"
-    }
-    # prefect.resource.name  emit_event(event=f"{name}.sent.event!", resource={"prefect.resource.id": f"coder.{name}"})
-
-    emit_event(event="s1.aio.start", resource={"prefect.resource.id": "s1.aio"}, payload=payload_json)
-    report_manager.success_step(step, f"Start AIO event for session {session_id}")
+@task(name="launch-dpr-aio", description="Launch on-demand S1-AIO processing")
+def run_dpr_aio(session_id: str):
+    run_deployment("dpr-process/dpr-process",
+                   flow_run_name=f"dpr-process/dpr-process-aio-{session_id}",
+                   parameters={"input_product_list": f"[{session_id}]",
+                               "processor_name": "s1-aio",
+                               "processor_version": "1.0.0",
+                               "processing_unit": "AIO-PART",
+                               "dask_cluster_id": "cluster-id_1",
+                               "aux_collection": [("aux1", "my-aux-collection")],
+                               "output_product_collection": [("output1", "my-product-collection")]},
+                   as_subflow=False)
 
 
 @flow
