@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Literal
 
 class Station(Enum):
     SGS = "sgs"
@@ -14,6 +15,7 @@ class Mission(Enum):
     S2 = "s2"
     S3 = "s3"
     
+
 class ProcessorName(Enum):
     S1_AIO = "s1-aio"
     S1_L0ASP = "s1-l0asp"
