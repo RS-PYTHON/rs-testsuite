@@ -45,7 +45,7 @@ def send_event(mission: Mission, station: Station, session_id: str):
         
 @flow (validate_parameters=True)
 def session_stage(mission: Literal["s1", "s2", "s3"], 
-                  station: Literal[Station.SGS, Station.MTI, Station.MPS, Station.INS, Station.KSE, Station.PAR, Station.NSG],
+                  station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "nsg"],
                   session_id: str):
     retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)

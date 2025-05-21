@@ -4,6 +4,7 @@ from enum import Enum
 from typing import List, Tuple
 from prefect.artifacts import create_markdown_artifact
 from  flows.utils.copernicus_enum import ProcessorName
+from typing import Literal
 
 
 
@@ -33,9 +34,9 @@ def info_input(input_product_list: list[str], processor_name: ProcessorName,
 
 
 @flow
-def dpr_process(input_product_list: list[str], processor_name: ProcessorName,
+def dpr_process(input_product_list: list[str], processor_name: Literal["s1-aio", "s1-l0asp", "s1-l1", "s1-l2"],
                 processor_version: str, processing_unit: str, dask_cluster_id: str,
-                aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]]):
+                aux_collection = None, output_product_collection=None):
     time.sleep(5)
     info_input(
         input_product_list,
