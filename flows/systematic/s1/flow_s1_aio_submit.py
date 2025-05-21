@@ -2,7 +2,7 @@ from prefect import flow, task, get_run_logger
 from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
 import time
-
+from  flows.utils.copernicus_enum import Station
 
 
 @task(name="AIO processing session",
@@ -35,7 +35,7 @@ def run_dpr_aio(session_id: str):
 
 
 @flow
-def s1_aio_submit(station: str, session_id: str):
+def s1_aio_submit(station: Station, session_id: str):
     s1_aio(station, session_id)
 
 

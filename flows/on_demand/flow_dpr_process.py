@@ -3,13 +3,7 @@ import time
 from enum import Enum
 from typing import List, Tuple
 from prefect.artifacts import create_markdown_artifact
-
-
-class ProcessorName(Enum):
-    S1_AIO = "s1-aio"
-    S1_L0ASP = "s1-l0asp"
-    S1_L1 = "s1-l1"
-    S1_L2 = "s1-l2"
+from  flows.utils.copernicus_enum import ProcessorName
 
 
 

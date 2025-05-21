@@ -1,6 +1,5 @@
 import random
 from prefect import flow, task
-from prefect.events import emit_event
 from prefect.deployments import run_deployment
 from datetime import datetime, timedelta
 from prefect.context import TaskRunContext
