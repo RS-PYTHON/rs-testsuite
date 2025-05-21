@@ -10,7 +10,7 @@ report_manager = ReportManager(2)
 
 
 @task(description="Retrieve all CADU chunks from session {session_id}")
-def retrieve_all_cadus(session_id, station : Station):
+def retrieve_all_cadus(session_id: str, station : Station):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"Stage session {session_id} from station {station}"
 
@@ -23,25 +23,25 @@ def retrieve_all_cadus(session_id, station : Station):
 @task(name="ingest-a-single-cadu", description="Retrieve one CADU chunk.")
 def retrieve_one_cadu(i: int):
     time.sleep(random.randint(1, 5))
-    report_manager.success_step(i+1, f"Retrieve cadu number {i}.")
+    report_manager.success_step(i+1, f"Retrieve cadu number {i+1}.")
 
 
 def send_event(mission: Mission, station: Station, session_id: str):
     payload_json = {
         "mission": f"{mission.value}",
         "level": "raw",
-        "station": f"{station}",
+        "station": f"{station.value}",
         "session_id": f"{session_id}"
     }
     logger = get_run_logger()
     event_value = f"{mission.value}.session.ingested"
     logger.info("Send event : " + event_value)
-    emit_event(event=event_value, resource={"prefect.resource.id": f"{station}.cadip"},
+    emit_event(event=event_value, resource={"prefect.resource.id": f"{station.value}.cadip"},
                payload=payload_json)
 
 
 @flow (validate_parameters=True)
-def session_stage(mission: Mission.value, station: Station.value, session_id: str):
+def session_stage(mission: Mission, station: Station, session_id: str):
     retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
