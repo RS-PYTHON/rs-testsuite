@@ -129,7 +129,11 @@ def do_stac_collections_exist(context, collections: str) -> bool:
     matches = 0
     for cid in collection_ids:
         for fc in found_collections:
-            if fc.id in [cid, os.environ["USER"] + "_" + cid]:
+            if fc.id in [
+                cid,
+                os.environ["USER"] + "_" + cid,
+                context.login + "_" + cid,
+            ]:
                 matches += 1
                 break
 
@@ -349,6 +353,7 @@ def create_rs_stac_client(context, instance: str) -> RsClient:
         client = RsClient(
             rs_server_href=rspy_host,
             rs_server_api_key=context.apikey,
+            owner_id=context.login,
         )
 
     return getattr(client, f"get_{instance.lower()}_client")()
