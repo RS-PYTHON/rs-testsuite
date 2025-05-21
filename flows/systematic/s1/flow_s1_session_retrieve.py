@@ -8,7 +8,7 @@ import time
 from prefect.artifacts import create_markdown_artifact
 
 
-@task
+@task (task_run_name=lambda station: f"retrieve last sessions from {station}")
 def retrieve_last_session(station:str):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
