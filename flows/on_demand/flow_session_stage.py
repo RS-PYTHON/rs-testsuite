@@ -28,20 +28,20 @@ def retrieve_one_cadu(i: int):
 
 def send_event(mission: Mission, station: Station, session_id: str):
     payload_json = {
-        "mission": f"{mission}",
+        "mission": f"{mission.value}",
         "level": "raw",
         "station": f"{station}",
         "session_id": f"{session_id}"
     }
     logger = get_run_logger()
-    event_value = f"{mission}.session.ingested"
+    event_value = f"{mission.value}.session.ingested"
     logger.info("Send event : " + event_value)
     emit_event(event=event_value, resource={"prefect.resource.id": f"{station}.cadip"},
                payload=payload_json)
 
 
 @flow (validate_parameters=True)
-def session_stage(mission: Mission, station: Station, session_id: str):
+def session_stage(mission: Mission.value, station: Station.value, session_id: str):
     retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
