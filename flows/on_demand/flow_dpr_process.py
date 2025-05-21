@@ -20,11 +20,11 @@ report_manager = ReportManager(2)
 def info_input(input_product_list: list[str], processor_name: ProcessorName,
                processor_version: str, processing_unit: str, dask_cluster_id: str,
                aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]]):
-    markdown_report = f"""# Input parmaters
+    markdown_report = f"""# Input parameters
 
 ## Input parameters when calling the flow
 | Parameter                     | Value                         |
-|:------------------------------|-----------------------------:|
+|:------------------------------|:-----------------------------|
 | **input_product_list**        | `{input_product_list}`        |
 | **processor_name**            | `{processor_name}`            |
 | **processor_version**         | `{processor_version}`         |
