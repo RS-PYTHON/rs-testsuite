@@ -1,7 +1,6 @@
 from prefect import flow, task, get_run_logger
 from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
-from prefect.variables import Variable
 import time
 
 
