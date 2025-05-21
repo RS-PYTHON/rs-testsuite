@@ -13,7 +13,16 @@ def retrieve_last_session(station:str):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
     time.sleep(random.randint(1, 2))
-    start_ingestion( station, "S1A_2025" + random.randint(1, 100000000000000000))
+    
+    # Obtenir la date actuelle
+    date_str = datetime.now().strftime("%Y%m%d")
+
+    # Générer un nombre aléatoire à 10 chiffres
+    random_number = random.randint(1000000000, 9999999999)
+
+    # Construire l'identifiant
+    identifier = f"S1A_{date_str}{random_number}"
+    start_ingestion( station, identifier)
     
 
 
