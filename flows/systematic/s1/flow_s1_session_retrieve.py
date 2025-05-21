@@ -44,7 +44,7 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
 
 """
     create_markdown_artifact(
-        key="Objective",
+        key="objective",
         markdown=markdown_report,
         description="Retrieve last sessions from stations")
     
