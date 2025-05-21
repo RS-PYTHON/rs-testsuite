@@ -10,7 +10,7 @@ report_manager = ReportManager(2)
 
 
 @task(description="Retrieve all CADU chunks from session {session_id}")
-def retrieve_all_cadus(session_id, station):
+def retrieve_all_cadus(session_id, station : Station):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"Stage session {session_id} from station {station}"
 
@@ -40,7 +40,7 @@ def send_event(mission: Mission, station: Station, session_id: str):
                payload=payload_json)
 
 
-@flow
+@flow (validate_parameters=True)
 def session_stage(mission: Mission, station: Station, session_id: str):
     retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)
@@ -48,4 +48,4 @@ def session_stage(mission: Mission, station: Station, session_id: str):
 
 
 if __name__ == "__main__":
-    session_stage("fake_mission", "fake_station", "fake_session_name")
+    session_stage(Mission.S1, Station.S1, "fake_session_name")
