@@ -5,6 +5,7 @@ from flows.utils.artifacts import ReportManager
 import time
 import random
 from  flows.utils.copernicus_enum import Station, Mission
+from typing import Literal
 
 report_manager = ReportManager(2)
 
@@ -41,7 +42,7 @@ def send_event(mission: Mission, station: Station, session_id: str):
 
 
 @flow (validate_parameters=True)
-def session_stage(mission: Mission, station: Station, session_id: str):
+def session_stage(mission: Literal["s1", "s2", "s3"], station: Station, session_id: str):
     retrieve_all_cadus(session_id, station)
     send_event(mission=mission, station=station, session_id=session_id)
     report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
