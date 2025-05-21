@@ -1,0 +1,31 @@
+{
+  "stac_version": "1.0.0",
+  "stac_extensions": [],
+  "id": "S1_L0_TEST",
+  "title": "S1_L0_TEST",
+  "description": "This is an S1_L0 Test collection only created for test purpose.",
+  "type": "Collection",
+  "license": "proprietary",
+  "extent": {
+    "spatial": {
+      "bbox": [
+        [
+          -180.0,
+          -90.0,
+          180.0,
+          90.0
+        ]
+      ]
+    },
+    "temporal": {
+      "interval": [
+        [
+          "2015-07-01T00:00:00Z",
+          null
+        ]
+      ]
+    }
+  },
+  "links": [
+  ]
+}
