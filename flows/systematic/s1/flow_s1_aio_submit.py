@@ -8,14 +8,14 @@ from typing import Literal
 
 @task(name="AIO processing session",
       description="Call DPR processor with processor AIO to compute session.")
-def s1_aio(station: Station, session_id: str):
+def s1_aio(station: str, session_id: str):
     # report_manager.success_step(1, f"Start generic processing with S1-AIO on session name {session_id} on station {station}")
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"Launch DPR AIO for session {session_id} on station {station}"
 
     time.sleep(1)
     logger = get_run_logger()
-    logger.info("station : " + station.value)
+    logger.info("station : " + station)
     logger.info("session_id : " + session_id)
     run_dpr_aio(session_id)
 
