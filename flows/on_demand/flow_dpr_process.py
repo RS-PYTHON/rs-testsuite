@@ -1,5 +1,4 @@
 from prefect import flow, task
-from flows.utils.artifacts import ReportManager
 import time
 from enum import Enum
 from typing import List, Tuple
@@ -12,8 +11,6 @@ class ProcessorName(Enum):
     S1_L1 = "s1-l1"
     S1_L2 = "s1-l2"
 
-
-report_manager = ReportManager(2)
 
 
 @task

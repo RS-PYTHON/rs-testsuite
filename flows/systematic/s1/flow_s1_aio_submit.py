@@ -1,54 +1,22 @@
 from prefect import flow, task, get_run_logger
 from prefect.context import TaskRunContext
-from flows.utils.artifacts import ReportManager
 from prefect.deployments import run_deployment
-from prefect.artifacts import create_markdown_artifact
-
-# import json
-# from prefect.deployments import run_deployment
+from prefect.variables import Variable
 import time
 
-report_manager = ReportManager(2)
 
 
-@task
-def markdown_task():
-    na_revenue = 500000
-    markdown_report = f"""# Sales Report
-
-## Summary
-
-In the past quarter, our company saw a significant increase in sales, with a total revenue of $1,000,000. 
-This represents a 20% increase over the same period last year.
-
-## Sales by Region
-
-| Region        | Revenue |
-|:--------------|-------:|
-| North America | ${na_revenue:,} |
-| Europe        | $250,000 |
-| Asia          | $150,000 |
-| South America | $75,000 |
-| Africa        | $25,000 |
-
-## Top Products
-
-1. Product A - $300,000 in revenue
-2. Product B - $200,000 in revenue
-3. Product C - $150,000 in revenue
-
-## Conclusion
-
-Overall, these results are very encouraging and demonstrate the success of our sales team in increasing revenue 
-across all regions. However, we still have room for improvement and should focus on further increasing sales in 
-the coming quarter.
-"""
-    create_markdown_artifact(
-        key="gtm-report",
-        markdown=markdown_report,
-        description="Quarterly Sales Report",
-    )
-
+@task (log_prints=True)
+def test_variable():
+    """
+    This task is used to test the variable in the flow.
+    """
+    print("test variable")
+    Variable.set("answer", 42)
+    Variable.set("answer", 9001, overwrite=True)
+    print (Variable.get("answer", "fallback"))
+    
+    
 
 @task(name="AIO processing session",
       description="Call DPR processor with processor AIO to compute session.")
@@ -80,7 +48,7 @@ def run_dpr_aio(session_id: str):
 
 @flow
 def s1_aio_submit(station: str, session_id: str):
-    markdown_task()
+    test_variable()
     s1_aio(station, session_id)
 
 
