@@ -57,9 +57,9 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
         markdown=markdown_report,
         description="Retrieve last sessions from stations")
     
-    t1 = retrieve_last_session("MTI").submit();
-    t2 = retrieve_last_session("MPS").submit();
-    t3 = retrieve_last_session("SGS").submit();
+    t1 = retrieve_last_session.submit("MTI");
+    t2 = retrieve_last_session.submit("MPS");
+    t3 = retrieve_last_session.submit("SGS");
     t1.wait()
     t2.wait()
     t3.wait()
