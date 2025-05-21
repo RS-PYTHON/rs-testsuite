@@ -39,6 +39,7 @@ def launch_session_stage(station: str, session_id: str):
     run_deployment("session-stage/session-stage",
                    flow_run_name=f"session-stage/session-stage-{station}",
                    parameters={"mission": "s1", "station": station, "session_id": session_id},
+                   tags=["s1", "systematic", "ingestion"],
                    as_subflow=True)
 
 

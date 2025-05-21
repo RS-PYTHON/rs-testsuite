@@ -30,6 +30,7 @@ def run_dpr_aio(session_id: str):
                                "dask_cluster_id": "cluster-id_1",
                                "aux_collection": [("aux1", "my-aux-collection")],
                                "output_product_collection": [("output1", "my-product-collection")]},
+                   tags=["s1", "systematic", "aio"],
                    as_subflow=True)
 
 
