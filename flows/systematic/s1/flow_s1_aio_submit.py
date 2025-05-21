@@ -6,18 +6,6 @@ import time
 
 
 
-@task (log_prints=True)
-def test_variable():
-    """
-    This task is used to test the variable in the flow.
-    """
-    print("test variable")
-    Variable.set("answer", 42)
-    Variable.set("answer", 9001, overwrite=True)
-    print (Variable.get("answer", "fallback"))
-    
-    
-
 @task(name="AIO processing session",
       description="Call DPR processor with processor AIO to compute session.")
 def s1_aio(station: str, session_id: str):
@@ -48,7 +36,6 @@ def run_dpr_aio(session_id: str):
 
 @flow
 def s1_aio_submit(station: str, session_id: str):
-    test_variable()
     s1_aio(station, session_id)
 
 

@@ -1,50 +1,34 @@
+import random
 from prefect import flow, task
 from prefect.events import emit_event
 from prefect.deployments import run_deployment
 from datetime import datetime, timedelta
-from flows.utils.artifacts import ReportManager
+from prefect.context import TaskRunContext
 import time
-
-report_manager = ReportManager(2)
-
-
-@task(name="station-connection", description="Connect to all stations")
-def connect():
-    report_manager.success_step(1, "Connect to station")
-    time.sleep(1)
+from prefect.artifacts import create_markdown_artifact
 
 
-@task(name="get-session-list", description="Retrieve the list of sessions between two dates")
-def retrieve_sessions(to, tf):
-    report_manager.success_step(2, f"Retrieve sessions between {to} and {tf} for all S1 stations.")
+@task(name="retrieve-last-session", description="Connect to all stations")
+def retrieve_last_session(station:str):
+    task_run_ctx = TaskRunContext.get()
+    task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
+    time.sleep(random.randint(1, 2))
+    start_ingestion( station, "S1A_2025" + random.randint(1, 100000000000000000))
+    
+
+
+@task(name="start-ingestion", description="Retrieve the list of sessions between two dates")
+def start_ingestion(station: str, session_id: str):
     time.sleep(2)
-    session1 = start_session_ingestion.submit(3, "MTI", "S1A_20241114143038056332")
-    session2 = start_session_ingestion.submit(4, "MPS", "S1A_20251314143031111111")
-    session3 = start_session_ingestion.submit(5, "MTI", "S1A_20231144143348056552")
-    session1.wait()
-    session2.wait()
-    session3.wait()
+    launch_session_stage(station, session_id)
 
 
-@task(name="launch-flow-session-stage", description="Launch generic S1-AIO processing")
-def start_session_ingestion(step, station: str, session_id: str):
+@task(name="launch-session-stage", description="Launch generic S1-AIO processing")
+def launch_session_stage(station: str, session_id: str):
     run_deployment("session-stage/session-stage",
                    flow_run_name=f"session-stage/session-stage-{station}",
                    parameters={"mission": "s1", "station": station, "session_id": session_id},
-                   as_subflow=False)
-
-
-def send_event(step, station: str, session_id: str):
-    payload_json = {
-        "mission": "s1",
-        "level": "raw",
-        "station": f"{station}",
-        "session_id": f"{session_id}"
-    }
-    # prefect.resource.name  emit_event(event=f"{name}.sent.event!", resource={"prefect.resource.id": f"coder.{name}"})
-
-    emit_event(event="s1.session.available", resource={"prefect.resource.id": f"{station}.cadip"}, payload=payload_json)
-    report_manager.success_step(step, f"Send event for session {session_id}")
+                   as_subflow=True)
 
 
 @flow
@@ -59,14 +43,17 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
 - **End date**: {now.strftime("%Y-%m-%d %H:%M:%S")}
 
 """
-    report_manager.add_markdown_as_artefact("summary", markdown_report, "")
-
-    # Start the 2 tasks in sequence
-    connect()
-    retrieve_sessions(before, now)
-
-    report_manager.add_report_as_artefact("retrieve-sentinel1-sessions", "retrieve sentinel-1 sessions")
-
+    create_markdown_artifact(
+        key="Objective",
+        markdown=markdown_report,
+        description="Retrieve last sessions from stations")
+    
+    t1 = retrieve_last_session("MTI").submit();
+    t2 = retrieve_last_session("MPS").submit();
+    t3 = retrieve_last_session("SGS").submit();
+    t1.wait()
+    t2.wait()
+    t3.wait()
 
 if __name__ == "__main__":
     s1_session_retrieve()
