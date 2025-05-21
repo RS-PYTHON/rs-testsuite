@@ -57,14 +57,10 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
     create_markdown_artifact(
         key="objective",
         markdown=markdown_report,
-        description="Retrieve last sessions from stations")
-    
-    t1 = retrieve_last_session.submit(Station.MTI);
-    t2 = retrieve_last_session.submit(Station.MPS);
-    t3 = retrieve_last_session.submit(Station.SGS);
-    t1.wait()
-    t2.wait()
-    t3.wait()
+        description="Retrieve last sessions from stations") 
+    retrieve_last_session.submit(Station.MTI);
+    retrieve_last_session.submit(Station.MPS);
+    retrieve_last_session.submit(Station.SGS);
 
 if __name__ == "__main__":
     s1_session_retrieve()
