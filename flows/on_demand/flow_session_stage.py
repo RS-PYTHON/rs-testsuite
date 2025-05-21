@@ -26,7 +26,7 @@ def retrieve_one_cadu(i: int):
     report_manager.success_step(i+1, f"Retrieve cadu number {i}.")
 
 
-def send_event(mission: str, station: str, session_id: str):
+def send_event(mission: Mission, station: Station, session_id: str):
     payload_json = {
         "mission": f"{mission}",
         "level": "raw",

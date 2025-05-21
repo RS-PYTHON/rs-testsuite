@@ -5,10 +5,10 @@ from datetime import datetime, timedelta
 from prefect.context import TaskRunContext
 import time
 from prefect.artifacts import create_markdown_artifact
-
+from  flows.utils.copernicus_enum import Station, Mission
 
 @task 
-def retrieve_last_session(station:str):
+def retrieve_last_session(station:Station):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
     time.sleep(random.randint(1, 2))
@@ -26,18 +26,18 @@ def retrieve_last_session(station:str):
 
 
 @task(name="start-ingestion", description="Retrieve the list of sessions between two dates")
-def start_ingestion(station: str, session_id: str):
+def start_ingestion(station: Station, session_id: str):
     time.sleep(2)
     launch_session_stage(station, session_id)
 
 
 @task
-def launch_session_stage(station: str, session_id: str):
+def launch_session_stage(station: Station, session_id: str):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"Stage {session_id} from station {station}"
     run_deployment("session-stage/session-stage",
                    flow_run_name=f"session-stage/session-stage-{station}",
-                   parameters={"mission": "s1", "station": station, "session_id": session_id},
+                   parameters={"mission": Mission.S1, "station": station, "session_id": session_id},
                    tags=["s1", "systematic", "ingestion"],
                    as_subflow=True)
 
@@ -59,9 +59,9 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
         markdown=markdown_report,
         description="Retrieve last sessions from stations")
     
-    t1 = retrieve_last_session.submit("MTI");
-    t2 = retrieve_last_session.submit("MPS");
-    t3 = retrieve_last_session.submit("SGS");
+    t1 = retrieve_last_session.submit(Station.MTI);
+    t2 = retrieve_last_session.submit(Station.MPS);
+    t3 = retrieve_last_session.submit(Station.SGS);
     t1.wait()
     t2.wait()
     t3.wait()
