@@ -8,7 +8,7 @@ import time
 from prefect.artifacts import create_markdown_artifact
 
 
-@task(name="retrieve-last-session", description="Connect to all stations")
+@task
 def retrieve_last_session(station:str):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
@@ -32,8 +32,10 @@ def start_ingestion(station: str, session_id: str):
     launch_session_stage(station, session_id)
 
 
-@task(name="launch-session-stage", description="Launch generic S1-AIO processing")
+@task
 def launch_session_stage(station: str, session_id: str):
+    task_run_ctx = TaskRunContext.get()
+    task_run_ctx.task_run.name = f"Stage {session_id} from station {station}"
     run_deployment("session-stage/session-stage",
                    flow_run_name=f"session-stage/session-stage-{station}",
                    parameters={"mission": "s1", "station": station, "session_id": session_id},
