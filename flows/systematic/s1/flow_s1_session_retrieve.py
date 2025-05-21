@@ -34,10 +34,10 @@ def start_ingestion(station: Station, session_id: str):
 @task
 def launch_session_stage(station: Station, session_id: str):
     task_run_ctx = TaskRunContext.get()
-    task_run_ctx.task_run.name = f"Stage {session_id} from station {station}"
+    task_run_ctx.task_run.name = f"Stage {session_id} from station {station.value}"
     run_deployment("session-stage/session-stage",
-                   flow_run_name=f"session-stage/session-stage-{station}",
-                   parameters={"mission": Mission.S1, "station": station, "session_id": session_id},
+                   flow_run_name=f"stage-{session_id}-{station.value}",
+                   parameters={"mission": Mission.S1, "station": station.value, "session_id": session_id},
                    tags=["s1", "systematic", "ingestion"],
                    as_subflow=True)
 
