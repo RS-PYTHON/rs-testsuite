@@ -3,6 +3,7 @@ from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
 import time
 from  flows.utils.copernicus_enum import Station
+from typing import Literal
 
 
 @task(name="AIO processing session",
@@ -14,7 +15,7 @@ def s1_aio(station: Station, session_id: str):
 
     time.sleep(1)
     logger = get_run_logger()
-    logger.info("station : " + station)
+    logger.info("station : " + station.value)
     logger.info("session_id : " + session_id)
     run_dpr_aio(session_id)
 
@@ -35,7 +36,7 @@ def run_dpr_aio(session_id: str):
 
 
 @flow
-def s1_aio_submit(station: Station, session_id: str):
+def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "nsg"], session_id: str):
     s1_aio(station, session_id)
 
 
