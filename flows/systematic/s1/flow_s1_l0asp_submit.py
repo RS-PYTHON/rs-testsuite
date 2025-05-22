@@ -7,9 +7,9 @@ import time
 from typing import Literal
 
 
-@task(name="L0ASP processing session",
-      description="Call DPR processor with processor L0ASP to compute session.")
-def s1_l0asp(dt: str, emit_event: bool = True):
+@task(name="L0ASP processing segments",
+      description="Call DPR processor with processor L0ASP to compute segments.")
+def s1_l0asp(dt: str, emit_event: bool):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"Launch DPR L0ASP for DT {dt}"
     run_deployment("dpr-process/dpr-process",
