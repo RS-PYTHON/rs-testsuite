@@ -34,11 +34,11 @@ def check_input_datatake(dt : str):
         print ("Some telemetry is misisng for datatake " + dt)
     else:
         print ("All telemetry is present for datatake " + dt + "✅")
-        emit_event(mission="s1", dt=dt)
+        send_event(mission="s1", dt=dt)
         
 
 @task(name="Send segment event", description="Send an event to alert L0ASP.")
-def emit_event(mission: str, dt: str):
+def send_event(mission: str, dt: str):
     payload_json = {
         "mission": f"{mission}",
         "level": "l0",
@@ -59,7 +59,6 @@ def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "ns
     for i in range(10):
         # Générer un nombre aléatoire à 10 chiffres
         random_number = random.randint(100000000, 999999999)
-
         # Construire l'identifiant
         dt_id = hex(random_number)
         check_input_datatake(dt_id)
