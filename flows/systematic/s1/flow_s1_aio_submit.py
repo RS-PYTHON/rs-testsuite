@@ -1,9 +1,9 @@
 import random
-from prefect import flow, task, get_run_logger
+from prefect import flow, task
+from prefect.events import emit_event
 from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
 import time
-from  flows.utils.copernicus_enum import Station
 from typing import Literal
 
 
