@@ -63,12 +63,12 @@ def report_expected():
     time.sleep(2)
     markdown_report = f"""# Input parameters
 ## Expected products ( output of the processor DPR)
-| Product type                     |
-|:------------------------------|
-| **IW_GRDH__1S**        |
-| **IW_SLC__1S**        |
-| **IW_SLC__1A**        |
-| **IW_GRDH__1A**        |
+| Product type                     | count                      |
+|:------------------------------|:-----------------------------|
+| **IW_GRDH__1S**        |  `1` |
+| **IW_SLC__1S**         |  `1` |
+| **IW_SLC__1A**         |  `1` |
+| **IW_GRDH__1A**        |  `1` |
 
 """
     create_markdown_artifact(
