@@ -7,4 +7,4 @@ def osam_obs_account(account_name: str = None):
     
     
 if __name__ == "__main__":
-    osam_obs_account)
+    osam_obs_account()
