@@ -52,7 +52,7 @@ def report_input_computed():
 | **aux file**        | `S1A_AUX_INS_V20190228T092500_G20190227T100643.SAFE`        |
 """
     create_markdown_artifact(
-        key="input_computed",
+        key="input-computed",
         markdown=markdown_report,
         description="List of products and AUX files sent to the processor"
     )
@@ -72,7 +72,7 @@ def report_expected():
 
 """
     create_markdown_artifact(
-        key="expected-report",
+        key="expected",
         markdown=markdown_report,
         description="Input for DPR processing"
     )
@@ -94,7 +94,7 @@ def report_realised():
 
 """
     create_markdown_artifact(
-        key="expected-report",
+        key="realised",
         markdown=markdown_report,
         description="Input for DPR processing"
     )
