@@ -8,11 +8,11 @@ import pyprof2calltree
 from behave import given, then, use_step_matcher, when
 from pystac import Collection, Item
 from pystac_client import Client
-from rs_client.auxip_client import AuxipClient
-from rs_client.cadip_client import CadipClient
-from rs_client.catalog_client import CatalogClient
+from rs_client.stac.auxip_client import AuxipClient
+from rs_client.stac.cadip_client import CadipClient
+from rs_client.stac.catalog_client import CatalogClient
 from rs_client.rs_client import RsClient
-from rs_client.stac_base import StacBase
+from rs_client.stac.stac_base import StacBase
 from stac_api_validator.validations import QueryConfig, validate_api
 
 logger = logging.getLogger(__name__)
