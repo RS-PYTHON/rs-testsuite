@@ -19,8 +19,11 @@ def rs_server_http_call(
     assert context.apikey is not None, "API-KEY is not set."
     assert os.getenv("RS_SERVER_URL") is not None, "RS_SERVER_URL is not set."
 
-    # Push API-KEY on the header
-    headers = {"x-api-key": f"{context.apikey}"}
+    # Push API-KEY and argument on the header
+    headers = {
+            "x-api-key": f"{context.apikey}",
+            "Content-Type": "application/json"
+            }
 
     with requests.Session() as session:
         rs_server_url = os.environ["RS_SERVER_URL"]
@@ -29,8 +32,8 @@ def rs_server_http_call(
         )
         logger.info("%s %s", verb, full_url)
         if parameter:
-            logger.info("TODO implement parameter %s", parameter)
-        response = session.request(verb, full_url, headers=headers)
+            logger.info("%s implement parameter %s", verb, parameter)
+        response = session.request(verb, full_url, headers=headers, json=parameter)
         assert (
             response.status_code == status
         ), f"status for {verb} {url} is {response.status_code} and not {status}: {response.text}"

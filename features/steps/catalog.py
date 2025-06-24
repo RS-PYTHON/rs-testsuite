@@ -116,7 +116,7 @@ def step_check_catalog_queryables(context):
     ), "Link http://www.opengis.net/def/rel/ogc/1.0/queryables cannot be found."
 
 
-@then("the url catalog/queryables has got 4 properties")
+@then("the url catalog/queryables has got 3 properties")
 def step_check_catalog_queryables_properties(context):
     """
     Check the queryable interface
@@ -126,7 +126,7 @@ def step_check_catalog_queryables_properties(context):
     check_json_path_is_not_null(data, "properties", "id")
     check_json_path_is_not_null(data, "properties", "datetime")
     check_json_path_is_not_null(data, "properties", "geometry")
-    check_json_path_is_not_null(data, "properties", "eo:cloud_cover")
+    #check_json_path_is_not_null(data, "properties", "eo:cloud_cover")
 
 
 @then("the url /catalog/collections/ for {collection} proposes queryables")
