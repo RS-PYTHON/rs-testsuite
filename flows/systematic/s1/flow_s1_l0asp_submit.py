@@ -3,8 +3,6 @@ from prefect import flow, task
 from prefect.events import emit_event
 from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
-import time
-from typing import Literal
 
 
 @task(name="L0ASP processing segments",
@@ -59,11 +57,11 @@ def send_event(dt: str, product_name: str):
                payload=payload_json)
 
 
-@flow (log_prints=True, validate_parameters=True)
+@flow(log_prints=True, validate_parameters=True)
 def s1_l0asp_submit(datatake: str, emit_event: bool = True):
     print("datatake : " + datatake)
     s1_l0asp(datatake, emit_event)
-    
-    
+
+
 if __name__ == "__main__":
     s1_l0asp_submit("074C93")

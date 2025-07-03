@@ -4,7 +4,6 @@ from prefect.context import TaskRunContext
 from prefect.deployments import run_deployment
 
 
-
 @task(name="L1 processing slice",
       description="Call DPR processor with processor L1 to compute slice l0.")
 def s1_l1(slice_l0: str, emit_event: bool):
@@ -33,17 +32,17 @@ def send_event(dt: str, product_name: str):
         "datatake": dt,
         "slice": product_name
     }
-    event_value = f"s1.slice.l1.catalog"
+    event_value = "s1.slice.l1.catalog"
     print("Send event : " + event_value)
     emit_event(event=event_value, resource={"prefect.resource.id": f"slice.l1.{dt}"},
                payload=payload_json)
 
 
-@flow (log_prints=True, validate_parameters=True)
+@flow(log_prints=True, validate_parameters=True)
 def s1_l1_submit(slice_l0: str, emit_event: bool = True):
     print("input slice  : " + slice_l0)
     s1_l1(slice_l0, emit_event)
-    
-    
+
+
 if __name__ == "__main__":
     s1_l1_submit("S1A_WV_SLC__0SSV_20250423T142610_20250423T145614_058885_074C93_CF43")

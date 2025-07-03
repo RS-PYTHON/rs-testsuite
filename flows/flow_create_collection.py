@@ -2,7 +2,6 @@
 import logging
 import os
 from datetime import datetime
-
 import rs_common
 from prefect import flow, task
 from prefect.blocks.system import Secret

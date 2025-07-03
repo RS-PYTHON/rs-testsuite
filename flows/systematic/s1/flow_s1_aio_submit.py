@@ -31,12 +31,12 @@ def check_input_datatake(dt : str, evt: bool):
     task_run_ctx.task_run.name = f"check segments input from catalog for datatake {dt}"
     time.sleep(1)
     if (random.randint(0, 1) == 0):
-        print ("Some telemetry is misisng for datatake " + dt)
+        print("Some telemetry is misisng for datatake " + dt)
     else:
-        print ("All telemetry is present for datatake " + dt + "✅")
+        print("All telemetry is present for datatake " + dt + "✅")
         if evt:
             send_event(mission="s1", dt=dt)
-        
+
 
 @task(name="Send segment event", description="Send an event to alert L0ASP.")
 def send_event(mission: str, dt: str):
@@ -52,7 +52,7 @@ def send_event(mission: str, dt: str):
                payload=payload_json)
 
 
-@flow (log_prints=True, validate_parameters=True)
+@flow(log_prints=True, validate_parameters=True)
 def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "nsg"], 
                   session_id: str, emit_event: bool = True):
     print("station : " + station)
@@ -64,8 +64,8 @@ def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "ns
         # Construire l'identifiant
         dt_id = hex(random_number)
         check_input_datatake(dt_id, emit_event)
-    
-    
+
+
 
 if __name__ == "__main__":
     s1_aio_submit("{}", "fake_session_name")

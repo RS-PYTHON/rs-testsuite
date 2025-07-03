@@ -38,11 +38,11 @@ def send_event(dt: str, product_name: str):
                payload=payload_json)
 
 
-@flow (log_prints=True, validate_parameters=True)
+@flow(log_prints=True, validate_parameters=True)
 def s1_l2_submit(slice_l0: str, emit_event: bool = True):
     print("input slice  : " + slice_l0)
     s1_l2(slice_l0, emit_event)
-    
-    
+
+
 if __name__ == "__main__":
     s1_l2_submit("S1A_WV_SLC__0SSV_20250423T142610_20250423T145614_058885_074C93_CF43")

@@ -5,14 +5,15 @@ from datetime import datetime, timedelta
 from prefect.context import TaskRunContext
 import time
 from prefect.artifacts import create_markdown_artifact
-from  flows.utils.copernicus_enum import Station, Mission
+from flows.utils.copernicus_enum import Station, Mission
 
-@task 
-def retrieve_last_session(station:Station):
+
+@task
+def retrieve_last_session(station: Station):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"retrieve last sessions from {station}"
     time.sleep(random.randint(1, 2))
-    
+
     # Obtenir la date actuelle
     date_str = datetime.now().strftime("%Y%m%d")
 
@@ -22,7 +23,6 @@ def retrieve_last_session(station:Station):
     # Construire l'identifiant
     identifier = f"S1A_{date_str}{random_number}"
     start_ingestion( station, identifier)
-    
 
 
 @task(name="start-ingestion", description="Retrieve the list of sessions between two dates")
@@ -65,6 +65,7 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
     t1.wait()
     t2.wait()
     t3.wait()
+
 
 if __name__ == "__main__":
     s1_session_retrieve()
