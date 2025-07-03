@@ -7,14 +7,14 @@ from typing import Literal
 
 
 @task
-def report_dpr_configuration(processor_name: ProcessorName, processor_version: str, processing_unit: str, dask_cluster_id: str,
-                             aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]],
-                             priority: Literal["LOW", "MEDIUM", "HIGH"]):
-    markdown_report = f"""# Input parameters
-✅ OK
-## Input parameters when calling the DPR processor
+def report_flow_input(input_product_list: list[str], processor_name: ProcessorName, processor_version: str,
+                      processing_unit: str, dask_cluster_id: str,
+                      aux_collection: List[Tuple[str, str]], output_product_collection: List[Tuple[str, str]],
+                      priority: Literal["LOW", "MEDIUM", "HIGH"]):
+    markdown_report = f"""# Parameters when calling the @flow 
 | Parameter                     | Value                         |
 |:------------------------------|:-----------------------------|
+| **input_product_list**            | `{input_product_list}`            |
 | **processor_name**            | `{processor_name}`            |
 | **processor_version**         | `{processor_version}`         |
 | **processing_unit**           | `{processing_unit}`           |
@@ -25,9 +25,9 @@ def report_dpr_configuration(processor_name: ProcessorName, processor_version: s
 
 """
     create_markdown_artifact(
-        key="processor-input",
+        key="flow-input",
         markdown=markdown_report,
-        description="Input parameters sent to Processor"
+        description="flow input parameters"
     )
 
 
@@ -101,12 +101,13 @@ def dpr_process(
     processor_version: str,
     processing_unit: str,
     dask_cluster_id: str,
-    aux_collection=None,
-    output_product_collection=None,
+    aux_collection: str = None,
+    output_product_collection: str = None,
     priority: Literal["LOW", "MEDIUM", "HIGH"] = "LOW"
 ):
     time.sleep(5)
-    report_dpr_configuration(
+    report_flow_input(
+        input_product_list,
         processor_name,
         processor_version,
         processing_unit,
