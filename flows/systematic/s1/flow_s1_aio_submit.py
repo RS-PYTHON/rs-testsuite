@@ -26,7 +26,7 @@ def s1_aio(station: str, session_id: str):
                    as_subflow=True)
 
 @task(name="Check input datatake", description="Check if the input datatake are complete.")
-def check_input_datatake(dt : str, evt: bool):
+def check_input_datatake(dt: str, evt: bool):
     task_run_ctx = TaskRunContext.get()
     task_run_ctx.task_run.name = f"check segments input from catalog for datatake {dt}"
     time.sleep(1)
@@ -53,7 +53,7 @@ def send_event(mission: str, dt: str):
 
 
 @flow(log_prints=True, validate_parameters=True)
-def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "nsg"], 
+def s1_aio_submit(station: Literal["sgs", "mti", "mps", "ins", "kse", "par", "nsg"],
                   session_id: str, emit_event: bool = True):
     print("station : " + station)
     print("session_id : " + session_id)
