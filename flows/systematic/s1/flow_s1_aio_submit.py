@@ -28,17 +28,17 @@ def s1_aio(station: str, session_id: str):
 @task(name="Check input datatake", description="Check if the input datatake are complete.")
 def check_input_datatake(dt: str, evt: bool):
     task_run_ctx = TaskRunContext.get()
-    task_run_ctx.task_run.name = f"check segments input from catalog for datatake {dt}"
+    task_run_ctx.task_run.name = f"check all segments for datatake {dt} from catalog "
     time.sleep(1)
     if (random.randint(0, 1) == 0):
-        print("Some telemetry is misisng for datatake " + dt)
+        print("Some telemetry is missing for datatake " + dt + "❌")
     else:
         print("All telemetry is present for datatake " + dt + "✅")
         if evt:
             send_event(mission="s1", dt=dt)
 
 
-@task(name="Send segment event", description="Send an event to alert L0ASP.")
+@task(name="start L0 assembly", description="Send an event to alert L0ASP.")
 def send_event(mission: str, dt: str):
     payload_json = {
         "mission": f"{mission}",

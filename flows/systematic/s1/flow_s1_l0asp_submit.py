@@ -9,12 +9,12 @@ from prefect.deployments import run_deployment
       description="Call DPR processor with processor L0ASP to compute segments.")
 def s1_l0asp(dt: str, emit_event: bool):
     task_run_ctx = TaskRunContext.get()
-    task_run_ctx.task_run.name = f"Launch DPR L0ASP for DT {dt}"
+    task_run_ctx.task_run.name = f"Call DPR with processor L0ASP for DT {dt}"
     run_deployment("dpr-process/dpr-process",
                    flow_run_name=f"dpr-process/dpr-process-l0asp-{dt}",
                    parameters={"input_product_list": ["S1A_WV_RAW__0NSV_20250423T142609_20250423T145626_058885_074C93_7676.SAFE"
-                                "S1A_WV_RAW__0ASV_20250423T142609_20250423T145626_058885_074C93_BEEA.SAFE",
-                                "S1A_WV_RAW__0SSV_20250423T142609_20250423T145626_058885_074C93_3AFA.SAFE"],
+                                                      "S1A_WV_RAW__0ASV_20250423T142609_20250423T145626_058885_074C93_BEEA.SAFE",
+                                                      "S1A_WV_RAW__0SSV_20250423T142609_20250423T145626_058885_074C93_3AFA.SAFE"],
                                "processor_name": "s1-l0asp",
                                "processor_version": "15.1.0",
                                "processing_unit": "L0ASP-PART",
@@ -36,7 +36,7 @@ def s1_l0asp(dt: str, emit_event: bool):
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153509_20250423T153541_058886_074C98_5D09")
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153534_20250423T153606_058886_074C98_38D4")
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153559_20250423T153631_058886_074C98_6E98")
-        send_event(dt, "S1A_IW_RAW__0SDV_20250423T153624_20250423T153656_058886_074C98_B9A6")    
+        send_event(dt, "S1A_IW_RAW__0SDV_20250423T153624_20250423T153656_058886_074C98_B9A6")
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153649_20250423T153721_058886_074C98_740D")
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153714_20250423T153746_058886_074C98_CDCB")
         send_event(dt, "S1A_IW_RAW__0SDV_20250423T153739_20250423T153811_058886_074C98_D607")
@@ -51,7 +51,7 @@ def send_event(dt: str, product_name: str):
         "datatake": dt,
         "slice": product_name
     }
-    event_value = f"s1.slice.l0.catalog"
+    event_value = "s1.slice.l0.catalog"
     print("Send event : " + event_value)
     emit_event(event=event_value, resource={"prefect.resource.id": f"slice.l0.{dt}"},
                payload=payload_json)
@@ -59,7 +59,7 @@ def send_event(dt: str, product_name: str):
 
 @flow(log_prints=True, validate_parameters=True)
 def s1_l0asp_submit(datatake: str, emit_event: bool = True):
-    print("datatake : " + datatake)
+    print("This flow will deal with the datatake : " + datatake)
     s1_l0asp(datatake, emit_event)
 
 

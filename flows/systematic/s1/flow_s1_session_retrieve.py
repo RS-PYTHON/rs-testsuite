@@ -44,7 +44,7 @@ def launch_session_stage(station: Station, session_id: str):
 
 
 @flow
-def s1_session_retrieve(delta_time_seconds: int = 3600):
+def s1_session_retrieve(delta_time_seconds: int = 1200):
     now = datetime.now()
     before = now - timedelta(seconds=delta_time_seconds)
 
@@ -59,9 +59,9 @@ This flow will retrieve sentinel-1 sessions from stations between two dates :
         key="objective",
         markdown=markdown_report,
         description="Retrieve last sessions from stations") 
-    t1 = retrieve_last_session.submit(Station.MTI);
-    t2 = retrieve_last_session.submit(Station.MPS);
-    t3 = retrieve_last_session.submit(Station.SGS);
+    t1 = retrieve_last_session.submit(Station.MTI)
+    t2 = retrieve_last_session.submit(Station.MPS)
+    t3 = retrieve_last_session.submit(Station.SGS)
     t1.wait()
     t2.wait()
     t3.wait()

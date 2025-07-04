@@ -48,10 +48,12 @@ def report_dpr_input_parameters():
 | **aux file**        | `S1A_AUX_INS_V20190228T092500_G20190227T100643.SAFE`        |
 """
     create_markdown_artifact(
-        key="input-computed",
+        key="dpr-input",
         markdown=markdown_report,
         description="List of products and AUX files sent to the processor"
     )
+    report_dpr_output_expected()
+
 
 
 @task
@@ -67,10 +69,23 @@ def report_dpr_output_expected():
 
 """
     create_markdown_artifact(
-        key="expected",
+        key="product-expected",
         markdown=markdown_report,
         description="Expected output products"
     )
+    dpr_execution()
+
+
+@task(name="Call DPR as a Service", description="Call DPR as a service.")
+def dpr_execution():
+    for i in range(5):
+        report_dpr_output_realised(i)
+
+
+@task
+def check_dpr_progression(value: int = 0):
+    time.sleep(1)
+    print("{i} % of DPR processing done".format(i=value * 20))
 
 
 @task
@@ -88,7 +103,7 @@ def report_dpr_output_realised():
 
 """
     create_markdown_artifact(
-        key="realised",
+        key="product-realised",
         markdown=markdown_report,
         description="Output products"
     )
@@ -116,8 +131,6 @@ def dpr_process(
         output_product_collection, 
         priority)
     report_dpr_input_parameters()
-    report_dpr_output_expected()
-    report_dpr_output_realised()
 
 
 if __name__ == "__main__":
