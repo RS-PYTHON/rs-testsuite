@@ -17,14 +17,18 @@ def retrieve_all_cadus(session_id: str, station: Station):
     task_run_ctx.task_run.name = f"Stage session {session_id} from station {station}"
 
     report_manager.success_step(1, "Retrieve all cadus")
-    tasks = [retrieve_one_cadu.submit(i) for i in range(50)]
+    tasks = [retrieve_one_cadu.submit(i, session_id) for i in range(50)]
     for t in tasks:
         t.wait()
 
 
 @task(name="ingest-a-single-cadu", description="Retrieve one CADU chunk.")
-def retrieve_one_cadu(i: int):
-    time.sleep(random.randint(1, 5))
+def retrieve_one_cadu(i: int, session_id: str):
+    channel = random.choice(["ch1", "ch2"])
+    chunk_name = f"{session_id}_{channel}_DSDB_{i:04d}.raw"
+    task_run_ctx = TaskRunContext.get()
+    task_run_ctx.task_run.name = f"Stage {chunk_name}"
+    time.sleep(random.randint(1, 6))
     report_manager.success_step(i+1, f"Retrieve cadu number {i+1}.")
 
 
