@@ -78,14 +78,17 @@ def report_dpr_output_expected():
 
 @task(name="Call DPR as a Service", description="Call DPR as a service.")
 def dpr_execution():
-    for i in range(5):
-        report_dpr_output_realised(i)
+    check_dpr_progression(0)
 
 
 @task
-def check_dpr_progression(value: int = 0):
+def check_dpr_progression(value: int):
     time.sleep(1)
     print("{i} % of DPR processing done".format(i=value * 20))
+    if (value < 5):
+        check_dpr_progression(value + 1)
+    else:
+        report_dpr_output_realised()
 
 
 @task
