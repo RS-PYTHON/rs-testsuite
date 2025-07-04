@@ -101,8 +101,8 @@ def dpr_process(
     processor_version: str,
     processing_unit: str,
     dask_cluster_id: str,
-    aux_collection: list[str] = None,
-    output_product_collection: list[str] = None,
+    aux_collection: list[tuple[str, str]] = None,
+    output_product_collection: list[tuple[str, str]] = None,
     priority: Literal["LOW", "MEDIUM", "HIGH"] = "LOW"
 ):
     time.sleep(5)
