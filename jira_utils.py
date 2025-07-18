@@ -2,6 +2,7 @@
 
 import logging
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -14,7 +15,6 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from webdriver_manager.firefox import GeckoDriverManager
 
 
 def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
@@ -27,8 +27,18 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
     Path(os.environ["TMPDIR"]).mkdir(parents=True, exist_ok=True)
 
     # Install gecko driver if it's missing
-    print(":: Installing Gecko driver")
-    geckodriver_autoinstaller.install()
+    if shutil.which("geckodriver") is None and not os.path.exists(
+        geckodriver_autoinstaller.utils.get_geckodriver_path(),
+    ):
+        print(":: Gecko driver not foud, installing...")
+        geckodriver_autoinstaller.install()
+    else:
+        print(":: Gecko driver already present, skipping installation.")
+
+    geckodriver_path = (
+        shutil.which("geckodriver")
+        or geckodriver_autoinstaller.utils.get_geckodriver_path()
+    )
 
     # Create download directory
     download_dir = os.environ["TMPDIR"] + "/downloads"
@@ -56,11 +66,11 @@ def firefox_browser() -> tuple[FirefoxProfile, webdriver.Firefox, str]:
     options.profile = firefox_profile
 
     # Start browser and navigate to page
-    print(":: Starting Firefox")
+    print(f":: Starting Firefox with geckodriver at {geckodriver_path}")
     browser = webdriver.Firefox(
         options,
         Service(
-            executable_path=GeckoDriverManager().install(),
+            executable_path=geckodriver_path,
             log_output=subprocess.STDOUT,
         ),
     )  # DEVNULL if needed

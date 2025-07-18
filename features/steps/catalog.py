@@ -77,12 +77,12 @@ def step_create_collection(context, name):
         "extent": {
             "spatial": {"bbox": [[-180, -90, 180, 90]]},
             "temporal": {
-                "interval": [["2000-01-01T00:00:00Z", "2030-01-01T00:00:00Z"]]
-            }
+                "interval": [["2000-01-01T00:00:00Z", "2030-01-01T00:00:00Z"]],
+            },
         },
         "license": "public-domain",
         "description": f"{name} default description",
-        "stac_version": "1.0.0"
+        "stac_version": "1.0.0",
     }
 
     # Call the endpoint to create the collection
@@ -126,7 +126,6 @@ def step_check_catalog_queryables_properties(context):
     check_json_path_is_not_null(data, "properties", "id")
     check_json_path_is_not_null(data, "properties", "datetime")
     check_json_path_is_not_null(data, "properties", "geometry")
-    #check_json_path_is_not_null(data, "properties", "eo:cloud_cover")
 
 
 @then("the url /catalog/collections/ for {collection} proposes queryables")
