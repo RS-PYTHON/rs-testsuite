@@ -4,6 +4,8 @@
 name: Run Test Execution
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
     inputs:
       environment:
@@ -51,6 +53,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Export tests from Jira/Xray
+      if: ${{ github.event_name != 'pull_request' }}
       env:
         INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
@@ -62,11 +65,13 @@ jobs:
 
     - name: Upload features as artifact
       uses: actions/upload-artifact@v4
+      if: ${{ github.event_name != 'pull_request' }}
       with:
         name: features
         path: ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
     - name: Run tests with behave
+      if: ${{ github.event_name != 'pull_request' }}
       env:
         APIKEY_URL: ${{ vars.APIKEY_URL }}
         AUXIP_STAC_API_URL: ${{ vars.AUXIP_STAC_API_URL }}
@@ -91,19 +96,20 @@ jobs:
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2
       id: test-results
-      if: always()
+      if: ${{ github.event_name != 'pull_request' && always() }}
       with:
         files: |
           reports/**/*.xml
 
     - name: Upload test reports as artifacts
       uses: actions/upload-artifact@v4
+      if: always()
       with:
         name: reports
         path: reports/
 
     - name: Import test execution results to Jira/Xray (OPS)
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       env:
         INPUT_XRAY_KEY: ${{ inputs.xray_key }}
         XRAY_USER: ${{ secrets.XRAY_USER }}
@@ -114,7 +120,7 @@ jobs:
 
     - name: Set badge color (OPS)
       shell: bash
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       run: |
         case ${{ fromJSON( steps.test-results.outputs.json ).conclusion }} in
           success)
@@ -131,7 +137,7 @@ jobs:
     - name: Create badge (OPS)
       uses: emibcn/badge-action@v2.0.3
       id: badge
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       with:
         label: Tests
         status: '${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.tests }} tests, ${{ fromJSON( steps.test-results.outputs.json ).formatted.stats.runs }} runs: ${{ fromJSON( steps.test-results.outputs.json ).conclusion }}'
@@ -140,14 +146,14 @@ jobs:
 
     - name: Upload badge as artifact
       uses: actions/upload-artifact@v4
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       with:
         name: badge
         path: badge.svg
         if-no-files-found: error
 
     - name: Commit badge (OPS)
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       continue-on-error: true
       run: |
         git config --local user.email "action@github.com"
@@ -161,7 +167,7 @@ jobs:
 
     - name: Push badge commit (OPS)
       uses: ad-m/github-push-action@master
-      if: inputs.environment == 'ENV_OPS' && (success() || failure())
+      if: ${{ github.event_name != 'pull_request' && inputs.environment == 'ENV_OPS' && (success() || failure()) }}
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         force_with_lease: true
