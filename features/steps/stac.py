@@ -8,10 +8,10 @@ import pyprof2calltree
 from behave import given, then, use_step_matcher, when
 from pystac import Collection, Item
 from pystac_client import Client
+from rs_client.rs_client import RsClient
 from rs_client.stac.auxip_client import AuxipClient
 from rs_client.stac.cadip_client import CadipClient
 from rs_client.stac.catalog_client import CatalogClient
-from rs_client.rs_client import RsClient
 from rs_client.stac.stac_base import StacBase
 from stac_api_validator.validations import QueryConfig, validate_api
 
@@ -304,7 +304,13 @@ def step_then_no_stac_api_warnings(context):
     assert (
         context.stac_api_warnings is not None
     ), "STAC API validation has not been performed"
-    stac_api_warnings: list[str] = list(context.stac_api_warnings)
+    # Ignore warnings for stories not yet implemented
+    # https://pforge-exchange2.astrium.eads.net/jira/browse/RSPY-780: STAC summaries for CADIP/AUXIP/PRIP collections
+    stac_api_warnings = [
+        warning
+        for warning in context.stac_api_warnings
+        if "A STAC collection should contain a summaries field" not in warning
+    ]
     assert (
         not stac_api_warnings
     ), f"STAC API validation warnings:\n - {'\n - '.join(stac_api_warnings)}"
