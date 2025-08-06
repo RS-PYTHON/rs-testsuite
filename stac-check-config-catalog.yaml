@@ -21,8 +21,8 @@ linting:
   bloated_metadata: true
   # best practices - ensure thumbnail is a small file size ["png", "jpeg", "jpg", "webp"]
   check_thumbnail: true
-  # best practices - ensure that links in catalogs and collections include a title field
-  links_title: true
+  # best practices - ensure that links in catalogs and collections include a title field - to enable after RSPY-613
+  links_title: false
   # best practices - ensure that links in catalogs and collections include self link
   links_self: true
 
