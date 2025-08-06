@@ -45,6 +45,7 @@ def step_given_stac_api(context, stac_instance: str):
         "CADIP": create_rs_stac_client_cadip,
         "AUXIP": create_rs_stac_client_auxip,
     }[stac_instance](context)
+    context.stac_instance = stac_instance
 
 
 use_step_matcher("parse")
@@ -196,6 +197,7 @@ def step_check_stac_api(context):
     assert (
         context.stac_conformance_classes is not None
     ), "STAC conformance classes are not set."
+    assert isinstance(context.stac_instance, str), "STAC instance type is not set."
 
     profiler = cProfile.Profile()
     profiler.enable()
@@ -227,6 +229,7 @@ def step_check_stac_api(context):
         ),
         transaction_collection=None,
         open_assets_urls=False,
+        stac_check_config=f"./stac-check-config-{context.stac_instance.lower()}.yaml",
     )
     context.stac_api_warnings = warnings
     context.stac_api_errors = errors
@@ -305,11 +308,10 @@ def step_then_no_stac_api_warnings(context):
         context.stac_api_warnings is not None
     ), "STAC API validation has not been performed"
     # Ignore warnings for stories not yet implemented
-    # https://pforge-exchange2.astrium.eads.net/jira/browse/RSPY-780: STAC summaries for CADIP/AUXIP/PRIP collections
     stac_api_warnings = [
         warning
         for warning in context.stac_api_warnings
-        if "A STAC collection should contain a summaries field" not in warning
+        if "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" not in warning
     ]
     assert (
         not stac_api_warnings
