@@ -15,7 +15,7 @@ on:
       xray_key:
         description: XRay Test Execution key to run
         required: true
-        default: 'RSPY-730'
+        default: 'RSPY-783'
 
 permissions:
   contents: write
