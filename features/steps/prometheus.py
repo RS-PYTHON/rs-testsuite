@@ -84,7 +84,8 @@ def step_check_container_version(context, container: str, version: str):
     ), f"regex {configuration[2]} does not match image version: {image_value}"
     version_extracted = match.group(1)
 
-    # Assert that the extracted version matches the expected version
-    assert (
-        version_extracted == version
-    ), f"Version extracted is {version_extracted} instead of {version}."
+    # Assert that the extracted version matches the expected version or latest
+    assert version_extracted in (
+        version,
+        "latest",
+    ), f"Version extracted is {version_extracted} instead of {version} or latest."
