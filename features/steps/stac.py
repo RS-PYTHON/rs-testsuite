@@ -373,6 +373,7 @@ def step_when_stac_create_collection(context, collection_id: str):
         collection=Collection.from_file(
             "resources/catalog/collections/" + collection_id + ".json",
         ),
+        raise_for_status=False,
     )
     assert response.status_code in [
         201,
@@ -386,6 +387,7 @@ def step_when_stac_add_item(context, item_id: str, collection_id: str):
     response = create_rs_stac_client_catalog(context).add_item(
         item=Item.from_file("resources/catalog/items/" + item_id + ".json"),
         collection_id=collection_id,
+        raise_for_status=False,
     )
     assert response.status_code in [
         201,
