@@ -3,15 +3,22 @@ import json
 import logging
 import os
 import pstats
+from collections.abc import Iterator
+from pathlib import Path
 
 import pyprof2calltree
 from behave import given, then, use_step_matcher, when
 from pystac import Collection, Item
 from pystac_client import Client
+from pystac_client.exceptions import APIError
 from rs_client.rs_client import RsClient
 from rs_client.stac.auxip_client import AuxipClient
 from rs_client.stac.cadip_client import CadipClient
 from rs_client.stac.catalog_client import CatalogClient
+
+# from rs_client.stac.edrs_client import EdrsClient
+# from rs_client.stac.lta_client import LtaClient
+from rs_client.stac.prip_client import PripClient
 from rs_client.stac.stac_base import StacBase
 from stac_api_validator.validations import QueryConfig, validate_api
 
@@ -29,6 +36,7 @@ def step_given_stac_api(context, stac_instance: str):
         "AUXIP_STAC_API_URL",
         "LTA_STAC_API_URL",
         "PRIP_STAC_API_URL",
+        "EDRS_STAC_API_URL",
     ]:
         assert os.getenv(url) is not None, url + " is not set."
     context.stac_api_root_url = os.environ[
@@ -38,12 +46,16 @@ def step_given_stac_api(context, stac_instance: str):
             "AUXIP": "AUXIP_STAC_API_URL",
             "LTA": "LTA_STAC_API_URL",
             "PRIP": "PRIP_STAC_API_URL",
+            "EDRS": "EDRS_STAC_API_URL",
         }[stac_instance]
     ]
     context.rs_stac_client = {
         "CATALOG": create_rs_stac_client_catalog,
         "CADIP": create_rs_stac_client_cadip,
         "AUXIP": create_rs_stac_client_auxip,
+        #        "LTA": create_rs_stac_client_lta,
+        "PRIP": create_rs_stac_client_prip,
+        #        "EDRS": create_rs_stac_client_edrs,
     }[stac_instance](context)
     context.stac_instance = stac_instance
 
@@ -276,6 +288,44 @@ def step_search_stac_item(
     )[0]
 
 
+@when("he retrieves all collections")
+def step_retrieve_all_collections(context):
+    assert (
+        context.rs_stac_client is not None
+    ), "STAC API client has not been initialized"
+    stac_client: StacBase = context.rs_stac_client
+    context.stac_all_collections = stac_client.get_collections()
+
+
+@then("each collection has at least {num_items:d} item")
+@then("each collection has at least {num_items:d} items")
+def step_each_collection_contains_at_least_num_items(context, num_items: int):
+    assert (
+        context.stac_all_collections is not None
+    ), "STAC API client returned no collections"
+    all_collections: Iterator[Collection] = context.stac_all_collections
+    results = {}
+    for collection in all_collections:
+        all_items: Iterator[Item] = collection.get_items()
+        count = 0
+        for _ in range(num_items):
+            try:
+                next(all_items)
+                count += 1
+            except (APIError, StopIteration):
+                break
+
+        has_enough = count >= num_items
+        results[collection.id] = has_enough
+
+    report_path = Path(context.stac_instance + "_stac_collection_report.json")
+    with report_path.open("w", encoding="utf-8") as f:
+        json.dump(results, f, indent=2, ensure_ascii=False)
+
+    missing = [cid for cid, ok in results.items() if not ok]
+    assert not missing, f"Some collections have fewer than {num_items} items: {missing}"
+
+
 @then("no STAC API validation error occurs")
 def step_then_no_stac_api_errors(context):
     assert (
@@ -346,6 +396,18 @@ def create_rs_stac_client_catalog(context) -> CatalogClient:
     return create_rs_stac_client(context, "catalog")
 
 
+# def create_rs_stac_client_edrs(context) -> EdrsClient:
+#    return create_rs_stac_client(context, "edrs")
+
+
+# def create_rs_stac_client_lta(context) -> LtaClient:
+#    return create_rs_stac_client(context, "lta")
+
+
+def create_rs_stac_client_prip(context) -> PripClient:
+    return create_rs_stac_client(context, "prip")
+
+
 def create_rs_stac_client(context, instance: str) -> RsClient:
     env_var = f"{instance.upper()}_STAC_API_URL"
     stac_api_url = os.getenv(env_var)
@@ -364,7 +426,7 @@ def create_rs_stac_client(context, instance: str) -> RsClient:
             owner_id=context.login,
         )
 
-    return getattr(client, f"get_{instance.lower()}_client")()
+    return getattr(client, f"get_{instance.lower()}_client")(timeout=10)
 
 
 @when("he adds the collection {collection_id}")
