@@ -15,7 +15,7 @@ container_tab = [
         "rs-server-catalog",
         (".*server-catalog.*", ".*server-catalog-db.*", ":([0-9a-zA-Z.\\-]+)$"),
     ),
-    ("pgstac", (".*server-catalog-db.*", "", "v(\\d+\\.\\d+\\.\\d+)")),
+    ("pgstac", (".*cnpgstac-1.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     ("rs-osam", (".*rs-osam.*", "", ":([0-9a-zA-Z.\\-]+)$")),
 ]
 
