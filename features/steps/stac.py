@@ -322,7 +322,42 @@ def step_each_collection_contains_at_least_num_items(context, num_items: int):
     with report_path.open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, ensure_ascii=False)
 
-    missing = [cid for cid, ok in results.items() if not ok]
+    # CADIP: No Sentinel-1 products found at Punta Arenas, but it seems normal
+    # PRIP: S1 EN/NM/Z* produced only during commissioning phase + very rare calibration campaigns
+    # PRIP: S2 MSI_L1A are produced quite rarely - https://esa-cams.atlassian.net/browse/GSANOM-20505
+    # PRIP: S3 OL_0_CR1__* produced only during commissioning phase
+    # PRIP: S3 OL_1_SPC___ produced only every three months
+    ignored_cid = [
+        "S1_PAR",
+        "S1A_L0_EN_S",
+        "S1A_L0_NM_S",
+        "S1A_L0_ZM_S",
+        "S1A_L0_ZE_S",
+        "S1A_L0_ZI_S",
+        "S1A_L0_ZW_S",
+        "S1C_L0_EN_S",
+        "S1C_L0_NM_S",
+        "S1C_L0_ZM_S",
+        "S1C_L0_ZE_S",
+        "S1C_L0_ZI_S",
+        "S1C_L0_ZW_S",
+        "S1D_L0_EN_S",
+        "S1D_L0_NM_S",
+        "S1D_L0_ZM_S",
+        "S1D_L0_ZE_S",
+        "S1D_L0_ZI_S",
+        "S1D_L0_ZW_S",
+        "S2A_L1_MSI_L1A",
+        "S2B_L1_MSI_L1A",
+        "S2C_L1_MSI_L1A",
+        "S3A_L0_OL_0_CR1",
+        "S3B_L0_OL_0_CR1",
+        "S3A_L1_OL_SPC",
+        "S3B_L1_OL_SPC",
+    ]
+    missing = [
+        cid for cid, ok in results.items() if not ok and cid.upper() not in ignored_cid
+    ]
     assert not missing, f"Some collections have fewer than {num_items} items: {missing}"
 
 
