@@ -10,6 +10,7 @@ container_tab = [
     ("rs-server-frontend", (".*rs-server-frontend.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     ("rs-server-adgs", (".*rs-server-adgs.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     ("rs-server-cadip", (".*rs-server-cadip.*", "", ":([0-9a-zA-Z.\\-]+)$")),
+    ("rs-server-prip", (".*rs-server-prip.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     ("rs-server-staging", (".*rs-server-staging.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     (
         "rs-server-catalog",
@@ -53,10 +54,10 @@ use_step_matcher("re")
 
 # Check the version of a specific container
 @given(
-    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
+    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
 )
 @then(
-    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
+    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
 )
 def step_check_container_version(context, container: str, version: str):
     # Retrieve the configuration for the specified container from container_tab
