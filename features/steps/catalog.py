@@ -2,7 +2,7 @@ import json
 
 from behave import given, then, when
 from json_utils import check_json_path_is_not_null
-from rs_server import rs_server_delete, rs_server_get, rs_server_post
+from rs_server import rs_server_delete, rs_server_get, rs_server_post_ex
 
 
 def get_user_collections(context):
@@ -86,7 +86,7 @@ def step_create_collection(context, name):
     }
 
     # Call the endpoint to create the collection
-    rs_server_post(context, "/catalog/collections", collection_json, 201)
+    rs_server_post_ex(context, "/catalog/collections", collection_json, [201, 409])
 
 
 @then("the count of collection should be {number:d}")
