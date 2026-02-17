@@ -3,7 +3,7 @@ import logging
 import os
 
 import requests
-from behave import then, use_step_matcher
+from behave import then
 from requests import Response
 
 logger = logging.getLogger(__name__)
@@ -56,9 +56,6 @@ def rs_server_post(context, url: str, parameter: json, status: int = 200) -> Res
     return rs_server_http_call(context, "POST", url, [status], parameter)
 
 
-use_step_matcher("cfparse")
-
-
 @then("rs-server post {url} ends with status in {statuses:d+}")
 def rs_server_post_ex(
     context,
@@ -70,9 +67,6 @@ def rs_server_post_ex(
     Perform a POST call to the catalog and send back the response
     """
     return rs_server_http_call(context, "POST", url, statuses, parameter)
-
-
-use_step_matcher("parse")
 
 
 @then("rs-server put {url} ends with status {status:d}")
