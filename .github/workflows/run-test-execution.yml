@@ -15,7 +15,7 @@ on:
       xray_key:
         description: XRay Test Execution key to run
         required: true
-        default: 'RSPY-938'
+        default: 'RSPY-938'  # To be kept in line with INPUT_XRAY_KEY default value below
 
 permissions:
   contents: write
@@ -53,9 +53,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Export tests from Jira/Xray
-      if: ${{ github.event_name != 'pull_request' }}
       env:
-        INPUT_XRAY_KEY: ${{ inputs.xray_key }}
+        INPUT_XRAY_KEY: ${{ inputs.xray_key || 'RSPY-938' }}  # To be kept in line with workflow_dispatch.inputs.xray.default
         XRAY_USER: ${{ secrets.XRAY_USER }}
         XRAY_PASSWORD: ${{ secrets.XRAY_PASSWORD }}
         XRAY_BASE_URL: ${{ secrets.XRAY_BASE_URL }}
@@ -71,7 +70,6 @@ jobs:
         path: ~/snap/firefox/common/tmp/downloads/FeatureBundle.zip
 
     - name: Run tests with behave
-      if: ${{ github.event_name != 'pull_request' }}
       env:
         APIKEY_URL: ${{ vars.APIKEY_URL }}
         AUXIP_STAC_API_URL: ${{ vars.AUXIP_STAC_API_URL }}
@@ -92,7 +90,11 @@ jobs:
         S3_DOMAIN_URL: ${{ vars.S3_DOMAIN_URL }}
 
       run: |
-        behave --junit -f json.pretty --logging-level DEBUG -o reports/results.json || true
+        if [ "${{ github.event_name }}" = "pull_request" ]; then
+          behave --dry-run --junit -f json.pretty --logging-level DEBUG -o reports/results.json
+        else
+          behave --junit -f json.pretty --logging-level DEBUG -o reports/results.json || true
+        fi
 
     - name: Publish Test Results
       uses: EnricoMi/publish-unit-test-result-action@v2

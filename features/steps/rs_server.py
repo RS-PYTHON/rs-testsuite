@@ -56,7 +56,7 @@ def rs_server_post(context, url: str, parameter: json, status: int = 200) -> Res
     return rs_server_http_call(context, "POST", url, [status], parameter)
 
 
-@then("rs-server post {url} ends with status in {statuses:d+}")
+@then("rs-server post {url} ends with status in {statuses:IntList}")
 def rs_server_post_ex(
     context,
     url: str,
