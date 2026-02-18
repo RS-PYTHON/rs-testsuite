@@ -86,26 +86,26 @@ def step_given_stac_bbox(context, bbox: str):
 @given('the collection "{collection}" exists')
 def step_given_stac_collection_exists(context, collection: str):
     context.stac_collection = collection
-    step_given_stac_collections_exist(context, collection)
+    step_given_stac_collections_exist(context, [collection])
 
 
 @then('the collection "{collection}" exists')
 def step_then_stac_collection_exists(context, collection: str):
-    step_then_stac_collections_exist(context, collection)
+    step_then_stac_collections_exist(context, [collection])
 
 
-@given('the collections "{collections}" exist')
-def step_given_stac_collections_exist(context, collections: str):
+@given('the collections "{collections:StrList}" exist')
+def step_given_stac_collections_exist(context, collections: list[str]):
     context.stac_collection = collections
     assert_stac_collections_exist(context, collections)
 
 
-@then('the collections "{collections}" exist')
-def step_then_stac_collections_exist(context, collections: str):
+@then('the collections "{collections:StrList}" exist')
+def step_then_stac_collections_exist(context, collections: list[str]):
     assert_stac_collections_exist(context, collections)
 
 
-def assert_stac_collections_exist(context, collections: str):
+def assert_stac_collections_exist(context, collections: list[str]):
     assert do_stac_collections_exist(
         context,
         collections,
@@ -115,11 +115,11 @@ def assert_stac_collections_exist(context, collections: str):
 @given('the collection "{collection}" does not exist')
 def step_given_stac_collection_does_not_exist(context, collection: str):
     context.stac_collection = collection
-    step_given_stac_collections_do_not_exist(context, collection)
+    step_given_stac_collections_do_not_exist(context, [collection])
 
 
-@given('the collections "{collections}" do not exist')
-def step_given_stac_collections_do_not_exist(context, collections: str):
+@given('the collections "{collections:StrList}" do not exist')
+def step_given_stac_collections_do_not_exist(context, collections: list[str]):
     context.stac_collections = collections
     assert not do_stac_collections_exist(
         context,
@@ -127,9 +127,7 @@ def step_given_stac_collections_do_not_exist(context, collections: str):
     ), f"No expected count of collections found for {collections}"
 
 
-def do_stac_collections_exist(context, collections: str) -> bool:
-    collection_ids = collections.split(",")
-
+def do_stac_collections_exist(context, collection_ids: list[str]) -> bool:
     context.stac_collections = []
     for collection_id in collection_ids:
         context.stac_collections.append(collection_id)
@@ -138,7 +136,7 @@ def do_stac_collections_exist(context, collections: str) -> bool:
     #            context.stac_collections.append(os.environ['USER'] + '_' + collection_id)
 
     found_collections = create_pystac_client(context).get_collections()
-    assert found_collections is not None, f"No collections found for {collections}"
+    assert found_collections is not None, f"No collections found for {collection_ids}"
     matches = 0
     for cid in collection_ids:
         for fc in found_collections:
@@ -156,28 +154,28 @@ def do_stac_collections_exist(context, collections: str) -> bool:
 @given("the item {item} exists")
 def step_given_stac_item_exists(context, item: str):
     context.stac_item = item
-    step_given_stac_items_exist(context, item)
+    step_given_stac_items_exist(context, [item])
 
 
 @then("the item {item} exists")
 def step_then_stac_item_exists(context, item: str):
-    step_then_stac_items_exist(context, item)
+    step_then_stac_items_exist(context, [item])
 
 
-@given("the items {items} exist")
-def step_given_stac_items_exist(context, items: str):
-    context.stac_items = items.split(",")
+@given("the items {items:StrList} exist")
+def step_given_stac_items_exist(context, items: list[str]):
+    context.stac_items = items
     assert do_stac_items_exist(
         context,
-        items.split(","),
+        items,
     ), f"No expected count of items found for {items}"
 
 
-@then("the items {items} exist")
-def step_then_stac_items_exist(context, items: str):
+@then("the items {items:StrList} exist")
+def step_then_stac_items_exist(context, items: list[str]):
     assert do_stac_items_exist(
         context,
-        items.split(","),
+        items,
     ), f"No expected count of items found for {items}"
 
 
