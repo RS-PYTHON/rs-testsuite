@@ -50,6 +50,8 @@ for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}
 for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=ContentType%20eq%20'application/octet-stream'%20or%20ContentType%20eq%20'foo'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # not
 for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=not%20endswith(Name,'p')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
+for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=not(ContentType%20eq%20'application/zip')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
+for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=not%20(ContentType%20eq%20'application/zip')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # ()
 for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=ContentType%20eq%20'application/octet-stream'%20and%20(contains(Name,'2000')%20or%20contains(Name,'3000'))&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # concat

@@ -91,6 +91,8 @@ for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR}
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20eq%20'S1A'%20or%20Satellite%20eq%20'S1C'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # not
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=not%20endswith(SessionId,'0')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
+for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=not(Satellite%20eq%20'S1A')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
+for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=not%20(Satellite%20eq%20'S1A')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # ()
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20eq%20'S1A'%20and%20(contains(SessionId,'2000')%20or%20contains(SessionId,'3000'))&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # concat
