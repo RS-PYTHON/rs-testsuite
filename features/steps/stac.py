@@ -96,7 +96,7 @@ def step_then_stac_collection_exists(context, collection: str):
 
 @given('the collections "{collections:StrList}" exist')
 def step_given_stac_collections_exist(context, collections: list[str]):
-    context.stac_collection = collections
+    context.stac_collections = collections
     assert_stac_collections_exist(context, collections)
 
 
