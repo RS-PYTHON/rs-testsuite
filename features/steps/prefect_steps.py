@@ -1,13 +1,28 @@
+# Copyright 2026 Airbus defence And Space
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import json
 import os
 import time
 
 import requests
 from behave import given, then, when
+from faker import Faker
 
 
 # Function to perform a GET request to the Prefect API
-def prefect_api_get(context, endpoint: str, parameters: str) -> str:
+def prefect_api_get(context, endpoint: str, parameters: str) -> requests.Response:
     # Ensure the PREFECT_API_URL environment variable is set
     assert (
         "PREFECT_API_URL" in os.environ
@@ -30,12 +45,12 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> str:
             response.status_code == 200
         ), f"status for GET {url} is {response.status_code} and not 200."
 
-        print(response.text, flush=True)
+        # print(response.text, flush=True)
         return response
 
 
 # Function to perform a POST request to the Prefect API
-def prefect_api_post(context, endpoint: str, post_data: json) -> str:
+def prefect_api_post(context, endpoint: str, post_data: dict) -> requests.Response:
     # Ensure the PREFECT_API_URL environment variable is set
     assert (
         "PREFECT_API_URL" in os.environ
@@ -71,11 +86,12 @@ def step_flow_is_deployed(context, flow: str):
         The flow ID is not None.
     """
     # Perform a GET request to check the flow deployment
+    print(f"Start with {os.environ["PREFECT_API_URL"]}")
+
     response = prefect_api_get(context, "/api/flows/name", flow)
 
     # Parse the response JSON and extract the flow ID
-    data = json.loads(response.text)
-    context.flow_id = data["id"]
+    context.flow_id = response.json()["id"]
     # Ensure the flow ID is not None
     assert context.flow_id is not None, "Flow id could not be extracted from data."
     print(f"Flow id = {context.flow_id}.")
@@ -100,14 +116,15 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
         "/api/deployments/name",
         flow + "/" + deployment,
     )
+    print(json.dumps(response.json(), indent=2))
+
     assert (
         response.status_code == 200
     ), f"GET request ends with status {response.status_code}. Not a 200 answer."
 
     # Parse the response JSON and extract the deployment and flow IDs
-    data = json.loads(response.text)
-    context.deployment_id = data["id"]
-    context.flow_id = data["flow_id"]
+    context.deployment_id = response.json()["id"]
+    context.flow_id = response.json()["flow_id"]
     # Ensure the deployment and flow IDs are not None
     assert (
         context.deployment_id is not None
@@ -122,41 +139,41 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
 def step_start_the_flow(context):
     """
     Step definition to start the flow.
-
-    Args:
-    context: The context object provided by Behave.
-
-    Asserts:
-    The flow ID and deployment ID are not None.
-    The response status code is between 200 and 299.
     """
-    # Ensure the flow ID and cookies are not None
+
+    # Ensure the flow ID and deployment ID are not None
     assert context.flow_id is not None, "Flow id is not set on the context environment."
-    assert (
-        context.deployment_id is not None
-    ), "Deployment id is not set on the context environment."
+    assert context.deployment_id is not None, "Deployment id is not set on the context environment."
 
     # Define the parameters for the POST request to start the flow
-    parameters_json = {
-        "name": "flow-run-from-cucumber",
-        "tags": ["CUCUMBER", "TEST"],
+    fake = Faker()
+    payload = {
+        "name": f"CUCUMBER-{fake.word().capitalize()}-{fake.word().capitalize()}",
+        "tags": ["cucumber", "test"],
     }
 
     # Perform a POST request to start the flow
     response = prefect_api_post(
         context,
         f"/api/deployments/{context.deployment_id}/create_flow_run",
-        parameters_json,
+        payload,
     )
-    data = json.loads(response.text)
-    print(data)
-    context.flow_run_id = data["id"]
-    assert (
-        context.flow_run_id is not None
-    ), f"Flow run identifier could not be extraced from data['id'] :\n {data}."
-    assert (response.status_code >= 200) and (
-        response.status_code < 300
-    ), f"POST request ends with status {response.status_code}. Not a 2XX answer."
+
+    # Validate HTTP status before parsing JSON
+    assert response.status_code is not None, f"Response dict has no 'status_code' key: {response.status_code}"
+    assert 200 <= response.status_code < 300, (
+        f"POST request ends with status {response.status_code}. Not a 2XX answer."
+    )
+
+    print(response)
+
+    # Extract flow_run_id safely
+    flow_run_id = response.json()["id"]
+    assert flow_run_id is not None, (
+        f"Flow run identifier could not be extracted from response: {response}"
+    )
+
+    context.flow_run_id = flow_run_id
 
 
 @then("the flow ends with status completed")
@@ -168,21 +185,25 @@ def step_wait_the_flow_to_complete(context):
     status = "UNKNOWN"
 
     while status not in ["COMPLETED", "FAILED", "CANCELLED", "CRASHED", "CANCELLING"]:
-        # Effectue!= 'COMPLETED'):
         time.sleep(1)
 
         response = prefect_api_get(context, "/api/flow_runs", context.flow_run_id)
-        data = json.loads(response.text)
-        flow_state_id = data["state_id"]
+        flow_state_id = response.json()["state_id"]
 
         response = prefect_api_get(context, "/api/flow_run_states", flow_state_id)
         # Parse the response JSON and extract the deployment and flow IDs
-        data = json.loads(response.text)
-        status = data["type"]
+        status = response.json()["type"]
 
     assert (
         status == "COMPLETED"
     ), f"Flow ends with status {status} instead of 'Completed'."
+
+
+@then("the flow has an artifact result")
+def step_read_artifact_result(context):
+    assert (
+        context.flow_run_id is not None
+    ), "Flow run id is not set on the context environment."
 
     # Get test results
     parameters_json = {
@@ -198,8 +219,7 @@ def step_wait_the_flow_to_complete(context):
     assert (response.status_code >= 200) and (
         response.status_code < 300
     ), f"POST request ends with status {response.status_code}. Not a 2XX answer."
-    data = json.loads(response.text)
-    context.steps_result = json.loads(data[0]["data"])
+    context.steps_result = response.json()[0]["data"]
 
 
 @then("the flow ends without error")
@@ -208,7 +228,7 @@ def step_check_flow_results(context):
         context.steps_result is not None
     ), "steps_result is not set on the context environment."
 
-    # Vérifier si tous les steps sont "OK"
+    # Check that all steps are "OK"
     all_ok = all(step["status"] == "OK" for step in context.steps_result)
     assert all_ok, "Almost one step is not OK."
 
