@@ -33,7 +33,9 @@ for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}
 # eq
 for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=ContentType%20eq%20'application/octet-stream'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # ne
-for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=ContentType%20ne%20'application/octet-stream'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
+for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=ContentType%20ne%20'application/zip'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
+for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=PublicationDate%20ne%202026-03-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
+for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=Name%20ne%20'foo'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # gt
 for sys in ADGS ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=PublicationDate%20gt%202026-02-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${AFIELD}" || echo "ERROR" ; done
 # ge
