@@ -82,7 +82,7 @@ for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR}
 # lt
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=PublicationDate%20lt%202026-02-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # le
-for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=PublicationDate%20le%202026-02-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
+for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=PublicationDate%20le%202026-03-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # in
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20in%20('S1A','S1C')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # and
