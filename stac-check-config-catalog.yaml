@@ -4,7 +4,7 @@ linting:
   # Item name '{self.object_id}' should not contain ':' or '/'
   percent_encoded: true
   # Item file names should match their ids
-  item_id_file_name: true
+  item_id_file_name: false
   # Collections and catalogs should be named collection.json and catalog.json
   catalog_id_file_name: true
   # A STAC collection should contain a summaries field - to enable after RSPY-780
