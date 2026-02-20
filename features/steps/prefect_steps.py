@@ -18,6 +18,7 @@ import time
 
 import requests
 from behave import given, then, when  # type: ignore
+from behave.api.pending_step import StepNotImplementedError # type: ignore
 from faker import Faker  # type: ignore
 
 
@@ -73,7 +74,7 @@ def prefect_api_post(context, endpoint: str, post_data: dict) -> requests.Respon
         return response
 
 
-@given("the flow {flow} is deployed")
+@given('the flow "{flow}" is deployed')
 def step_flow_is_deployed(context, flow: str):
     """
     Step definition to check if a flow is deployed.
@@ -97,7 +98,7 @@ def step_flow_is_deployed(context, flow: str):
     print(f"Flow id = {context.flow_id}.")
 
 
-@given("the flow {flow} is deployed on deployment {deployment}")
+@given('the flow "{flow}" is deployed on deployment "{deployment}"')
 def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
     """
     Step definition to check if a flow is deployed on a specific deployment.
@@ -135,8 +136,15 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
     print(f"Deployment id = {context.deployment_id}.")
 
 
+@when('we start the flow with the parameters:')
+def step_start_the_flow_parameters(context):
+    parameters_str = context.text  # le contenu entre """ ... """
+    parameters = json.loads(parameters_str)
+    step_start_the_flow(context, parameters)
+
+
 @when("we start the flow")
-def step_start_the_flow(context):
+def step_start_the_flow(context, parameters: dict = {}):
     """
     Step definition to start the flow.
     """
@@ -151,9 +159,10 @@ def step_start_the_flow(context):
     fake = Faker()
     payload = {
         "name": f"cucumber-{fake.word().lower()}-{fake.word().lower()}",
+        "parameters": parameters,
         "tags": ["cucumber", "test"],
     }
-
+    print(f"payload : {payload}")
     # Perform a POST request to start the flow
     response = prefect_api_post(
         context,
