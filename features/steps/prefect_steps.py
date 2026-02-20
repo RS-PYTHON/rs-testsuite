@@ -17,8 +17,8 @@ import os
 import time
 
 import requests
-from behave import given, then, when
-from faker import Faker
+from behave import given, then, when  # type: ignore
+from faker import Faker  # type: ignore
 
 
 # Function to perform a GET request to the Prefect API
@@ -32,6 +32,7 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> requests.Respons
 
     # Construct the URL for the GET request
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/{parameters}"
+    print(f"url: {url}")
 
     with requests.Session() as session:
         # Update session cookies with context cookies
@@ -39,8 +40,7 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> requests.Respons
         # Call HTTP GET method
         response = session.get(url)
         # Print the response status code and text
-        print(response.status_code, flush=True)
-
+        print(f"response status is {response.status_code}.", flush=True)
         assert (
             response.status_code == 200
         ), f"status for GET {url} is {response.status_code} and not 200."
@@ -110,13 +110,13 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
     Asserts:
         The deployment ID and flow ID are not None.
     """
+
     # Perform a GET request to check the flow deployment on a specific deployment
     response = prefect_api_get(
         context,
         "/api/deployments/name",
         flow + "/" + deployment,
     )
-    print(json.dumps(response.json(), indent=2))
 
     assert (
         response.status_code == 200
@@ -143,12 +143,14 @@ def step_start_the_flow(context):
 
     # Ensure the flow ID and deployment ID are not None
     assert context.flow_id is not None, "Flow id is not set on the context environment."
-    assert context.deployment_id is not None, "Deployment id is not set on the context environment."
+    assert (
+        context.deployment_id is not None
+    ), "Deployment id is not set on the context environment."
 
     # Define the parameters for the POST request to start the flow
     fake = Faker()
     payload = {
-        "name": f"CUCUMBER-{fake.word().capitalize()}-{fake.word().capitalize()}",
+        "name": f"cucumber-{fake.word().lower()}-{fake.word().lower()}",
         "tags": ["cucumber", "test"],
     }
 
@@ -160,18 +162,20 @@ def step_start_the_flow(context):
     )
 
     # Validate HTTP status before parsing JSON
-    assert response.status_code is not None, f"Response dict has no 'status_code' key: {response.status_code}"
-    assert 200 <= response.status_code < 300, (
-        f"POST request ends with status {response.status_code}. Not a 2XX answer."
-    )
+    assert (
+        response.status_code is not None
+    ), f"Response dict has no 'status_code' key: {response.status_code}"
+    assert (
+        200 <= response.status_code < 300
+    ), f"POST request ends with status {response.status_code}. Not a 2XX answer."
 
     print(response)
 
     # Extract flow_run_id safely
     flow_run_id = response.json()["id"]
-    assert flow_run_id is not None, (
-        f"Flow run identifier could not be extracted from response: {response}"
-    )
+    assert (
+        flow_run_id is not None
+    ), f"Flow run identifier could not be extracted from response: {response}"
 
     context.flow_run_id = flow_run_id
 
