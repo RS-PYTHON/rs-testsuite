@@ -385,6 +385,7 @@ def step_then_no_stac_api_errors(context):
     if context.stac_api_root_url == os.environ["CATALOG_STAC_API_URL"]:
         # Ignore known Catalog errors traced by an anomaly
         for ignored_catalog_error in [
+            "[Collections] : https://rspy.ops.rs-python.eu/catalog/collections/SENTINEL-2 self link does not match requested url",  # RSPY-464 # noqa: E501 # pylint: disable=line-too-long
             "[Collections] /collections self link does not match requested url",  # RSPY-950
         ]:
             if ignored_catalog_error in stac_api_errors:
