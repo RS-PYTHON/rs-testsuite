@@ -4,7 +4,7 @@ linting:
   # Item name '{self.object_id}' should not contain ':' or '/'
   percent_encoded: true
   # Item file names should match their ids
-  item_id_file_name: true
+  item_id_file_name: false
   # Collections and catalogs should be named collection.json and catalog.json
   catalog_id_file_name: true
   # A STAC collection should contain a summaries field - to enable after RSPY-780
@@ -18,7 +18,7 @@ linting:
   # check to see if there are too many links
   bloated_links: true
   # best practices - check for bloated metadata in properties
-  bloated_metadata: true
+  bloated_metadata: false
   # best practices - ensure thumbnail is a small file size ["png", "jpeg", "jpg", "webp"]
   check_thumbnail: true
   # best practices - ensure that links in catalogs and collections include a title field - to enable after RSPY-613

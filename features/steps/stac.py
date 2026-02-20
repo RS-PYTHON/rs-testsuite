@@ -96,7 +96,7 @@ def step_then_stac_collection_exists(context, collection: str):
 
 @given('the collections "{collections:StrList}" exist')
 def step_given_stac_collections_exist(context, collections: list[str]):
-    context.stac_collection = collections
+    context.stac_collections = collections
     assert_stac_collections_exist(context, collections)
 
 
@@ -368,9 +368,11 @@ def step_then_no_stac_api_errors(context):
     if context.stac_api_root_url in [
         os.environ["CATALOG_STAC_API_URL"],
         os.environ["CADIP_STAC_API_URL"],
+        os.environ["AUXIP_STAC_API_URL"],
+        os.environ["EDRS_STAC_API_URL"],
     ]:
         # Ignore bbox errors for CADIP/AUXIP as we have items without geometry
-        for ignored_cadip_auxip_error in [
+        for ignored_geometry_error in [
             "[Item Search] GET Search with ids and non-intersecting bbox returned results, "
             "indicating the ids parameter is overriding the bbox parameter. "
             "All parameters are applied equally since STAC API 1.0.0-beta.1",
@@ -378,8 +380,16 @@ def step_then_no_stac_api_errors(context):
             "indicating the ids parameter is overriding the bbox parameter. "
             "All parameters are applied equally since STAC API 1.0.0-beta.1",
         ]:
-            if ignored_cadip_auxip_error in stac_api_errors:
-                stac_api_errors.remove(ignored_cadip_auxip_error)
+            if ignored_geometry_error in stac_api_errors:
+                stac_api_errors.remove(ignored_geometry_error)
+    if context.stac_api_root_url == os.environ["CATALOG_STAC_API_URL"]:
+        # Ignore known Catalog errors traced by an anomaly
+        for ignored_catalog_error in [
+            "[Collections] : https://rspy.ops.rs-python.eu/catalog/collections/SENTINEL-2 self link does not match requested url",  # RSPY-464 # noqa: E501 # pylint: disable=line-too-long
+            "[Collections] /collections self link does not match requested url",  # RSPY-950
+        ]:
+            if ignored_catalog_error in stac_api_errors:
+                stac_api_errors.remove(ignored_catalog_error)
     assert (
         not stac_api_errors
     ), f"STAC API validation errors:\n - {'\n - '.join(stac_api_errors)}"
@@ -464,6 +474,7 @@ def create_rs_stac_client(context, instance: str) -> RsClient:
 
 @when("he adds the collection {collection_id}")
 def step_when_stac_create_collection(context, collection_id: str):
+    context.stac_collection = collection_id
     response = create_rs_stac_client_catalog(context).add_collection(
         collection=Collection.from_file(
             "resources/catalog/collections/" + collection_id + ".json",
