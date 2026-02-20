@@ -473,6 +473,7 @@ def create_rs_stac_client(context, instance: str) -> RsClient:
 
 @when("he adds the collection {collection_id}")
 def step_when_stac_create_collection(context, collection_id: str):
+    context.stac_collection = collection_id
     response = create_rs_stac_client_catalog(context).add_collection(
         collection=Collection.from_file(
             "resources/catalog/collections/" + collection_id + ".json",
