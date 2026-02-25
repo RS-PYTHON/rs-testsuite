@@ -18,7 +18,6 @@ import time
 
 import requests
 from behave import given, then, when  # type: ignore
-from behave.api.pending_step import StepNotImplementedError # type: ignore
 from faker import Faker  # type: ignore
 
 
@@ -136,7 +135,7 @@ def step_flow_is_deployed_on_deployment(context, flow: str, deployment: str):
     print(f"Deployment id = {context.deployment_id}.")
 
 
-@when('we start the flow with the parameters:')
+@when("we start the flow with the parameters:")
 def step_start_the_flow_parameters(context):
     parameters_str = context.text  # le contenu entre """ ... """
     parameters = json.loads(parameters_str)
