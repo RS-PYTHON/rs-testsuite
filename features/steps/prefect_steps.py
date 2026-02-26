@@ -32,7 +32,6 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> requests.Respons
 
     # Construct the URL for the GET request
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/{parameters}"
-    print(f"url: {url}")
 
     with requests.Session() as session:
         # Update session cookies with context cookies
@@ -40,7 +39,6 @@ def prefect_api_get(context, endpoint: str, parameters: str) -> requests.Respons
         # Call HTTP GET method
         response = session.get(url)
         # Print the response status code and text
-        print(f"response status is {response.status_code}.", flush=True)
         assert (
             response.status_code == 200
         ), f"status for GET {url} is {response.status_code} and not 200."
@@ -60,8 +58,6 @@ def prefect_api_post(context, endpoint: str, post_data: dict) -> requests.Respon
 
     # Construct the URL for the POST request
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/"
-    print(f"url = {url}")
-    print(post_data)
 
     with requests.Session() as session:
         # Update session cookies with context cookies
@@ -211,16 +207,20 @@ def step_wait_the_flow_to_complete(context):
     ), f"Flow ends with status {status} instead of 'Completed'."
 
 
-@then("the flow has an artifact result")
-def step_read_artifact_result(context):
+@then('the flow has an artifact named "{name}"')
+def step_read_artifact_result(context, name: str):
     assert (
         context.flow_run_id is not None
     ), "Flow run id is not set on the context environment."
 
     # Get test results
     parameters_json = {
-        "artifacts": {"flow_run_id": {"any_": [f"{context.flow_run_id}"]}},
-    }
+        "artifacts": {
+                    "operator": "and_",
+                    "flow_run_id": {"any_": [f"{context.flow_run_id}"]},
+                    "key": {"any_": [f"{name}"]}
+                    }
+        }
 
     # Perform a POST request to start the flow
     response = prefect_api_post(
@@ -231,7 +231,11 @@ def step_read_artifact_result(context):
     assert (response.status_code >= 200) and (
         response.status_code < 300
     ), f"POST request ends with status {response.status_code}. Not a 2XX answer."
-    context.steps_result = response.json()[0]["data"]
+    try:
+        context.steps_result = response.json()[0]["data"]
+    except IndexError:
+        print(f"Conversion failed. 'response' : '{response}'")
+        raise Exception("No artifact found.")
 
 
 @then("the flow ends without error")
@@ -248,26 +252,20 @@ def step_check_flow_results(context):
 @then("the flow step {step:d} ends with status OK")
 def step_check_flow_step(context, step: int):
     assert context.steps_result is not None
+    item = context.steps_result
+    if isinstance(item, str):
+        item = json.loads(item)
+    print(f"item1 = {item}")
 
-    status = "None"
-    for item in context.steps_result:
-        if item["step"] == step:
-            status = item["status"]
-            break
-
-    assert status == "OK", f"Step {step} is NOK."
+    assert item[step-1]["status"] == "OK", f"Step {step} is NOK."
 
 
 @then("the flow step {step:d} ends with status NOK")
 def step_check_flow_step_nok(context, step: int):
     assert context.steps_result is not None
+    item = context.steps_result
+    if isinstance(item, str):
+        item = json.loads(item)
+    print(f"item1 = {item}")
 
-    assert context.steps_result is not None
-
-    status = "None"
-    for item in context.steps_result:
-        if item["step"] == step:
-            status = item["status"]
-            break
-
-    assert status == "NOK", f"Step {step} is OK."
+    assert item[step-1]["status"] == "NOK", f"Step {step} is OK."
