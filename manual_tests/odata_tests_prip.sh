@@ -139,3 +139,8 @@ for sys in S1A S1C S2A S2B S3A S3B ; do echo -n "${sys}: " ; curl -sfkH "${AUTHB
 for sys in S1A S1C S2A S2B S3A S3B ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=toupper(ContentType)%20eq%20'APPLICATION/OCTET-STREAM'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${PFIELD}" || echo "ERROR" ; done
 # trim
 for sys in S1A S1C S2A S2B S3A S3B ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=trim(ContentType)%20eq%20'application/octet-stream'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${PFIELD}" || echo "ERROR" ; done
+
+# smallest public SAFE product
+PFIELD='.value[0] | "\(.Name) \(.ContentLength)"'
+for sys in S1A ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=not%20(contains(Name,'WV_RAW'))%20and%20endswith(Name,'SAFE.zip')&\$top=1&\$orderby=ContentLength%20asc" | jq "${PFIELD}" || echo "ERROR" ; done
+for sys in S1C S2A S2B S3A S3B ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Products?\$filter=not%20(contains(Name,'HKM2'))%20and%20not%20(contains(Name,'SR_1_LAN_RD'))%20and%20not%20(contains(Name,'WV_RAW'))%20and%20not%20(contains(Name,'DO_0_'))%20and%20not%20(contains(Name,'_CAL_'))%20and%20not%20(contains(Name,'_AI_'))%20and%20not%20(contains(Name,'AX'))%20and%20not%20(contains(Name,'AUX'))%20and%20(endswith(Name,'SAFE.zip')%20or%20endswith(Name,'.tar')%20or%20endswith(Name,'SEN3.zip'))&\$top=1&\$orderby=ContentLength%20asc" | jq "${PFIELD}" || echo "ERROR" ; done
