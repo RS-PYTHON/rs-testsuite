@@ -103,33 +103,29 @@ def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, passwor
     browser.find_element(By.ID, "passwd").send_keys(password)
     browser.find_element(By.ID, "nsg-x1-logon-button").click()
 
-    try:
-        # Terms of use => OK
-        print(":: Waiting for Terms of Use")
-        WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.ID, "loginBtn")),
-        )
-        browser.find_element(By.ID, "loginBtn").click()
+    # Terms of use => OK
+    print(":: Waiting for Terms of Use")
+    WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.ID, "loginBtn")),
+    )
+    browser.find_element(By.ID, "loginBtn").click()
 
+    try:
         # JIRA login form
         print(":: Waiting for JIRA login form")
-        WebDriverWait(browser, 45).until(
+        WebDriverWait(browser, 30).until(
             EC.element_to_be_clickable((By.ID, "login-form-username")),
         )
         browser.find_element(By.ID, "login-form-username").send_keys(login)
         browser.find_element(By.ID, "login-form-password").send_keys(password)
         browser.find_element(By.ID, "login").click()
-
-        print(":: Waiting for JIRA login success")
-        WebDriverWait(browser, 30).until(
-            EC.element_to_be_clickable((By.ID, "create_link")),
-        )
     except TimeoutException:
-        print(":: Timeout waiting for JIRA")
-        print(":: Current URL:", browser.current_url)
-        print(":: HTML Page:")
-        print(browser.page_source)
-        raise
+        print(":: Jira login form not found, maybe already logged in?")
+
+    print(":: Waiting for JIRA login success")
+    WebDriverWait(browser, 30).until(
+        EC.element_to_be_clickable((By.ID, "create_link")),
+    )
 
 
 def get_cookies(browser: webdriver.Firefox):
