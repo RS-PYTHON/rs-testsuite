@@ -110,7 +110,7 @@ def login_to_jira(browser: webdriver.Firefox, jira_url: str, login: str, passwor
 
     # JIRA login form
     print(":: Waiting for JIRA login form")
-    WebDriverWait(browser, 30).until(
+    WebDriverWait(browser, 45).until(
         EC.element_to_be_clickable((By.ID, "login-form-username")),
     )
     browser.find_element(By.ID, "login-form-username").send_keys(login)
