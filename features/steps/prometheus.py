@@ -1,9 +1,12 @@
 import json
 import re
+import logging
 
 from behave import given, then, use_step_matcher, when
 from json_utils import check_json_path_is_not_null, is_valid_json
 from service import step_request_service
+
+logger = logging.getLogger(__name__)
 
 container_tab = [
     ("prefect", (".*prefect-server.*", "", ":(\\d+\\.\\d+\\.\\d+)-")),
@@ -16,8 +19,9 @@ container_tab = [
         "rs-server-catalog",
         (".*server-catalog.*", ".*server-catalog-db.*", ":([0-9a-zA-Z.\\-]+)$"),
     ),
-    ("pgstac", (".*cnpgstac-1.*", "", ":([0-9a-zA-Z.\\-]+)$")),
-    ("rs-osam", (".*rs-osam.*", "", ":([0-9a-zA-Z.\\-]+)$")),
+#    ("pgstac", (".*cnpgstac-1.*", "", ":([0-9a-zA-Z.\\-]+)$")),
+    ("pgstac", (".*pgstac-cluster-1.*", ".*postgis.*", ":([^@]+)")),
+    ("rs-server-osam", (".*rs-server-osam.*", "", ":([0-9a-zA-Z.\\-]+)$")),
 ]
 
 
@@ -54,10 +58,10 @@ use_step_matcher("re")
 
 # Check the version of a specific container
 @given(
-    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
+    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-server-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
 )
 @then(
-    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
+    'the container (?P<container>prefect|rs-server-frontend|rs-server-adgs|rs-server-prip|rs-server-cadip|rs-server-staging|rs-server-catalog|pgstac|rs-server-osam) has got version (?P<version>[^"]+)',  # noqa: E501 # pylint: disable=line-too-long
 )
 def step_check_container_version(context, container: str, version: str):
     # Retrieve the configuration for the specified container from container_tab
@@ -76,7 +80,12 @@ def step_check_container_version(context, container: str, version: str):
 
     # Get the image value from the response data
     data = json.loads(response.text)
-    image_value = data["data"]["result"][0]["metric"]["image"]
+    #logger.info("Check_version Image response data : %s", data)
+    if configuration[0] == '.*pgstac-cluster-1.*':
+       image_value = data["data"]["result"][0]["metric"]["image_spec"]
+    else:
+       image_value = data["data"]["result"][0]["metric"]["image"]
+    #logger.info("Check_version Image value : %s", image_value)
 
     # Use regex to find the version in the image value
     match = re.search(rf"{configuration[2]}", image_value)
