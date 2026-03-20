@@ -1,9 +1,11 @@
 import json
+import logging
 
 from behave import given, then, when
 from json_utils import check_json_path_is_not_null
 from rs_server import rs_server_delete, rs_server_get, rs_server_post_ex
 
+logger = logging.getLogger(__name__)
 
 def get_user_collections(context):
     """
@@ -20,19 +22,21 @@ def get_user_collections(context):
         context.login is not None
     ), "Login has not be added to the set on the request header."
     response = rs_server_get(context, "/catalog/collections", 200)
+    #logger.info("Get Collection response : %s", response)
     collections = response.json()["collections"]
 
     # Remove duplicates from the collections list
     collections_without_duplicate = []
     for item in collections:
         if item not in collections_without_duplicate:
+            #logger.info("Collection found : %s", item)
             collections_without_duplicate.append(item)
 
     # Filter collections to extract those owned by the user
     user_collections = [
         collection
         for collection in collections_without_duplicate
-        if collection["id"].startswith(context.login)
+        if collection["owner"].startswith(context.login)
     ]
 
     return user_collections
@@ -52,11 +56,17 @@ def step_remove_user_collections(context):
 
     # Get the list of the user collection
     user_collections = get_user_collections(context)
+    #logger.info("Number of collection find : %s", len(user_collections))
+    #logger.info("List of collections : %s", user_collections)
 
     for collection in user_collections:
-        url = f"/catalog/collections/{context.login}:{collection['id'][len(context.login)+1:]}"
-        rs_server_delete(context, url)
+        url = f"/catalog/collections/{collection['id']}"
 
+        #logger.info("Try to delete collection : %s", collection)
+        #logger.info("URL call : %s", url)
+
+        rs_server_delete(context, url)
+        #logger.info("Delete sent for : %s", collection)
 
 @given('the collection "{name}" is created')
 @when('the collection "{name}" is created')
