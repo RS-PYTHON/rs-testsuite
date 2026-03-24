@@ -58,13 +58,16 @@ def prefect_api_post(context, endpoint: str, post_data: dict) -> requests.Respon
 
     # Construct the URL for the POST request
     url = f"{os.getenv('PREFECT_API_URL')}{endpoint}/"
+    print(f"url= {url}")
 
     with requests.Session() as session:
         # Update session cookies with context cookies
         session.cookies.update(context.cookies)
         # Call the HTTP.POST method
-        response = session.post(url, json.dumps(post_data))
+        response = session.post(url, json=post_data)
+
         # Print the response status code and text
+        print(response.text)
         print(response.status_code, flush=True)
         return response
 
@@ -158,6 +161,7 @@ def step_start_the_flow(context, parameters: dict = {}):
         "tags": ["cucumber", "test"],
     }
     print(f"payload : {payload}")
+    print(f"/api/deployments/{context.deployment_id}/create_flow_run")
     # Perform a POST request to start the flow
     response = prefect_api_post(
         context,
