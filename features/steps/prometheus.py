@@ -1,6 +1,6 @@
 import json
-import re
 import logging
+import re
 
 from behave import given, then, use_step_matcher, when
 from json_utils import check_json_path_is_not_null, is_valid_json
@@ -19,7 +19,7 @@ container_tab = [
         "rs-server-catalog",
         (".*server-catalog.*", ".*server-catalog-db.*", ":([0-9a-zA-Z.\\-]+)$"),
     ),
-#    ("pgstac", (".*cnpgstac-1.*", "", ":([0-9a-zA-Z.\\-]+)$")),
+    #    ("pgstac", (".*cnpgstac-1.*", "", ":([0-9a-zA-Z.\\-]+)$")),
     ("pgstac", (".*pgstac-cluster-1.*", ".*postgis.*", ":([^@]+)")),
     ("rs-server-osam", (".*rs-server-osam.*", "", ":([0-9a-zA-Z.\\-]+)$")),
 ]
@@ -80,12 +80,12 @@ def step_check_container_version(context, container: str, version: str):
 
     # Get the image value from the response data
     data = json.loads(response.text)
-    #logger.info("Check_version Image response data : %s", data)
-    if configuration[0] == '.*pgstac-cluster-1.*':
-       image_value = data["data"]["result"][0]["metric"]["image_spec"]
+    # logger.info("Check_version Image response data : %s", data)
+    if configuration[0] == ".*pgstac-cluster-1.*":
+        image_value = data["data"]["result"][0]["metric"]["image_spec"]
     else:
-       image_value = data["data"]["result"][0]["metric"]["image"]
-    #logger.info("Check_version Image value : %s", image_value)
+        image_value = data["data"]["result"][0]["metric"]["image"]
+    # logger.info("Check_version Image value : %s", image_value)
 
     # Use regex to find the version in the image value
     match = re.search(rf"{configuration[2]}", image_value)
