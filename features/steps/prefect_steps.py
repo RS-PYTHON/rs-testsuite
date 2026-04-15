@@ -220,11 +220,11 @@ def step_read_artifact_result(context, name: str):
     # Get test results
     parameters_json = {
         "artifacts": {
-                    "operator": "and_",
-                    "flow_run_id": {"any_": [f"{context.flow_run_id}"]},
-                    "key": {"any_": [f"{name}"]}
-                    }
+            "operator": "and_",
+            "flow_run_id": {"any_": [f"{context.flow_run_id}"]},
+            "key": {"any_": [f"{name}"]},
         }
+    }
 
     # Perform a POST request to start the flow
     response = prefect_api_post(
@@ -261,7 +261,7 @@ def step_check_flow_step(context, step: int):
         item = json.loads(item)
     print(f"item1 = {item}")
 
-    assert item[step-1]["status"] == "OK", f"Step {step} is NOK."
+    assert item[step - 1]["status"] == "OK", f"Step {step} is NOK."
 
 
 @then("the flow step {step:d} ends with status NOK")
@@ -272,4 +272,4 @@ def step_check_flow_step_nok(context, step: int):
         item = json.loads(item)
     print(f"item1 = {item}")
 
-    assert item[step-1]["status"] == "NOK", f"Step {step} is OK."
+    assert item[step - 1]["status"] == "NOK", f"Step {step} is OK."

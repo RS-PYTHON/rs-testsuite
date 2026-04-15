@@ -212,7 +212,7 @@ def step_check_stac_api(context):
     profiler = cProfile.Profile()
     profiler.enable()
 
-    (warnings, errors) = validate_api(
+    warnings, errors = validate_api(
         root_url=context.stac_api_root_url,
         ccs_to_validate=context.stac_conformance_classes,
         collection=getattr(context, "stac_collection", None),
