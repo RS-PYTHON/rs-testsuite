@@ -84,11 +84,11 @@ for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR}
 # le
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=PublicationDate%20le%202026-03-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # in
-for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20in%20('S1A','S1C')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
+for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20in%20('S1A','S1C','S1D')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # and
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20eq%20'S1C'%20and%20PublicationDate%20lt%202026-01-01T00:00:00.000Z&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # or
-for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20eq%20'S1A'%20or%20Satellite%20eq%20'S1C'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
+for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=Satellite%20eq%20'S1A'%20or%20Satellite%20eq%20'S1C'%20or%20Satellite%20eq%20'S1D'&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 # not
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=not%20endswith(SessionId,'0')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
 for sys in MPS MTI NSG SGS SSC ; do echo -n "${sys}: " ; curl -sfkH "${AUTHBEAR} ${TOKEN[$sys]}" "${URL[$sys]}/Sessions?\$filter=not(Satellite%20eq%20'S1A')&\$orderby=PublicationDate%20desc&\$top=1" | jq "${CFIELD}" || echo "ERROR" ; done
