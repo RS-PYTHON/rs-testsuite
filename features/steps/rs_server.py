@@ -1,4 +1,17 @@
-import json
+# Copyright 2023-2026 Airbus
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import logging
 import os
 
@@ -14,7 +27,7 @@ def rs_server_http_call(
     verb: str,
     url: str,
     statuses: list[int] | None = None,
-    parameter: str | None = None,
+    parameter: str | dict | None = None,
 ) -> Response:
     assert context.apikey is not None, "API-KEY is not set."
     assert os.getenv("RS_SERVER_URL") is not None, "RS_SERVER_URL is not set."
@@ -49,7 +62,7 @@ def rs_server_get(context, url: str, status: int = 200) -> Response:
 
 
 @then("rs-server post {url} ends with status {status:d}")
-def rs_server_post(context, url: str, parameter: json, status: int = 200) -> Response:
+def rs_server_post(context, url: str, parameter: dict, status: int = 200) -> Response:
     """
     Perform a POST call to the catalog and send back the response
     """
@@ -60,7 +73,7 @@ def rs_server_post(context, url: str, parameter: json, status: int = 200) -> Res
 def rs_server_post_ex(
     context,
     url: str,
-    parameter: json,
+    parameter: dict,
     statuses: list[int] | None = None,
 ) -> Response:
     """
@@ -70,7 +83,7 @@ def rs_server_post_ex(
 
 
 @then("rs-server put {url} ends with status {status:d}")
-def rs_server_put(context, url: str, parameter: json, status: int = 200) -> Response:
+def rs_server_put(context, url: str, parameter: dict, status: int = 200) -> Response:
     """
     Perform a PUT call to the catalog and send back the response
     """
@@ -78,7 +91,7 @@ def rs_server_put(context, url: str, parameter: json, status: int = 200) -> Resp
 
 
 @then("rs-server patch {url} ends with status {status:d}")
-def rs_server_patch(context, url: str, parameter: json, status: int = 200) -> Response:
+def rs_server_patch(context, url: str, parameter: dict, status: int = 200) -> Response:
     """
     Perform a PATCH call to the catalog and send back the response
     """
@@ -89,7 +102,7 @@ def rs_server_patch(context, url: str, parameter: json, status: int = 200) -> Re
 def rs_server_options(
     context,
     url: str,
-    parameter: json,
+    parameter: dict,
     status: int = 200,
 ) -> Response:
     """

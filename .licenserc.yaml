@@ -1,4 +1,4 @@
-# Copyright 2023-2026 Airbus, CS Group
+# Copyright 2023-2026 Airbus
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
 header:
   license:
     spdx-id: Apache-2.0
-    copyright-owner: Airbus, CS Group
+    copyright-owner: Airbus
     copyright-year: '2023-2026'
 
   paths-ignore:
@@ -31,12 +31,16 @@ header:
     - '**/empty.txt'
     - '**/.gitignore'
     - '**/.helmignore'
+    - '.bandit'
     - '.gitattributes'
     - '.gitmodules'
+    - '.pylintrc'
     - '.safety-project.ini'
     - '.trivyignore'
     - '.yamllint'
     - 'LICENSE'
     - 'NOTICE'
+    - 'file-test.txt'
+    - 'requirements.txt'
 
   comment: on-failure

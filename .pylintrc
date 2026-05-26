@@ -1,0 +1,8 @@
+[MESSAGES CONTROL]
+disable=
+    missing-function-docstring,
+    missing-module-docstring,
+    not-callable,
+
+[FORMAT]
+max-line-length=120
