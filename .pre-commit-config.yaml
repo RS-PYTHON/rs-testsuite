@@ -1,4 +1,4 @@
-# Copyright 2024 CS Group
+# Copyright 2023-2026 Airbus
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ repos:
 
 # Format (black)
 -   repo: https://github.com/psf/black
-    rev: 26.3.1
+    rev: 26.5.1
     hooks:
     -   id: black
 
@@ -59,15 +59,12 @@ repos:
     -   id: flake8
         args: [--max-complexity=10, --max-line-length=127]
 
--   repo: local
-    hooks:
-    -   id: pylint
-        name: pylint
-        entry: pylint
-        language: system
-        types: [python]
-        require_serial: true
-        args: [--max-line-length=127, "--disable=C0114,C0116,E1102"]
+- repo: https://github.com/google/addlicense
+  rev: v1.2.0
+  hooks:
+  - id: addlicense
+    files: \.(css|html|js|py|sh|yml|yaml)$
+    args: [ "-c", "Airbus", "-l", "apache" ]
 
 # Remarks:
 #   - we don't use ruff because it uses pylint that returns an error code for quality issues

@@ -1,12 +1,35 @@
+# Copyright 2023-2026 Airbus
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import hashlib
 import os
 import uuid
 from datetime import datetime, timezone
+from typing import Any
 from urllib.parse import urljoin
 
-import requests
 from behave import given, then, use_step_matcher, when
 from bs4 import BeautifulSoup
+from requests import Response, Session
+
+
+def call_apikey_manager(cookies: Any, session: Session, path: str) -> Response:
+    """Call API Key Manager"""
+    session.cookies.update(cookies)
+    response = session.get(urljoin(os.environ["APIKEY_URL"], path))
+    response.raise_for_status()
+    return response
 
 
 @given("user {user:d} is defined")
@@ -43,7 +66,7 @@ def step_login_into_url(context, url: str):
         context.passw is not None
     ), "Password has not be added to the set on the request header."
 
-    with requests.Session() as session:
+    with Session() as session:
         # Step 1: Connect to API key manager to be redirected to URL login form
         response = session.get(url)
         assert (
@@ -92,7 +115,7 @@ def step_create_apikey(context, key_type: str):
     ), "APIKEY_URL environment variable has not been set."
     assert context.cookies is not None, "Cookies are missing on context."
 
-    with requests.Session() as session:
+    with Session() as session:
         session.cookies.update(context.cookies)
 
         # Create new API key
@@ -127,17 +150,13 @@ def step_revoke_apikey(context):
     assert context.apikey is not None, "apikey cannot be retrieve from request answer."
     assert uuid.UUID(context.apikey) is not None
 
-    with requests.Session() as session:
-        session.cookies.update(context.cookies)
-
+    with Session() as session:
         # Revoke the last created API key
-        response = session.get(
-            urljoin(
-                os.getenv("APIKEY_URL"),
-                f"/auth/api_key/revoke?api-key={context.apikey}",
-            ),
+        call_apikey_manager(
+            context.cookies,
+            session,
+            f"/auth/api_key/revoke?api-key={context.apikey}",
         )
-        response.raise_for_status()
 
 
 @then("the last created API key should be revoked")
@@ -150,11 +169,8 @@ def step_check_revocation_apikey(context):
     assert context.apikey is not None, "apikey cannot be retrieve from request answer."
     assert uuid.UUID(context.apikey) is not None
 
-    with requests.Session() as session:
-        session.cookies.update(context.cookies)
-
-        response = session.get(urljoin(os.getenv("APIKEY_URL"), "/auth/api_key/list"))
-        response.raise_for_status()
+    with Session() as session:
+        response = call_apikey_manager(context.cookies, session, "/auth/api_key/list")
 
         hash_hex = encode_sha_256(context.apikey)
 
@@ -177,11 +193,8 @@ def step_check_apikey_validity(context):
     assert context.apikey is not None, "apikey cannot be retrieve from request answer."
     assert uuid.UUID(context.apikey) is not None
 
-    with requests.Session() as session:
-        session.cookies.update(context.cookies)
-
-        response = session.get(urljoin(os.getenv("APIKEY_URL"), "/auth/api_key/list"))
-        response.raise_for_status()
+    with Session() as session:
+        response = call_apikey_manager(context.cookies, session, "/auth/api_key/list")
 
         hash_hex = encode_sha_256(context.apikey)
 

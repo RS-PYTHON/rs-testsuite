@@ -1,7 +1,22 @@
+# Copyright 2023-2026 Airbus
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Module importing test execution results into JIRA X-Ray test execution tickets"""
 
 import json
 import logging
+from http.client import HTTPConnection
 from pathlib import Path
 
 import requests
@@ -34,10 +49,6 @@ try:
     # Enabling debugging at http.client level (requests->urllib3->http.client)
     # you will see the REQUEST, including HEADERS and DATA, and RESPONSE with HEADERS but without DATA.
     # the only thing missing will be the response.body which is not logged.
-    try:  # for Python 3
-        from http.client import HTTPConnection
-    except ImportError:
-        from httplib import HTTPConnection
     HTTPConnection.debuglevel = 1
 
     logging.basicConfig()  # need to initialize logging, otherwise you will not see anything from requests

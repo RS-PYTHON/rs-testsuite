@@ -1,9 +1,23 @@
+# Copyright 2023-2026 Airbus
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 """Module defining JIRA X-Ray utilities"""
 
 import logging
 import os
 import shutil
-import subprocess
+import subprocess  # nosec
 from pathlib import Path
 from typing import Any
 
@@ -171,7 +185,7 @@ def login_to_jira(  # noqa: C901
 
 
 def extract_login_form(browser: webdriver.Firefox) -> tuple[Any, Any, Any]:
-    # JIRA has two distinct login forms !!!
+    """Extract the correct login form from JIRA as has two distinct login forms !"""
     return (
         find_element_without_error(
             browser,
@@ -195,6 +209,7 @@ def find_element_without_error(
     value1: str,
     value2: str,
 ) -> Any | None:
+    """Robust find_element (returns None if not found instead of exception)"""
     try:
         return browser.find_element(by, value1)
     except NoSuchElementException as e1:
@@ -207,6 +222,7 @@ def find_element_without_error(
 
 
 def print_context(browser: webdriver.Firefox):
+    """Print the browser context for debug purpose"""
     print(":: Title:", browser.title)
     print(":: URL:", browser.current_url)
     print(":: HTML Page:")

@@ -1,4 +1,4 @@
-# Copyright 2026 Airbus defence And Space
+# Copyright 2023-2026 Airbus
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ def step_start_the_flow_parameters(context):
 
 
 @when("we start the flow")
-def step_start_the_flow(context, parameters: dict = {}):
+def step_start_the_flow(context, parameters: dict | None = None):
     """
     Step definition to start the flow.
     """
@@ -223,7 +223,7 @@ def step_read_artifact_result(context, name: str):
             "operator": "and_",
             "flow_run_id": {"any_": [f"{context.flow_run_id}"]},
             "key": {"any_": [f"{name}"]},
-        }
+        },
     }
 
     # Perform a POST request to start the flow
@@ -237,9 +237,9 @@ def step_read_artifact_result(context, name: str):
     ), f"POST request ends with status {response.status_code}. Not a 2XX answer."
     try:
         context.steps_result = response.json()[0]["data"]
-    except IndexError:
+    except IndexError as exc:
         print(f"Conversion failed. 'response' : '{response}'")
-        raise Exception("No artifact found.")
+        raise ValueError("No artifact found.") from exc
 
 
 @then("the flow ends without error")
