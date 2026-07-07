@@ -157,7 +157,7 @@ def step_start_the_flow(context, parameters: dict | None = None):
     fake = Faker()
     payload = {
         "name": f"cucumber-{fake.word().lower()}-{fake.word().lower()}",
-        "parameters": parameters,
+        "parameters": parameters if parameters is not None else {},
         "tags": ["cucumber", "test"],
     }
     print(f"payload : {payload}")
