@@ -25,20 +25,6 @@ def _headers():
     return {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}#to adapt
 
 
-#copy of another test
-@given("user {user:d} is defined")
-def step_define_user(context, user: int):
-    """Checks that user credentials are defined as environment variables"""
-    assert (
-        f"RSPY_TEST_USER_{user}" in os.environ
-    ), f"RSPY_TEST_USER_{user} environment variable is not set."
-    assert (
-        f"RSPY_TEST_PASS_{user}" in os.environ
-    ), f"RSPY_TEST_PASS_{user} environment variable is not set."
-
-    context.login = os.getenv(f"RSPY_TEST_USER_{user}")
-    context.passw = os.getenv(f"RSPY_TEST_PASS_{user}")
-
 
 #first minimal version
 @given("the branch is {branch}")
