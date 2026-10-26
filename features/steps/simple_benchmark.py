@@ -75,12 +75,12 @@ def launch_benchmark(context):
         "scenario" : context.scenario,
         "kecloak_username" : context.kecloak_username
     }
-resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
-assert resp.status_code == 204 , resp.text
-#sleep ?
-time.sleep(10)
-runs = requests.get (URL + "/runs", headers = _headers(), params = {"branch":context.branch, "per_page": 1}).json()
-context.run_id = runs["workflow_runs"][0]["id"]
+    resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
+    assert resp.status_code == 204 , resp.text
+    #sleep ?
+    time.sleep(10)
+    runs = requests.get (URL + "/runs", headers = _headers(), params = {"branch":context.branch, "per_page": 1}).json()
+    context.run_id = runs["workflow_runs"][0]["id"]
 
 
 @then ("the benchmark workflow run succeeds")
