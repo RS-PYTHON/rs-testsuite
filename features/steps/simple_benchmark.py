@@ -13,12 +13,14 @@
 # limitations under the License.
 
 import os
-
+import time
+import requests
 import boto3
 from behave import given, then, when
 from botocore.exceptions import ClientError, NoCredentialsError
 
-
+URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml"
+HEADERS = {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}#to adapt
 
 
 #copy of another test
@@ -61,19 +63,32 @@ def step_scenario_is_correct(context, value):
 def step_keycloak_username_is_correct(context, value):
     context.keycloak_username=value
 
-#TODO
+
 @when ("the benchmark workflow is launched")
 def launch_benchmark(context):
-    assert (context.branch == "develop")
-    assert (context.cluster == "ops")
-    assert (context.processor == "s3_l0")
-    assert (context.processor_version == "1.5.0")
-    assert (context.scenario == "B")
-    assert (context.keycloak_username == "test_username")
+    inputs = {
+        "cluster": context.cluster,
+        "processor": context.processor,
+        "processor_version" : context.processor_version,
+        "scenario" : context.scenario,
+        "kecloak_username" : context.kecloak_username
+    }
+resp = requests.post(URL + "/dispaches", headers = HEADERS, json = {"ref": context.branch, "inputs": inputs})
+assert resp.status_code == 204 , resp.text
+#sleep ?
+time.sleep(10)
+runs = requests.get (URL + "/runs", headers = HEADERS, params = {"branch":context.branch, "per_page": 1}).json()
+context.run_id = runs["workflow_runs"][0]["id"]
 
-#TODO
+
 @then ("the benchmark workflow run succeeds")
 def check_benchmark(context):
-    return True
+    run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
+    run = requests.get(run_url, headers=HEADERS).json()
+    while run["status"] != "completed":
+        time.sleep(30)
+        run = requests.get(run_url, headers=HEADERS).json()
+    assert run["conclusion"] == "success", run["html_url"]
+
 
 
