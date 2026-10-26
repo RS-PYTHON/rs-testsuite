@@ -19,8 +19,10 @@ import boto3
 from behave import given, then, when
 from botocore.exceptions import ClientError, NoCredentialsError
 
-URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml"
-HEADERS = {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}#to adapt
+URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml" #to update
+
+def _headers():
+    return {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}#to adapt
 
 
 #copy of another test
@@ -73,21 +75,21 @@ def launch_benchmark(context):
         "scenario" : context.scenario,
         "kecloak_username" : context.kecloak_username
     }
-resp = requests.post(URL + "/dispaches", headers = HEADERS, json = {"ref": context.branch, "inputs": inputs})
+resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
 assert resp.status_code == 204 , resp.text
 #sleep ?
 time.sleep(10)
-runs = requests.get (URL + "/runs", headers = HEADERS, params = {"branch":context.branch, "per_page": 1}).json()
+runs = requests.get (URL + "/runs", headers = _headers(), params = {"branch":context.branch, "per_page": 1}).json()
 context.run_id = runs["workflow_runs"][0]["id"]
 
 
 @then ("the benchmark workflow run succeeds")
 def check_benchmark(context):
     run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
-    run = requests.get(run_url, headers=HEADERS).json()
+    run = requests.get(run_url, headers=_headers()).json()
     while run["status"] != "completed":
         time.sleep(30)
-        run = requests.get(run_url, headers=HEADERS).json()
+        run = requests.get(run_url, headers=_headers()).json()
     assert run["conclusion"] == "success", run["html_url"]
 
 
