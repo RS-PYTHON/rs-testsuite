@@ -61,7 +61,7 @@ def launch_benchmark(context):
         "scenario" : context.benchmark_scenario,
         "keycloak_user" : context.keycloak_user
     }
-    resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
+    resp = requests.post(URL + "/dispatches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
     assert resp.status_code == 204 , resp.text
     #sleep ?
     time.sleep(10)
