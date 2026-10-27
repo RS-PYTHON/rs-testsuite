@@ -15,7 +15,7 @@
 import os
 import time
 import requests
-import boto3
+
 from behave import given, then, when
 from botocore.exceptions import ClientError, NoCredentialsError
 
@@ -27,27 +27,27 @@ def _headers():
 
 
 #first minimal version
-@given("the branch is {branch}")
+@given('the branch is "{branch}"')
 def step_branch_is_correct(context, branch):
-    context.branch=value
+    context.branch=branch
 
-@given("the cluster is {cluster}")
+@given('the cluster is "{cluster}"')
 def step_cluster_is_correct(context, cluster):
     context.cluster=cluster
 
-@given("the processor is {processor}")
+@given('the processor is "{processor}"')
 def step_processor_is_correct(context, processor):
     context.processor=processor
 
-@given("the precessor version is {processor_version}")
+@given('the processor version is "{processor_version}"')
 def step_processor_version_is_correct(context, processor_version):
-    context.processor_version=processor_version
+    context.processor_version = processor_version
 
-@given("the scenario is {scenario}")
-def step_scenario_is_correct(context, scenario):
-    context.scenario=scenario
+@given('the scenario is "{benchmark_scenario}"')
+def step_scenario_is_correct(context, benchmark_scenario):
+    context.benchmark_scenario=benchmark_scenario
 
-@given("the keycloak username is {keycloak_username}")
+@given('the keycloak username is "{keycloak_username}"')
 def step_keycloak_username_is_correct(context, keycloak_username):
     context.keycloak_username=keycloak_username
 
@@ -59,7 +59,7 @@ def launch_benchmark(context):
         "processor": context.processor,
         "processor_version" : context.processor_version,
         "scenario" : context.scenario,
-        "kecloak_username" : context.kecloak_username
+        "keycloak_username" : context.keycloak_username
     }
     resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
     assert resp.status_code == 204 , resp.text
