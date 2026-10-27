@@ -53,6 +53,7 @@ def step_keycloak_username_is_correct(context, keycloak_user):
 
 @when ("the benchmark workflow is launched")
 def launch_benchmark(context):
+    print("Token length (debug);", len(os.environ.get("BENCHMARK_TOKEN", "")))
     inputs = {
         "cluster": context.cluster,
         "processor_name": context.processor_name,
