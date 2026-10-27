@@ -17,12 +17,11 @@ import time
 import requests
 
 from behave import given, then, when
-from botocore.exceptions import ClientError, NoCredentialsError
 
 URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml" #to update
 
 def _headers():
-    return {"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"}#to adapt
+    return {"Authorization": f"Bearer {os.environ['TOKEN_ACTION_RS_CLIENT_LIBRAIRIES']}"}#to adapt
 
 
 
@@ -35,9 +34,9 @@ def step_branch_is_correct(context, branch):
 def step_cluster_is_correct(context, cluster):
     context.cluster=cluster
 
-@given('the processor is "{processor}"')
-def step_processor_is_correct(context, processor):
-    context.processor=processor
+@given('the processor is "{processor_name}"')
+def step_processor_is_correct(context, processor_name):
+    context.processor_name=processor_name
 
 @given('the processor version is "{processor_version}"')
 def step_processor_version_is_correct(context, processor_version):
@@ -47,19 +46,19 @@ def step_processor_version_is_correct(context, processor_version):
 def step_scenario_is_correct(context, benchmark_scenario):
     context.benchmark_scenario=benchmark_scenario
 
-@given('the keycloak username is "{keycloak_username}"')
-def step_keycloak_username_is_correct(context, keycloak_username):
-    context.keycloak_username=keycloak_username
+@given('the keycloak username is "{keycloak_user}"')
+def step_keycloak_username_is_correct(context, keycloak_user):
+    context.keycloak_user=keycloak_user
 
 
 @when ("the benchmark workflow is launched")
 def launch_benchmark(context):
     inputs = {
         "cluster": context.cluster,
-        "processor": context.processor,
+        "processor_name": context.processor_name,
         "processor_version" : context.processor_version,
-        "scenario" : context.scenario,
-        "keycloak_username" : context.keycloak_username
+        "scenario" : context.benchmark_scenario,
+        "keycloak_user" : context.keycloak_user
     }
     resp = requests.post(URL + "/dispaches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
     assert resp.status_code == 204 , resp.text
@@ -70,13 +69,11 @@ def launch_benchmark(context):
 
 
 @then ("the benchmark workflow run succeeds")
-def check_benchmark(context):
+def check_benchmark(context): 
     run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
     run = requests.get(run_url, headers=_headers()).json()
     while run["status"] != "completed":
         time.sleep(30)
         run = requests.get(run_url, headers=_headers()).json()
     assert run["conclusion"] == "success", run["html_url"]
-
-
 

@@ -102,6 +102,7 @@ jobs:
         RS_PYTHON_URL: ${{ vars.RS_PYTHON_URL }}
         RS_SERVER_URL: ${{ vars.RS_SERVER_URL }}
         S3_DOMAIN_URL: ${{ vars.S3_DOMAIN_URL }}
+        TOKEN_ACTION_RS_CLIENT_LIBRAIRIES : ${{ secrets.TOKEN_ACTION_RS_CLIENT_LIBRAIRIES }}
 
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
