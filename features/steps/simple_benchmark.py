@@ -18,56 +18,62 @@ import requests
 
 from behave import given, then, when
 
-URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml" #to update
 
+#base URL
+URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml" 
+
+#the github token. It should be a platform account instead of a personal one
 def _headers():
-    return {"Authorization": f"Bearer {os.environ['TOKEN_ACTION_RS_CLIENT_LIBRAIRIES']}"}#to adapt
+    return {"Authorization": f"Bearer {os.environ['TOKEN_ACTION_RS_CLIENT_LIBRAIRIES']}"}
 
 
 
-#first minimal version
+
+# each parameter is configurable in jira
+# the possible combinations can be found in rs-client-libraries -> benchmark processor
+
 @given('the branch is "{branch}"')
-def step_branch_is_correct(context, branch):
+def step_branch (context, branch):
     context.branch=branch
 
 @given('the cluster is "{cluster}"')
-def step_cluster_is_correct(context, cluster):
+def step_cluster (context, cluster):
     context.cluster=cluster
 
 @given('the processor is "{processor_name}"')
-def step_processor_is_correct(context, processor_name):
+def step_processor (context, processor_name):
     context.processor_name=processor_name
 
 @given('the processor version is "{processor_version}"')
-def step_processor_version_is_correct(context, processor_version):
+def step_processor_version(context, processor_version):
     context.processor_version = processor_version
 
 @given('the scenario is "{benchmark_scenario}"')
-def step_scenario_is_correct(context, benchmark_scenario):
+def step_scenario(context, benchmark_scenario):
     context.benchmark_scenario=benchmark_scenario
 
 @given('the keycloak username is "{keycloak_user}"')
-def step_keycloak_username_is_correct(context, keycloak_user):
+def step_keycloak_username(context, keycloak_user):
     context.keycloak_user=keycloak_user
 
-
-@when ("the benchmark workflow is launched")
+ 
+# launch the benchmark processor and get the run id
+@when("the benchmark workflow is launched")
 def launch_benchmark(context):
     inputs = {
-        "cluster": context.cluster,
-        "processor_name": context.processor_name,
-        "processor_version" : context.processor_version,
+        "cluster": context.cluster, #the kubernetes cluster (ops/dev)
+        "processor_name": context.processor_name, 
+        "processor_version" : context.processor_version, 
         "scenario" : context.benchmark_scenario,
-        "keycloak_user" : context.keycloak_user
+        "keycloak_user" : context.keycloak_user 
     }
-    resp = requests.post(URL + "/dispatches", headers = _headers(), json = {"ref": context.branch, "inputs": inputs})
-    assert resp.status_code == 204 , resp.text
-    #sleep ?
-    time.sleep(10)
-    runs = requests.get (URL + "/runs", headers = _headers(), params = {"branch":context.branch, "per_page": 1}).json()
-    context.run_id = runs["workflow_runs"][0]["id"]
+    resp = requests.post(URL + "/dispatches", headers = _headers(),json={"ref": context.branch, "inputs": inputs, "return_run_details": True},timeout=30)
+    assert resp.status_code == 200 , resp.text
+    #The dispatch API returns the id of the run it created, so we follow exactly this run
+    context.run_id = resp.json()["workflow_run_id"]
 
 
+# wait until the benchmark finishes and check that it succeeded
 @then ("the benchmark workflow run succeeds")
 def check_benchmark(context): 
     run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
