@@ -55,7 +55,7 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python -m pip install --upgrade --only-binary :all: pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
@@ -102,6 +102,7 @@ jobs:
         RS_PYTHON_URL: ${{ vars.RS_PYTHON_URL }}
         RS_SERVER_URL: ${{ vars.RS_SERVER_URL }}
         S3_DOMAIN_URL: ${{ vars.S3_DOMAIN_URL }}
+        TOKEN_ACTION_RS_CLIENT_LIBRAIRIES : ${{ secrets.TOKEN_ACTION_RS_CLIENT_LIBRAIRIES }}
 
       run: |
         if [ "${{ github.event_name }}" = "pull_request" ]; then
