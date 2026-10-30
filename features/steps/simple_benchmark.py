@@ -31,25 +31,9 @@ def _headers():
     }
 
 
-"""
-each parameter is configurable in jira
-the possible combinations can be found in rs-client-libraries -> benchmark processor
-"""
 
-
-@given("user {user:d} is defined")
-def step_define_user(context, user: int):
-    """Checks that user credentials are defined as environment variables"""
-    assert (
-        f"RSPY_TEST_USER_{user}" in os.environ
-    ), f"RSPY_TEST_USER_{user} environment variable is not set."
-    assert (
-        f"RSPY_TEST_PASS_{user}" in os.environ
-    ), f"RSPY_TEST_PASS_{user} environment variable is not set."
-
-    context.keycloak_user = os.getenv(f"RSPY_TEST_USER_{user}")
-
-
+# each parameter is configurable in jira
+# the possible combinations can be found in rs-client-libraries -> benchmark processor
 @given('the branch is "{branch}"')
 def step_branch(context, branch):
     """the github branch (repo client-libraries)"""
@@ -88,7 +72,7 @@ def launch_benchmark(context):
         "processor_name": context.processor_name,
         "processor_version": context.processor_version,
         "scenario": context.benchmark_scenario,
-        "keycloak_user": context.keycloak_user,
+        "keycloak_user": context.login,
     }
     resp = requests.post(
         URL + "/dispatches",
