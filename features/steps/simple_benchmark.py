@@ -31,7 +31,6 @@ def _headers():
     }
 
 
-
 # each parameter is configurable in jira
 # the possible combinations can be found in rs-client-libraries -> benchmark processor
 @given('the branch is "{branch}"')
