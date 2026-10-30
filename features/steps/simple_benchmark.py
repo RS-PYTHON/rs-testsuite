@@ -77,9 +77,9 @@ def launch_benchmark(context):
 @then ("the benchmark workflow run succeeds")
 def check_benchmark(context): 
     run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
-    run = requests.get(run_url, headers=_headers()).json()
+    run = requests.get(run_url, headers=_headers(), timeout = 30).json()
     while run["status"] != "completed":
         time.sleep(30)
-        run = requests.get(run_url, headers=_headers()).json()
+        run = requests.get(run_url, headers=_headers(), timeout=30).json()
     assert run["conclusion"] == "success", run["html_url"]
 
