@@ -22,56 +22,67 @@ from behave import given, then, when
 URL = "https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/workflows/benchmark-processor.yml"
 
 
-# the github token. It should be a platform account instead of a personal one
 def _headers():
+    """
+    the github authentication secret
+    """
     return {
         "Authorization": f"Bearer {os.environ['TOKEN_ACTION_RS_CLIENT_LIBRAIRIES']}",
     }
 
 
-# each parameter is configurable in jira
-# the possible combinations can be found in rs-client-libraries -> benchmark processor
+"""
+each parameter is configurable in jira
+the possible combinations can be found in rs-client-libraries -> benchmark processor
+"""
 
 
-# the github branch (repo client-libraries)
+@given("user {user:d} is defined")
+def step_define_user(context, user: int):
+    """Checks that user credentials are defined as environment variables"""
+    assert (
+        f"RSPY_TEST_USER_{user}" in os.environ
+    ), f"RSPY_TEST_USER_{user} environment variable is not set."
+    assert (
+        f"RSPY_TEST_PASS_{user}" in os.environ
+    ), f"RSPY_TEST_PASS_{user} environment variable is not set."
+
+    context.keycloak_user = os.getenv(f"RSPY_TEST_USER_{user}")
+
+
 @given('the branch is "{branch}"')
 def step_branch(context, branch):
+    """the github branch (repo client-libraries)"""
     context.branch = branch
 
 
-# the cluster (dev/ops)
 @given('the cluster is "{cluster}"')
 def step_cluster(context, cluster):
+    """the cluster (dev/ops)"""
     context.cluster = cluster
 
 
-# the processor to benchmark (eg : s3_l0)
 @given('the processor is "{processor_name}"')
 def step_processor(context, processor_name):
+    """the processor to benchmark (eg : s3_l0)"""
     context.processor_name = processor_name
 
 
-# the version of the processor (eg : 1.5.0)
 @given('the processor version is "{processor_version}"')
 def step_processor_version(context, processor_version):
+    """the version of the processor (eg : 1.5.0)"""
     context.processor_version = processor_version
 
 
-# the scenario A/B
 @given('the scenario is "{benchmark_scenario}"')
 def step_scenario(context, benchmark_scenario):
+    """the scenario A/B"""
     context.benchmark_scenario = benchmark_scenario
 
 
-# use validator by default
-@given('the keycloak username is "{keycloak_user}"')
-def step_keycloak_username(context, keycloak_user):
-    context.keycloak_user = keycloak_user
-
-
-# launch the benchmark processor and get the run id
 @when("the benchmark workflow is launched")
 def launch_benchmark(context):
+    """launch the benchmark processor and get the run id"""
     inputs = {
         "cluster": context.cluster,  # the kubernetes cluster (ops/dev)
         "processor_name": context.processor_name,
@@ -90,9 +101,9 @@ def launch_benchmark(context):
     context.run_id = resp.json()["workflow_run_id"]
 
 
-# wait until the benchmark finishes and check that it succeeded
 @then("the benchmark workflow run succeeds")
 def check_benchmark(context):
+    """wait until the benchmark finishes and check that it succeeded"""
     run_url = f"https://api.github.com/repos/RS-PYTHON/rs-client-libraries/actions/runs/{context.run_id}"
     run = requests.get(run_url, headers=_headers(), timeout=30).json()
     while run["status"] != "completed":
